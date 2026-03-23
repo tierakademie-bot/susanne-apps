@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wie du wirklich handelst · Die unsichtbaren Fäden</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: Georgia, serif; background: linear-gradient(160deg, #5C3A1E 0%, #3A2010 40%, #1E0F05 100%); min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 28px 16px 48px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+::-webkit-scrollbar{width:5px} ::-webkit-scrollbar-thumb{background:#C4923A;border-radius:3px}
+.hdr{text-align:center;margin-bottom:26px}
+.ey{font-size:11px;color:#D4A853;letter-spacing:3px;text-transform:uppercase;margin-bottom:8px;font-family:system-ui}
+.hdr h1{font-size:24px;font-weight:700;color:white;margin-bottom:4px;line-height:1.2}
+.hdr .sub{font-size:13px;color:#D4A853;font-family:system-ui;opacity:.8}
+.card{width:100%;max-width:580px;background:white;border-radius:20px;overflow:hidden;box-shadow:0 20px 70px rgba(0,0,0,.4)}
+.card-hdr{background:linear-gradient(135deg,#5C3A1E,#C4923A);padding:22px 24px 18px;color:white}
+.card-hdr .e{font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:#FFF0C0;margin-bottom:6px;font-family:system-ui}
+.card-hdr h2{font-size:19px;font-weight:700;margin-bottom:8px;line-height:1.3}
+.card-hdr p{font-size:13px;color:rgba(255,255,255,.85);line-height:1.7;font-family:system-ui}
+.body{padding:20px 24px 26px}
+.feat{display:flex;align-items:flex-start;gap:12px;margin-bottom:14px}
+.feat-icon{width:36px;height:36px;border-radius:10px;background:#FFF8F0;border:1px solid #F5E0C0;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;margin-top:1px}
+.feat-text{font-size:13px;color:#1E2E28;font-family:system-ui;line-height:1.6}
+.feat-text strong{color:#5C3A1E}
+.tip{background:linear-gradient(135deg,#FFF8EC,#FFF0D4);border-left:4px solid #C4923A;border-radius:10px;padding:13px 15px;font-size:13px;color:#1E2E28;line-height:1.7;font-family:system-ui;margin:14px 0}
+.bruecke{background:linear-gradient(135deg,#FFF8F0,#F5E0C0);border-left:4px solid #5C3A1E;border-radius:10px;padding:13px 15px;font-size:13px;color:#1E2E28;line-height:1.7;font-family:system-ui;margin:14px 0}
+.btn-p{background:linear-gradient(135deg,#5C3A1E,#C4923A);color:white;border:none;border-radius:10px;padding:13px 18px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;width:100%}
+.btn-p:disabled{background:#D4A882;cursor:not-allowed}
+.btn-g{background:linear-gradient(135deg,#C4923A,#D4A853);color:white;border:none;border-radius:10px;padding:13px 18px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;width:100%}
+.btn-o{background:transparent;border:1.5px solid #5C3A1E;color:#5C3A1E;border-radius:10px;padding:12px 18px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit}
+.btn-lnk{background:none;border:none;color:#7D6352;font-size:12px;cursor:pointer;text-decoration:underline;font-family:inherit;padding:8px 0 0;display:block}
+.btn-row{display:flex;gap:10px;margin-top:14px}
+.btn-row .btn-p,.btn-row .btn-g{flex:1}
+.prog-meta{display:flex;justify-content:space-between;font-size:11px;color:#7D6352;font-family:system-ui;margin-bottom:6px}
+.prog-track{background:#F5E0C0;border-radius:999px;height:6px;overflow:hidden;margin-bottom:8px}
+.prog-fill{height:100%;background:linear-gradient(90deg,#5C3A1E,#D4A853);border-radius:999px}
+.dots{display:flex;gap:6px;margin-bottom:20px}
+.dot{flex:1;height:4px;border-radius:999px}
+.q-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:#C4923A;font-family:system-ui;margin-bottom:4px}
+.q-title{font-size:18px;font-weight:700;color:#5C3A1E;margin-bottom:8px;line-height:1.35}
+.q-hint{font-size:13px;color:#7D6352;font-style:italic;font-family:system-ui;line-height:1.6}
+.idk{font-size:12px;color:#7D6352;font-family:system-ui;line-height:1.6;margin:6px 0 12px;font-style:italic}
+textarea{width:100%;font-family:Georgia,serif;font-size:14px;color:#1E2E28;background:#FFF8F0;border:1.5px solid #D4A882;border-radius:10px;padding:11px 13px;outline:none;resize:vertical;line-height:1.65;margin:12px 0 0;display:block}
+textarea:focus{border-color:#C4923A}
+.rbox{background:linear-gradient(135deg,#FFF8F0,#F5E0C0);border-radius:12px;padding:14px 16px;margin-bottom:14px}
+.rs-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px}
+.rs-txt{font-size:14px;color:#1E2E28;line-height:1.8}
+.copy-hint{font-size:11px;color:#7D6352;font-family:system-ui;margin:10px 0 4px}
+.copy-field{width:100%;background:white;border:1.5px solid #C4923A;border-radius:8px;padding:9px 11px;font-size:13px;color:#1E2E28;font-family:inherit;line-height:1.7;resize:none;outline:none;cursor:text;display:block}
+.spin-wrap{display:flex;flex-direction:column;align-items:center;gap:16px;padding:40px 0}
+.spin{width:36px;height:36px;border:3px solid #F5E0C0;border-top-color:#C4923A;border-radius:50%;animation:spin .8s linear infinite}
+.err{background:#fff0f0;border-left:4px solid #cc4444;border-radius:10px;padding:14px 16px;font-size:13px;color:#7a2222;font-family:system-ui}
+.badge-5f{display:inline-block;background:#5C3A1E;color:#D4A853;font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;font-family:system-ui;letter-spacing:1px;text-transform:uppercase;margin-bottom:12px}
+.bridge-box{background:#FFF8F0;border-radius:12px;padding:14px 16px;margin-bottom:14px;font-size:13px;color:#7D6352;line-height:1.7;font-family:system-ui;border-left:4px solid #D4A853}
+.footer{margin-top:18px;font-size:11px;color:rgba(212,168,83,.4);font-family:system-ui}
+</style>
+</head>
+<body>
+<div class="hdr">
+  <div class="ey">Die unsichtbaren Fäden</div>
+  <h1>Wie du wirklich handelst –<br>nicht wie du es meinst</h1>
+  <div class="sub">6-Felder-Modell · Feld 5 · Handlungsachse</div>
+</div>
+<div class="card" id="card"></div>
+<div class="footer">🐾 Susanne Zischgl · Die unsichtbaren Fäden zwischen Mensch und Hund</div>
+
+<script>
+var QS = [
+  {
+    lbl: "Dein erstes Impuls",
+    q: "Wenn dein Hund etwas tut, das dich stoert – was ist dein allererster Impuls?",
+    hint: "Nicht was du dann tust – sondern was in der ersten Sekunde passiert. Bevor du nachdenkst. Das ist deine Handlungsachse.",
+    ph: "z. B. Ich sage sofort laut Nein. Oder ich zerre an der Leine. Oder ich erstarre kurz..."
+  },
+  {
+    lbl: "Zu viel oder zu wenig",
+    q: "Wuerdest du sagen, du greifst eher zu schnell ein – oder zu zoegerlich?",
+    hint: "Viele Menschen sind entweder zu viel oder zu wenig. Zu schnell oder zu abwartend. Wo liegt deine typische Richtung?",
+    ph: "z. B. Ich greife zu schnell ein, bevor er ueberhaupt etwas falsch gemacht hat. Oder: Ich warte zu lange und dann eskaliert es..."
+  },
+  {
+    lbl: "Klar oder widersprüchlich",
+    q: "Wie konsistent bist du im Alltag mit deinem Hund?",
+    hint: "Machst du heute das eine und morgen das andere? Gibt es Momente wo du dir selbst widersprichst – und was loest das aus?",
+    ph: "z. B. Manchmal erlaube ich ihm auf die Couch, manchmal nicht. Ich merke er ist dann unsicher..."
+  },
+  {
+    lbl: "Dein Ton und deine Koerpersprache",
+    q: "Wie wuerdest du deinen Ton und deine Koerpersprache im Umgang mit deinem Hund beschreiben?",
+    hint: "Nicht wie du sein moechtest – sondern wie du wirklich bist. Sanft, bestimmt, hektisch, ruhig, laut, unberechenbar, liebevoll...?",
+    ph: "z. B. Ich bin meistens ruhig, aber wenn ich gestresst bin werde ich lauter und merke dass er dann angespannter wird..."
+  },
+  {
+    lbl: "Was du dir wuenschst",
+    q: "Was moechtest du in deinem Handeln mit deinem Hund konkret veraendern?",
+    hint: "Nicht was dein Hund anders machen soll – sondern was du selbst anders tun, lassen oder ausprobieren moechtest.",
+    ph: "z. B. Ich moechte ruhiger reagieren wenn er zieht. Und weniger schimpfen..."
+  }
+];
+
+var ANS = ["","","","",""];
+var STEP = 0;
+var RES = "";
+
+function $(id){return document.getElementById(id);}
+
+function showWelcome(){
+  $("card").innerHTML =
+    '<div class="card-hdr">'+
+    '<div class="e">Feld 5 · Handlungsachse</div>'+
+    '<h2>Jetzt verlassen wir die Tiefe.<br>Jetzt geht es um dein Tun.</h2>'+
+    '<p>Du hast geschaut, wie du unter Stress reagierst, was dein innerer Hebel ist, wie du Beziehungen lebst und was tief in dir verwurzelt ist. Jetzt kommt die Frage: Wie handelst du konkret im Alltag mit deinem Hund – und was wirkt davon, wie du es dir vorstellst?</p>'+
+    '</div>'+
+    '<div class="body">'+
+    '<div class="badge-5f">6-Felder-Modell · Feld 5</div>'+
+
+    '<div class="bruecke">'+
+    '<p style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:#5C3A1E;font-family:system-ui;margin-bottom:8px">Die Bruecke von Feld 3 zu Feld 4</p>'+
+    '<p style="font-size:13px;color:#1E2E28;font-family:system-ui;line-height:1.7;margin-bottom:8px">In Feld 3 hast du deine Muster erkannt – wie du fuehlen, denken und innerlich reagierst. Feld 4 schaut nun, wie das in konkretes Handeln uebersetzt wird.</p>'+
+    '<p style="font-size:13px;color:#1E2E28;font-family:system-ui;line-height:1.7">Nicht: <em>Was fuehle ich?</em> Sondern: <em>Was tue ich? Wie handle ich wirklich – nicht wie ich es meine?</em></p>'+
+    '</div>'+
+
+    '<div class="feat"><div class="feat-icon">&#9889;</div><div class="feat-text"><strong>Dein erster Impuls</strong> – was passiert bevor du nachdenkst. Das ist deine echte Handlungsachse.</div></div>'+
+    '<div class="feat"><div class="feat-icon">&#9878;&#65039;</div><div class="feat-text"><strong>Zu viel oder zu wenig</strong> – greifst du zu schnell ein oder zu zoegerlich? Bist du klar oder widersprüchlich?</div></div>'+
+    '<div class="feat"><div class="feat-icon">&#128270;</div><div class="feat-text"><strong>Was dein Hund wirklich wahrnimmt</strong> – nicht wie du es meinst, sondern wie es bei ihm ankommt.</div></div>'+
+    '<div class="feat"><div class="feat-icon">&#128336;</div><div class="feat-text"><strong>Selbstreflexion & eine konkrete Veraenderung</strong> – was du diese Woche anders machen kannst.</div></div>'+
+
+    '<div class="tip"><strong style="color:#C4923A">Tipp:</strong> Diese Fragen sind manchmal unbequem – weil das Handeln das Ehrlichste ist, was wir ueber uns zeigen. Antworte so konkret wie moeglich. Und schreib <strong>Ich weiss es nicht</strong> wenn du unsicher bist.</div>'+
+    '<button class="btn-p" onclick="showQ(1)">&#9889; Meine Handlungsachse erkennen</button>'+
+    '</div>';
+}
+
+function showQ(n){
+  STEP = n;
+  var q = QS[n-1];
+  var pct = Math.round((n/5)*100);
+  var dots = "";
+  for(var i=0;i<5;i++){
+    var c = i<n-1?"#C4923A":i===n-1?"#5C3A1E":"#F5E0C0";
+    dots += '<div class="dot" style="background:'+c+'"></div>';
+  }
+  var back = n>1?'<button class="btn-o" onclick="goBack()">&#8592; Zurueck</button>':'';
+  var nextCls = n===5?"btn-g":"btn-p";
+  var nextLbl = n===5?"&#9889; Meine Handlungsachse zeigen":"Weiter &#8594;";
+  $("card").innerHTML =
+    '<div class="body">'+
+    '<div class="prog-meta"><span>Frage '+n+' von 5</span><span>'+pct+'%</span></div>'+
+    '<div class="prog-track"><div class="prog-fill" style="width:'+pct+'%"></div></div>'+
+    '<div class="dots">'+dots+'</div>'+
+    '<div class="q-label">'+q.lbl+'</div>'+
+    '<div class="q-title">'+q.q+'</div>'+
+    '<div class="q-hint">'+q.hint+'</div>'+
+    '<textarea id="ta" rows="4" placeholder="'+q.ph+'" oninput="chk()">'+(ANS[n-1]||'')+'</textarea>'+
+    '<p class="idk">&#128161; Du kannst auch schreiben: <strong>Ich weiss es nicht</strong> – das ist eine vollwertige Antwort.</p>'+
+    '<div class="btn-row">'+back+'<button class="'+nextCls+'" id="nbtn" onclick="goNext()">'+nextLbl+'</button></div>'+
+    '<button class="btn-lnk" onclick="reset()">&#8635; Von vorne starten</button>'+
+    '</div>';
+  chk();
+}
+
+function chk(){
+  var ta=$("ta"), btn=$("nbtn");
+  if(ta&&btn) btn.disabled = !ta.value.trim();
+}
+
+function goNext(){
+  var ta=$("ta");
+  if(!ta||!ta.value.trim()) return;
+  ANS[STEP-1]=ta.value.trim();
+  if(STEP<5){showQ(STEP+1);}
+  else{generate();}
+}
+
+function goBack(){
+  var ta=$("ta");
+  if(ta) ANS[STEP-1]=ta.value.trim();
+  showQ(STEP-1);
+}
+
+function showLoading(){
+  $("card").innerHTML='<div class="body"><div class="spin-wrap"><div class="spin"></div><p style="font-size:14px;color:#7D6352;font-family:system-ui;font-style:italic">Susanne schaut auf dein konkretes Handeln...</p></div></div>';
+}
+
+function generate(){
+  showLoading();
+  var msg="";
+  var labels=["Erster Impuls bei stoerenden Verhalten","Zu schnell oder zu zoegerlich","Konsistenz im Alltag","Ton und Koerpersprache","Was konkret veraendert werden soll"];
+  for(var i=0;i<5;i++) msg+=labels[i]+": "+(ANS[i]||"keine Angabe")+"\n";
+
+  var sys="Du bist Susanne, erfahrene Hundetrainerin, Physiotherapeutin und systemische Coach mit ueber 30 Jahren Erfahrung. Du arbeitest mit dem 6-Felder-Modell der Mensch-Hund-Dynamik.\n\nFeld 5 ist die Handlungsachse: Wie handelt der Mensch konkret im Alltag mit dem Hund? Nicht was er fuehlt oder denkt – sondern was er tut. Viele Menschen sind entweder zu viel oder zu wenig: zu schnell oder zu zoegerlich, zu laut oder zu still, zu konsistent oder zu widersprüchlich. Das Verhalten des Menschen wirkt auf den Hund – nicht wie es gemeint ist, sondern wie es ankommt.\n\nDu schreibst warm, direkt, konkret und ohne Floskeln. Keine Ratschlaege im Coaching-Ton. Du benennt klar was du siehst – auch wenn es unbequem ist – aber immer mit Respekt und ohne Verurteilung.\n\nBasierend auf den fuenf Antworten schreibst du fuenf Abschnitte mit diesen exakten Ueberschriften:\n\nDeine Handlungsachse:\n[3-4 Saetze: Wie wuerdest du das Handlungsmuster dieses Menschen beschreiben? Klar und konkret – z.B. eher impulsiv-reaktiv, eher zoegerlich-abwartend, eher inkonsistent, eher kontrollierend.]\n\nWie es bei deinem Hund ankommt:\n[2-3 Saetze: Was nimmt der Hund von diesem Handeln wahr? Nicht was gemeint ist – sondern was beim Hund als Signal ankommt.]\n\nDer Unterschied zwischen Absicht und Wirkung:\n[2-3 Saetze: Wo ist die groesste Luecke zwischen dem, was der Mensch tun moechte, und dem was er tatsaechlich tut? Das ist oft der entscheidendste Punkt.]\n\nSelbstreflexion:\n[2-3 Saetze: Was koennte der Mensch ueber sein Handeln erkennen – ohne sich dafuer zu verurteilen? Was wuerde es bedeuten, wenn er eine kleine Sache aendert?]\n\nDeine eine Veraenderung diese Woche:\n[1-2 Saetze: Eine einzige konkrete Handlungs-Aufgabe fuer den Alltag mit dem Hund. Kein grosses Training – etwas Kleines, Beobachtbares, Machbares.]\n\nKein Markdown. Deutsch, du-Ansprache.";
+
+  fetch("https://api.anthropic.com/v1/messages",{
+    method:"POST",
+    headers:{"Content-Type":"application/json","x-api-key":"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","anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},
+    body:JSON.stringify({
+      model:"claude-sonnet-4-20250514",
+      max_tokens:1100,
+      system:sys,
+      messages:[{role:"user",content:"Hier sind die fuenf Antworten:\n\n"+msg}]
+    })
+  })
+  .then(function(r){if(!r.ok)throw new Error("Fehler "+r.status);return r.json();})
+  .then(function(d){
+    if(d.error)throw new Error(d.error.message);
+    RES=d.content&&d.content[0]?d.content[0].text:"";
+    showResult();
+  })
+  .catch(function(e){
+    $("card").innerHTML='<div class="body"><div class="err">&#9888; '+e.message+'<br><button class="btn-p" style="margin-top:12px;width:auto;padding:9px 16px" onclick="generate()">&#8635; Nochmal versuchen</button></div></div>';
+  });
+}
+
+function showResult(){
+  var secs=[
+    {key:"deine handlungsachse",lbl:"&#9889; Deine Handlungsachse",col:"#5C3A1E",copy:false},
+    {key:"wie es bei deinem hund",lbl:"&#128062; Wie es bei deinem Hund ankommt",col:"#8B5E3C",copy:false},
+    {key:"der unterschied zwischen",lbl:"&#9878;&#65039; Der Unterschied zwischen Absicht und Wirkung",col:"#C4923A",copy:false},
+    {key:"selbstreflexion",lbl:"&#128270; Selbstreflexion",col:"#D4A853",copy:false},
+    {key:"deine eine veraenderung",lbl:"&#128336; Deine eine Veraenderung diese Woche",col:"#1E3A2E",copy:true}
+  ];
+  var parsed=[],cur=null;
+  var lines=RES.split("\n");
+  for(var i=0;i<lines.length;i++){
+    var line=lines[i].trim(),low=line.toLowerCase();
+    var found=false;
+    for(var j=0;j<secs.length;j++){
+      if(low.indexOf(secs[j].key)!==-1){
+        if(cur)parsed.push(cur);
+        cur={lbl:secs[j].lbl,col:secs[j].col,copy:secs[j].copy,txt:""};
+        found=true;break;
+      }
+    }
+    if(!found&&cur&&line) cur.txt+=(cur.txt?"\n":"")+line;
+  }
+  if(cur)parsed.push(cur);
+  if(!parsed.length)parsed=[{lbl:"&#9889; Deine Handlungsachse",col:"#5C3A1E",copy:false,txt:RES}];
+
+  var html='<div class="body">'+
+    '<div class="badge-5f">6-Felder-Modell · Feld 5</div>'+
+    '<p style="font-size:16px;font-weight:700;color:#5C3A1E;margin-bottom:4px">Deine Handlungsachse &#9889;</p>'+
+    '<p style="font-size:13px;color:#7D6352;font-family:system-ui;margin-bottom:16px;line-height:1.65">Das Handeln ist das Ehrlichste was wir ueber uns zeigen. Lies es offen und ohne Selbstkritik.</p>';
+
+  for(var k=0;k<parsed.length;k++){
+    var s=parsed[k];
+    var cp=s.copy?
+      '<p class="copy-hint">&#128070; Klick ins Feld &#8594; alles markiert &#8594; Strg+C</p>'+
+      '<textarea class="copy-field" readonly rows="3" onclick="this.select()">'+s.txt+'</textarea>':'';
+    html+='<div class="rbox" style="border-left:4px solid '+s.col+'">'+
+      '<div class="rs-lbl" style="color:'+s.col+'">'+s.lbl+'</div>'+
+      '<div class="rs-txt">'+s.txt.replace(/\n/g,"<br>")+'</div>'+cp+'</div>';
+  }
+
+  html+='<div class="bridge-box">'+
+    '<strong style="color:#5C3A1E">Und jetzt das grosse Ganze.</strong> In Feld 5 · Integration fliessen alle Erkenntnisse zusammen – dein Stressmuster, dein innerer Hebel, deine Beziehungsmuster und dein Handeln. Daraus entsteht dein persoenlicher Mensch-Hund-Kompass.'+
+    '</div>';
+
+  html+='<button class="btn-p" onclick="reset()" style="margin-top:4px">&#8635; Nochmal von vorne</button>'+
+    '</div>';
+  $("card").innerHTML=html;
+}
+
+function reset(){ANS=["","","","",""];STEP=0;RES="";showWelcome();}
+
+showWelcome();
+</script>
+</body>
+</html>

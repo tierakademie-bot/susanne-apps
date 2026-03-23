@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dein Mensch-Hund-Kompass · Die unsichtbaren Fäden</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: Georgia, serif; background: linear-gradient(160deg, #1A2A3A 0%, #0E1A26 40%, #060D13 100%); min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 28px 16px 48px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes glow { 0%,100%{opacity:.8} 50%{opacity:1} }
+::-webkit-scrollbar{width:5px} ::-webkit-scrollbar-thumb{background:#D4A853;border-radius:3px}
+.hdr{text-align:center;margin-bottom:26px}
+.ey{font-size:11px;color:#D4A853;letter-spacing:3px;text-transform:uppercase;margin-bottom:8px;font-family:system-ui}
+.hdr h1{font-size:24px;font-weight:700;color:white;margin-bottom:4px;line-height:1.2}
+.hdr .sub{font-size:13px;color:#D4A853;font-family:system-ui;opacity:.8}
+.card{width:100%;max-width:580px;background:white;border-radius:20px;overflow:hidden;box-shadow:0 20px 70px rgba(0,0,0,.5)}
+.card-hdr{background:linear-gradient(135deg,#1A2A3A,#2E4A6A);padding:22px 24px 18px;color:white}
+.card-hdr .e{font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:#D4A853;margin-bottom:6px;font-family:system-ui}
+.card-hdr h2{font-size:19px;font-weight:700;margin-bottom:8px;line-height:1.3}
+.card-hdr p{font-size:13px;color:rgba(255,255,255,.85);line-height:1.7;font-family:system-ui}
+.body{padding:20px 24px 26px}
+.feat{display:flex;align-items:flex-start;gap:12px;margin-bottom:14px}
+.feat-icon{width:36px;height:36px;border-radius:10px;background:#F0F4F8;border:1px solid #D0DCE8;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;margin-top:1px}
+.feat-text{font-size:13px;color:#1E2E28;font-family:system-ui;line-height:1.6}
+.feat-text strong{color:#1A2A3A}
+.tip{background:linear-gradient(135deg,#FFF8EC,#FFF0D4);border-left:4px solid #D4A853;border-radius:10px;padding:13px 15px;font-size:13px;color:#1E2E28;line-height:1.7;font-family:system-ui;margin:14px 0}
+.reise{background:linear-gradient(135deg,#F0F4F8,#D0DCE8);border-left:4px solid #1A2A3A;border-radius:10px;padding:13px 15px;font-size:13px;color:#1E2E28;line-height:1.7;font-family:system-ui;margin:14px 0}
+.btn-p{background:linear-gradient(135deg,#1A2A3A,#2E4A6A);color:white;border:none;border-radius:10px;padding:13px 18px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;width:100%}
+.btn-p:disabled{background:#8FAF9F;cursor:not-allowed}
+.btn-g{background:linear-gradient(135deg,#C4923A,#D4A853);color:white;border:none;border-radius:10px;padding:13px 18px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;width:100%}
+.btn-o{background:transparent;border:1.5px solid #1A2A3A;color:#1A2A3A;border-radius:10px;padding:12px 18px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit}
+.btn-lnk{background:none;border:none;color:#6B8A7E;font-size:12px;cursor:pointer;text-decoration:underline;font-family:inherit;padding:8px 0 0;display:block}
+.btn-row{display:flex;gap:10px;margin-top:14px}
+.btn-row .btn-p,.btn-row .btn-g{flex:1}
+.prog-meta{display:flex;justify-content:space-between;font-size:11px;color:#6B8A7E;font-family:system-ui;margin-bottom:6px}
+.prog-track{background:#D0DCE8;border-radius:999px;height:6px;overflow:hidden;margin-bottom:8px}
+.prog-fill{height:100%;background:linear-gradient(90deg,#1A2A3A,#D4A853);border-radius:999px}
+.dots{display:flex;gap:6px;margin-bottom:20px}
+.dot{flex:1;height:4px;border-radius:999px}
+.q-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:#2E4A6A;font-family:system-ui;margin-bottom:4px}
+.q-title{font-size:18px;font-weight:700;color:#1A2A3A;margin-bottom:8px;line-height:1.35}
+.q-hint{font-size:13px;color:#6B8A7E;font-style:italic;font-family:system-ui;line-height:1.6}
+.idk{font-size:12px;color:#6B8A7E;font-family:system-ui;line-height:1.6;margin:6px 0 12px;font-style:italic}
+textarea{width:100%;font-family:Georgia,serif;font-size:14px;color:#1E2E28;background:#F0F4F8;border:1.5px solid #A0B8CC;border-radius:10px;padding:11px 13px;outline:none;resize:vertical;line-height:1.65;margin:12px 0 0;display:block}
+textarea:focus{border-color:#D4A853}
+.rbox{background:linear-gradient(135deg,#F0F4F8,#D0DCE8);border-radius:12px;padding:14px 16px;margin-bottom:14px}
+.rs-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px}
+.rs-txt{font-size:14px;color:#1E2E28;line-height:1.8}
+.copy-hint{font-size:11px;color:#6B8A7E;font-family:system-ui;margin:10px 0 4px}
+.copy-field{width:100%;background:white;border:1.5px solid #D4A853;border-radius:8px;padding:9px 11px;font-size:13px;color:#1E2E28;font-family:inherit;line-height:1.7;resize:none;outline:none;cursor:text;display:block}
+.spin-wrap{display:flex;flex-direction:column;align-items:center;gap:16px;padding:40px 0}
+.spin{width:36px;height:36px;border:3px solid #D0DCE8;border-top-color:#D4A853;border-radius:50%;animation:spin .8s linear infinite}
+.err{background:#fff0f0;border-left:4px solid #cc4444;border-radius:10px;padding:14px 16px;font-size:13px;color:#7a2222;font-family:system-ui}
+.badge-5f{display:inline-block;background:#1A2A3A;color:#D4A853;font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;font-family:system-ui;letter-spacing:1px;text-transform:uppercase;margin-bottom:12px}
+.kompass-box{background:linear-gradient(135deg,#1A2A3A,#2E4A6A);border-radius:14px;padding:18px 20px;margin-bottom:14px;color:white}
+.kompass-box .kt{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#D4A853;margin-bottom:6px;font-family:system-ui}
+.kompass-box .kt-text{font-size:15px;line-height:1.8;color:rgba(255,255,255,.95)}
+.abschluss{background:linear-gradient(135deg,#FFF8EC,#FFF0D4);border-left:4px solid #D4A853;border-radius:12px;padding:16px 18px;margin-bottom:14px;font-size:13px;color:#1E2E28;line-height:1.75;font-family:system-ui}
+.felder-uebersicht{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}
+.feld-badge{background:#F0F4F8;border:1px solid #D0DCE8;border-radius:10px;padding:10px 12px;display:flex;align-items:center;gap:8px}
+.feld-badge .fb-icon{font-size:16px;flex-shrink:0}
+.feld-badge .fb-text{font-size:12px;color:#1A2A3A;font-family:system-ui;line-height:1.4}
+.feld-badge .fb-text strong{display:block;font-size:11px;color:#6B8A7E;font-weight:400}
+.footer{margin-top:18px;font-size:11px;color:rgba(212,168,83,.4);font-family:system-ui}
+</style>
+</head>
+<body>
+<div class="hdr">
+  <div class="ey">Die unsichtbaren Fäden</div>
+  <h1>Dein persönlicher<br>Mensch-Hund-Kompass</h1>
+  <div class="sub">6-Felder-Modell · Integration</div>
+</div>
+<div class="card" id="card"></div>
+<div class="footer">🐾 Susanne Zischgl · Die unsichtbaren Fäden zwischen Mensch und Hund</div>
+
+<script>
+var QS = [
+  {
+    lbl: "Deine groesste Erkenntnis",
+    q: "Was hat dich auf dieser Reise durch die 6 Felder am meisten ueberrascht oder beruehrt?",
+    hint: "Nicht was du schon wusstest – sondern was neu war. Was ist geblieben? Was hat sich verschoben – auch durch die Erkenntnis ueber deinen stimmigen Weg?",
+    ph: "z. B. Ich habe nicht erwartet, dass mein Stressmuster so direkt mit seinem Verhalten zusammenhaengt. Und dass ich bisher eine Methode genutzt habe, die einfach nicht zu mir passt..."
+  },
+  {
+    lbl: "Was sich veraendert hat",
+    q: "Schaust du heute anders auf deine Beziehung zu deinem Hund als vorher?",
+    hint: "Auch kleine Verschiebungen zaehlen. Ein anderer Blickwinkel, ein neues Verstaendnis, eine Frage die geblieben ist.",
+    ph: "z. B. Ich sehe sein Verhalten jetzt mehr als Reaktion auf mich und weniger als sein Problem..."
+  },
+  {
+    lbl: "Was noch offen ist",
+    q: "Welche Frage oder welches Thema beschaeftigt dich noch – das noch nicht beantwortet ist?",
+    hint: "Das darf offen sein. Integration bedeutet nicht, dass alles geloest ist. Manchmal ist die offene Frage das Wichtigste.",
+    ph: "z. B. Ich frage mich noch, wie ich ruhiger werde wenn er an der Leine zieht. Das klappt noch nicht..."
+  },
+  {
+    lbl: "Dein Wunsch fuer euch",
+    q: "Wenn du dir eines wuenschen koenntest fuer eure Beziehung – was waere das?",
+    hint: "Kein Trainingsziel. Kein Verhalten das sich aendern soll. Sondern wie es sich anfuehlen soll – fuer dich und fuer ihn.",
+    ph: "z. B. Ich wuensche mir, dass wir beide einfach da sein koennen – ohne Anspannung, ohne Erwartungen..."
+  },
+  {
+    lbl: "Dein naechster Schritt",
+    q: "Du kennst jetzt deinen stimmigen Weg. Was ist dein erster konkreter Schritt – heute oder diese Woche?",
+    hint: "Nicht eine lange Liste. Einen einzigen konkreten naechsten Schritt – innerlich, im Alltag, oder in der Art wie du mit deinem Hund arbeitest.",
+    ph: "z. B. Ich moechte diese Woche bewusst auf meinen Koerper achten wenn es schwierig wird – und die Methode ausprobieren die sich fuer mich stimmig angefuehlt hat..."
+  }
+];
+
+var ANS = ["","","","",""];
+var STEP = 0;
+var RES = "";
+
+function $(id){return document.getElementById(id);}
+
+function showWelcome(){
+  $("card").innerHTML =
+    '<div class="card-hdr">'+
+    '<div class="e">Integration</div>'+
+    '<h2>Du bist am Ende der Reise.<br>Und am Anfang von etwas Neuem.</h2>'+
+    '<p>In den sechs Feldern hast du geschaut: wie du unter Stress reagierst, wie du Beziehungen lebst, was dein innerer Hebel ist, was tief in dir verwurzelt ist, wie du konkret handelst – und welcher Weg wirklich zu dir und deinem Hund passt. Jetzt wird alles zusammengefuehrt.</p>'+
+    '</div>'+
+    '<div class="body">'+
+    '<div class="badge-5f">6-Felder-Modell</div>'+
+
+    '<div class="reise">'+
+    '<p style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:#1A2A3A;font-family:system-ui;margin-bottom:10px">Deine Reise durch die 6 Felder</p>'+
+    '<div class="felder-uebersicht">'+
+    '<div class="feld-badge"><div class="fb-icon">&#129704;</div><div class="fb-text">Stressmuster<strong>Feld 1 · Wie du reagierst</strong></div></div>'+
+    '<div class="feld-badge"><div class="fb-icon">&#129309;</div><div class="fb-text">Beziehungsmuster<strong>Feld 2 · Wie du verbindest</strong></div></div>'+
+    '<div class="feld-badge"><div class="fb-icon">&#9881;&#65039;</div><div class="fb-text">Innerer Hebel<strong>Feld 3 · Was du brauchst</strong></div></div>'+
+    '<div class="feld-badge"><div class="fb-icon">&#128247;</div><div class="fb-text">Bindungsmuster<strong>Feld 4 · Die Wurzel</strong></div></div>'+
+    '<div class="feld-badge"><div class="fb-icon">&#9889;</div><div class="fb-text">Handlungsachse<strong>Feld 5 · Was du tust</strong></div></div>'+
+    '<div class="feld-badge"><div class="fb-icon">&#127811;</div><div class="fb-text">Methodik<strong>Feld 6 · Dein stimmiger Weg</strong></div></div>'+
+    '</div>'+
+    '<p style="font-size:13px;color:#1E2E28;font-family:system-ui;line-height:1.7;margin-top:12px">Jetzt entsteht daraus dein persoenlicher <strong>Mensch-Hund-Kompass</strong> – nicht was die Hundeschule sagt, sondern was fuer <em>euch</em> stimmig ist.</p>'+
+    '</div>'+
+
+    '<div class="feat"><div class="feat-icon">&#129517;</div><div class="feat-text"><strong>Alle Erkenntnisse zusammenfuehren</strong> – was bleibt, was sich verschoben hat, was noch offen ist.</div></div>'+
+    '<div class="feat"><div class="feat-icon">&#128336;</div><div class="feat-text"><strong>Dein persoenlicher Kompass</strong> – klar formuliert, zum Festhalten und Mitnehmen.</div></div>'+
+    '<div class="feat"><div class="feat-icon">&#128062;</div><div class="feat-text"><strong>Was das fuer euren Alltag bedeutet</strong> – konkret, ehrlich, ohne Druck.</div></div>'+
+
+    '<div class="tip"><strong style="color:#D4A853">Eine letzte Einladung:</strong> Antworte aus dem Bauch heraus. Du hast schon viel nachgedacht. Jetzt darf es einfach fliessen. Und <strong>Ich weiss es nicht</strong> ist hier genauso willkommen wie immer.</div>'+
+    '<button class="btn-p" onclick="showQ(1)">&#129517; Meinen Kompass finden</button>'+
+    '</div>';
+}
+
+function showQ(n){
+  STEP = n;
+  var q = QS[n-1];
+  var pct = Math.round((n/5)*100);
+  var dots = "";
+  for(var i=0;i<5;i++){
+    var c = i<n-1?"#D4A853":i===n-1?"#1A2A3A":"#D0DCE8";
+    dots += '<div class="dot" style="background:'+c+'"></div>';
+  }
+  var back = n>1?'<button class="btn-o" onclick="goBack()">&#8592; Zurueck</button>':'';
+  var nextCls = n===5?"btn-g":"btn-p";
+  var nextLbl = n===5?"&#129517; Meinen Kompass erstellen":"Weiter &#8594;";
+  $("card").innerHTML =
+    '<div class="body">'+
+    '<div class="prog-meta"><span>Frage '+n+' von 5</span><span>'+pct+'%</span></div>'+
+    '<div class="prog-track"><div class="prog-fill" style="width:'+pct+'%"></div></div>'+
+    '<div class="dots">'+dots+'</div>'+
+    '<div class="q-label">'+q.lbl+'</div>'+
+    '<div class="q-title">'+q.q+'</div>'+
+    '<div class="q-hint">'+q.hint+'</div>'+
+    '<textarea id="ta" rows="4" placeholder="'+q.ph+'" oninput="chk()">'+(ANS[n-1]||'')+'</textarea>'+
+    '<p class="idk">&#128161; Du kannst auch schreiben: <strong>Ich weiss es nicht</strong> – das ist eine vollwertige Antwort.</p>'+
+    '<div class="btn-row">'+back+'<button class="'+nextCls+'" id="nbtn" onclick="goNext()">'+nextLbl+'</button></div>'+
+    '<button class="btn-lnk" onclick="reset()">&#8635; Von vorne starten</button>'+
+    '</div>';
+  chk();
+}
+
+function chk(){
+  var ta=$("ta"), btn=$("nbtn");
+  if(ta&&btn) btn.disabled = !ta.value.trim();
+}
+
+function goNext(){
+  var ta=$("ta");
+  if(!ta||!ta.value.trim()) return;
+  ANS[STEP-1]=ta.value.trim();
+  if(STEP<5){showQ(STEP+1);}
+  else{generate();}
+}
+
+function goBack(){
+  var ta=$("ta");
+  if(ta) ANS[STEP-1]=ta.value.trim();
+  showQ(STEP-1);
+}
+
+function showLoading(){
+  $("card").innerHTML='<div class="body"><div class="spin-wrap"><div class="spin"></div><p style="font-size:14px;color:#6B8A7E;font-family:system-ui;font-style:italic">Susanne bringt alles zusammen und findet deinen Kompass...</p></div></div>';
+}
+
+function generate(){
+  showLoading();
+  var msg="";
+  var labels=["Groesste Erkenntnis der Reise","Veraenderter Blick auf die Beziehung","Noch offene Fragen","Wunsch fuer eure Beziehung","Naechster Schritt"];
+  for(var i=0;i<5;i++) msg+=labels[i]+": "+(ANS[i]||"keine Angabe")+"\n";
+
+  var sys="Du bist Susanne, erfahrene Hundetrainerin, Physiotherapeutin und systemische Coach mit ueber 30 Jahren Erfahrung. Du arbeitest mit dem 6-Felder-Modell der Mensch-Hund-Dynamik.\n\nDer Mensch hat soeben alle sechs Felder durchlaufen: 1.Stressmuster, 2.Beziehungsmuster, 3.Innerer Hebel, 4.Bindungsmuster, 5.Handlungsachse und 6.Methodik (seinen stimmigen Weg gefunden). Die Integration bringt alle Erkenntnisse zusammen – auch die Erkenntnis aus der Methodik, welcher Ansatz wirklich zu diesem Menschen und diesem Hund passt.\n\nDas ist wichtig: Der Mensch weiss jetzt nicht nur wie er innerlich strukturiert ist – er weiss auch, welcher Weg nach vorne fuer ihn stimmig ist. Das fliesst in den Kompass ein.\n\nDu schreibst warm, tief, wuerdend und ohne Floskeln. Diese App ist der Abschluss einer langen inneren Reise. Kein Coaching-Sprech. Keine Ratschlaege. Du fasst zusammen, benennst und schenkst dem Menschen einen Kompass fuer den weiteren Weg.\n\nBasierend auf den fuenf Antworten schreibst du fuenf Abschnitte mit diesen exakten Ueberschriften:\n\nWas diese Reise gezeigt hat:\n[3-4 Saetze: Eine wuerdende Zusammenfassung aller sechs Felder – was der Mensch erkannt hat, was sich veraendert hat, was die Methodik-Erkenntnis bedeutet.]\n\nDein persoenlicher Mensch-Hund-Kompass:\n[3-5 Saetze: Das Herzstuck. Ein klarer, persoenlicher Kompass der innere Erkenntnisse UND den stimmigen Weg vereint. Konkret, warm, zum Festhalten.]\n\nWas das fuer euren Alltag bedeutet:\n[2-3 Saetze: Wie zeigt sich dieser Kompass konkret – als innere Haltung UND als Handlungsrichtung?]\n\nDas darf noch offen bleiben:\n[2 Saetze: Was noch ungeloest oder unklar ist – als Einladung, nicht als Problem.]\n\nDein Weg von hier:\n[2-3 Saetze: Ein einziger konkreter naechster Schritt der sowohl die innere Arbeit als auch den stimmigen Methodenweg einschliesst. Ermutigend, ohne Druck.]\n\nKein Markdown. Deutsch, du-Ansprache.";
+
+  fetch("https://api.anthropic.com/v1/messages",{
+    method:"POST",
+    headers:{"Content-Type":"application/json","x-api-key":"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","anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},
+    body:JSON.stringify({
+      model:"claude-sonnet-4-20250514",
+      max_tokens:1200,
+      system:sys,
+      messages:[{role:"user",content:"Hier sind die fuenf Antworten:\n\n"+msg}]
+    })
+  })
+  .then(function(r){if(!r.ok)throw new Error("Fehler "+r.status);return r.json();})
+  .then(function(d){
+    if(d.error)throw new Error(d.error.message);
+    RES=d.content&&d.content[0]?d.content[0].text:"";
+    showResult();
+  })
+  .catch(function(e){
+    $("card").innerHTML='<div class="body"><div class="err">&#9888; '+e.message+'<br><button class="btn-p" style="margin-top:12px;width:auto;padding:9px 16px" onclick="generate()">&#8635; Nochmal versuchen</button></div></div>';
+  });
+}
+
+function showResult(){
+  var secs=[
+    {key:"was diese reise",lbl:"&#129517; Was diese Reise gezeigt hat",col:"#1A2A3A",copy:false,kompass:false},
+    {key:"dein persoenlicher mensch",lbl:"&#129517; Dein persoenlicher Mensch-Hund-Kompass",col:"#D4A853",copy:true,kompass:true},
+    {key:"was das fuer euren alltag",lbl:"&#128062; Was das fuer euren Alltag bedeutet",col:"#2E4A6A",copy:false,kompass:false},
+    {key:"das darf noch offen",lbl:"&#10024; Das darf noch offen bleiben",col:"#4A7C6F",copy:false,kompass:false},
+    {key:"dein weg von hier",lbl:"&#128336; Dein Weg von hier",col:"#C4923A",copy:true,kompass:false}
+  ];
+  var parsed=[],cur=null;
+  var lines=RES.split("\n");
+  for(var i=0;i<lines.length;i++){
+    var line=lines[i].trim(),low=line.toLowerCase();
+    var found=false;
+    for(var j=0;j<secs.length;j++){
+      if(low.indexOf(secs[j].key)!==-1){
+        if(cur)parsed.push(cur);
+        cur={lbl:secs[j].lbl,col:secs[j].col,copy:secs[j].copy,kompass:secs[j].kompass,txt:""};
+        found=true;break;
+      }
+    }
+    if(!found&&cur&&line) cur.txt+=(cur.txt?"\n":"")+line;
+  }
+  if(cur)parsed.push(cur);
+  if(!parsed.length)parsed=[{lbl:"&#129517; Dein Mensch-Hund-Kompass",col:"#D4A853",copy:true,kompass:true,txt:RES}];
+
+  var html='<div class="body">'+
+    '<div class="badge-5f">6-Felder-Modell · Integration</div>'+
+    '<p style="font-size:16px;font-weight:700;color:#1A2A3A;margin-bottom:4px">Dein Mensch-Hund-Kompass &#129517;</p>'+
+    '<p style="font-size:13px;color:#6B8A7E;font-family:system-ui;margin-bottom:16px;line-height:1.65">Du hast alle fuenf Felder durchlaufen. Das verdient einen Moment der Stille – bevor du weiterliest.</p>';
+
+  for(var k=0;k<parsed.length;k++){
+    var s=parsed[k];
+    if(s.kompass){
+      html+='<div class="kompass-box">'+
+        '<div class="kt">&#129517; '+s.lbl.replace("&#129517; ","")+'</div>'+
+        '<div class="kt-text">'+s.txt.replace(/\n/g,"<br>")+'</div>'+
+        '<p class="copy-hint" style="color:rgba(255,255,255,.6)">&#128070; Klick ins Feld &#8594; alles markiert &#8594; Strg+C</p>'+
+        '<textarea class="copy-field" readonly rows="'+Math.max(3,s.txt.split("\n").length+1)+'" onclick="this.select()" style="background:rgba(255,255,255,.1);border-color:rgba(212,168,83,.5);color:white">'+s.txt+'</textarea>'+
+        '</div>';
+    } else {
+      var cp=s.copy?
+        '<p class="copy-hint">&#128070; Klick ins Feld &#8594; alles markiert &#8594; Strg+C</p>'+
+        '<textarea class="copy-field" readonly rows="3" onclick="this.select()">'+s.txt+'</textarea>':'';
+      html+='<div class="rbox" style="border-left:4px solid '+s.col+'">'+
+        '<div class="rs-lbl" style="color:'+s.col+'">'+s.lbl+'</div>'+
+        '<div class="rs-txt">'+s.txt.replace(/\n/g,"<br>")+'</div>'+cp+'</div>';
+    }
+  }
+
+  html+='<div class="abschluss">'+
+    '<strong style="color:#D4A853">&#128062; Eine letzte Sache.</strong> Dieser Kompass gehoert dir und deinem Hund. Nicht der Hundeschule, nicht dem naechsten Ratgeber, nicht dem Internet. Ihr seid einzigartig – und diese Erkenntnisse sind nur fuer euch.'+
+    '</div>';
+
+  html+='<button class="btn-p" onclick="reset()" style="margin-top:4px">&#8635; Die Reise nochmal beginnen</button>'+
+    '</div>';
+  $("card").innerHTML=html;
+}
+
+function reset(){ANS=["","","","",""];STEP=0;RES="";showWelcome();}
+
+showWelcome();
+</script>
+</body>
+</html>

@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Innerer Hebel · Die unsichtbaren Fäden</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: Georgia, serif; background: linear-gradient(160deg, #4A3728 0%, #2E1F14 40%, #1a0f08 100%); min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 28px 16px 48px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+::-webkit-scrollbar{width:5px} ::-webkit-scrollbar-thumb{background:#C4923A;border-radius:3px}
+.hdr{text-align:center;margin-bottom:26px}
+.ey{font-size:11px;color:#D4A853;letter-spacing:3px;text-transform:uppercase;margin-bottom:8px;font-family:system-ui}
+.hdr h1{font-size:24px;font-weight:700;color:white;margin-bottom:4px;line-height:1.2}
+.hdr .sub{font-size:13px;color:#C4A882;font-family:system-ui}
+.card{width:100%;max-width:580px;background:white;border-radius:20px;overflow:hidden;box-shadow:0 20px 70px rgba(0,0,0,.4)}
+.card-hdr{background:linear-gradient(135deg,#6B4A1E,#C4923A);padding:22px 24px 18px;color:white}
+.card-hdr .e{font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:#FFF0C0;margin-bottom:6px;font-family:system-ui}
+.card-hdr h2{font-size:19px;font-weight:700;margin-bottom:8px;line-height:1.3}
+.card-hdr p{font-size:13px;color:rgba(255,255,255,.85);line-height:1.7;font-family:system-ui}
+.body{padding:20px 24px 26px}
+.feat{display:flex;align-items:flex-start;gap:12px;margin-bottom:14px}
+.feat-icon{width:36px;height:36px;border-radius:10px;background:#F5EFE6;border:1px solid #EDE3D8;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;margin-top:1px}
+.feat-text{font-size:13px;color:#2E1A0E;font-family:system-ui;line-height:1.6}
+.feat-text strong{color:#6B4A1E}
+.tip{background:linear-gradient(135deg,#FFF8EC,#FFF0D4);border-left:4px solid #C4923A;border-radius:10px;padding:13px 15px;font-size:13px;color:#2E1A0E;line-height:1.7;font-family:system-ui;margin:14px 0}
+.btn-p{background:linear-gradient(135deg,#6B4A1E,#C4923A);color:white;border:none;border-radius:10px;padding:13px 18px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;width:100%}
+.btn-p:disabled{background:#C4A882;cursor:not-allowed}
+.btn-g{background:linear-gradient(135deg,#C4923A,#D4A853);color:white;border:none;border-radius:10px;padding:13px 18px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;width:100%}
+.btn-o{background:transparent;border:1.5px solid #6B4A1E;color:#6B4A1E;border-radius:10px;padding:12px 18px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit}
+.btn-lnk{background:none;border:none;color:#7D6352;font-size:12px;cursor:pointer;text-decoration:underline;font-family:inherit;padding:8px 0 0;display:block}
+.btn-row{display:flex;gap:10px;margin-top:14px}
+.btn-row .btn-p,.btn-row .btn-g{flex:1}
+.prog-meta{display:flex;justify-content:space-between;font-size:11px;color:#7D6352;font-family:system-ui;margin-bottom:6px}
+.prog-track{background:#EDE3D8;border-radius:999px;height:6px;overflow:hidden;margin-bottom:8px}
+.prog-fill{height:100%;background:linear-gradient(90deg,#6B4A1E,#D4A853);border-radius:999px}
+.dots{display:flex;gap:6px;margin-bottom:20px}
+.dot{flex:1;height:4px;border-radius:999px}
+.q-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:#C4923A;font-family:system-ui;margin-bottom:4px}
+.q-title{font-size:18px;font-weight:700;color:#6B4A1E;margin-bottom:8px;line-height:1.35}
+.q-hint{font-size:13px;color:#7D6352;font-style:italic;font-family:system-ui;line-height:1.6}
+.idk{font-size:12px;color:#7D6352;font-family:system-ui;line-height:1.6;margin:6px 0 12px;font-style:italic}
+textarea{width:100%;font-family:Georgia,serif;font-size:14px;color:#2E1A0E;background:#F5EFE6;border:1.5px solid #C4A882;border-radius:10px;padding:11px 13px;outline:none;resize:vertical;line-height:1.65;margin:12px 0 0;display:block}
+textarea:focus{border-color:#C4923A}
+.rbox{background:linear-gradient(135deg,#F5EFE6,#EDE3D8);border-radius:12px;padding:14px 16px;margin-bottom:14px}
+.rs-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px}
+.rs-txt{font-size:14px;color:#2E1A0E;line-height:1.8}
+.copy-hint{font-size:11px;color:#7D6352;font-family:system-ui;margin:10px 0 4px}
+.copy-field{width:100%;background:white;border:1.5px solid #C4923A;border-radius:8px;padding:9px 11px;font-size:13px;color:#2E1A0E;font-family:inherit;line-height:1.7;resize:none;outline:none;cursor:text;display:block}
+.spin-wrap{display:flex;flex-direction:column;align-items:center;gap:16px;padding:40px 0}
+.spin{width:36px;height:36px;border:3px solid #EDE3D8;border-top-color:#C4923A;border-radius:50%;animation:spin .8s linear infinite}
+.err{background:#fff0f0;border-left:4px solid #cc4444;border-radius:10px;padding:14px 16px;font-size:13px;color:#7a2222;font-family:system-ui}
+.badge-5f{display:inline-block;background:#6B4A1E;color:#D4A853;font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;font-family:system-ui;letter-spacing:1px;text-transform:uppercase;margin-bottom:12px}
+.bridge-box{background:#F5EFE6;border-radius:12px;padding:14px 16px;margin-bottom:14px;font-size:13px;color:#7D6352;line-height:1.7;font-family:system-ui;border-left:4px solid #D4A853}
+.footer{margin-top:18px;font-size:11px;color:rgba(196,168,130,.5);font-family:system-ui}
+</style>
+</head>
+<body>
+<div class="hdr">
+  <div class="ey">Die unsichtbaren Fäden</div>
+  <h1>Was braucht dein Hund<br>wirklich von dir?</h1>
+  <div class="sub">6-Felder-Modell · Feld 3 · Innerer Hebel</div>
+</div>
+<div class="card" id="card"></div>
+<div class="footer">🐾 Susanne Zischgl · Die unsichtbaren Fäden zwischen Mensch und Hund</div>
+
+<script>
+var QS = [
+  {
+    lbl: "Was du gibst",
+    q: "Was glaubst du, gibst du deinem Hund am meisten?",
+    hint: "Nicht was du dir vorgenommen hast – sondern was du im Alltag wirklich gibst. Liebe, Korrekturen, Freiheit, Grenzen, Aufmerksamkeit, Fuehrung...?",
+    ph: "z. B. Ich gebe ihm sehr viel Liebe und Naehe, immer Zuwendung wenn er kommt..."
+  },
+  {
+    lbl: "Was er zeigt",
+    q: "Was zeigt dein Hund, das dich verwirrt, belastet oder beschaeftigt?",
+    hint: "Das Verhalten, ueber das du am meisten nachdenkst. Nicht die Diagnose – sondern wie es sich anfuehlt wenn es passiert.",
+    ph: "z. B. Er ist unruhig, sucht staendig Kontakt, kann nicht alleine sein..."
+  },
+  {
+    lbl: "Deine Theorie",
+    q: "Was denkst du: Was braucht dein Hund, damit es ihm besser geht?",
+    hint: "Schreib das, was dir spontan einfaellt – auch wenn du dir nicht sicher bist. Es gibt keine falsche Antwort hier.",
+    ph: "z. B. Vielleicht mehr Struktur? Oder mehr Bewegung? Ich bin wirklich unsicher..."
+  },
+  {
+    lbl: "Dein innerer Zustand",
+    q: "Wie fuehlt es sich fuer dich innerlich an, wenn du mit deinem Hund zusammen bist?",
+    hint: "Nicht wie du sein moechtest – sondern wie du wirklich bist. Entspannt, angespannt, unsicher, liebevoll, ueberfordert, gluecklich...?",
+    ph: "z. B. Meistens entspannt, aber in bestimmten Situationen sofort angespannt und unsicher..."
+  },
+  {
+    lbl: "Dein Wunsch",
+    q: "Was wuenschst du dir am meisten fuer eure Beziehung?",
+    hint: "Nicht was du trainieren moechtest. Sondern wie es sich anfuehlen soll – fuer dich und fuer ihn.",
+    ph: "z. B. Ich wuensche mir, dass wir beide entspannt sind und ich ihm wirklich vertrauen kann..."
+  }
+];
+
+var ANS = ["","","","",""];
+var STEP = 0;
+var RES = "";
+
+function $(id){return document.getElementById(id);}
+
+function showWelcome(){
+  $("card").innerHTML =
+    '<div class="card-hdr">'+
+    '<div class="e">Feld 3 · Innerer Hebel</div>'+
+    '<h2>Dein Hund braucht selten das,<br>was du denkst.</h2>'+
+    '<p>Vielleicht gibst du viel Liebe – aber dein Hund braucht Klarheit. Vielleicht korrigierst du viel – aber dein Hund braucht Sicherheit. Diese App zeigt dir deinen inneren Hebel: den Punkt, an dem sich alles veraendern kann.</p>'+
+    '</div>'+
+    '<div class="body">'+
+    '<div class="badge-5f">6-Felder-Modell · Feld 3</div>'+
+    '<div class="feat"><div class="feat-icon">&#128273;</div><div class="feat-text"><strong>Was dein Hund wirklich braucht</strong> – nicht Technik, nicht Training, sondern einen bestimmten inneren Zustand von dir.</div></div>'+
+    '<div class="feat"><div class="feat-icon">&#9881;&#65039;</div><div class="feat-text"><strong>Dein innerer Hebel</strong> – der eine Punkt, an dem eine kleine Veraenderung in dir eine grosse Wirkung bei deinem Hund erzeugt.</div></div>'+
+    '<div class="feat"><div class="feat-icon">&#128161;</div><div class="feat-text"><strong>Selbstreflexion & konkreter Schritt</strong> – was du erkennst und was du diese Woche bewusst anders machen kannst.</div></div>'+
+    '<div class="tip">Das hier ist kein Training. Es geht nicht darum, was du besser machen sollst. Es geht darum zu verstehen, was zwischen euch wirklich passiert – und wo dein innerer Hebel liegt.<br><br><strong style="color:#C4923A">Tipp:</strong> Antworte ehrlich – und wenn du unsicher bist, schreib einfach <strong>Ich weiss es nicht</strong>.</div>'+
+    '<button class="btn-p" onclick="showQ(1)">&#9881;&#65039; Meinen inneren Hebel finden</button>'+
+    '</div>';
+}
+
+function showQ(n){
+  STEP = n;
+  var q = QS[n-1];
+  var pct = Math.round((n/5)*100);
+  var dots = "";
+  for(var i=0;i<5;i++){
+    var c = i<n-1?"#C4923A":i===n-1?"#D4A853":"#EDE3D8";
+    dots += '<div class="dot" style="background:'+c+'"></div>';
+  }
+  var back = n>1?'<button class="btn-o" onclick="goBack()">&#8592; Zurueck</button>':'';
+  var nextCls = n===5?"btn-g":"btn-p";
+  var nextLbl = n===5?"&#9881;&#65039; Meinen Hebel zeigen":"Weiter &#8594;";
+  $("card").innerHTML =
+    '<div class="body">'+
+    '<div class="prog-meta"><span>Frage '+n+' von 5</span><span>'+pct+'%</span></div>'+
+    '<div class="prog-track"><div class="prog-fill" style="width:'+pct+'%"></div></div>'+
+    '<div class="dots">'+dots+'</div>'+
+    '<div class="q-label">'+q.lbl+'</div>'+
+    '<div class="q-title">'+q.q+'</div>'+
+    '<div class="q-hint">'+q.hint+'</div>'+
+    '<textarea id="ta" rows="4" placeholder="'+q.ph+'" oninput="chk()">'+(ANS[n-1]||'')+'</textarea>'+
+    '<p class="idk">&#128161; Du kannst auch schreiben: <strong>Ich weiss es nicht</strong> – das ist eine vollwertige Antwort.</p>'+
+    '<div class="btn-row">'+back+'<button class="'+nextCls+'" id="nbtn" onclick="goNext()">'+nextLbl+'</button></div>'+
+    '<button class="btn-lnk" onclick="reset()">&#8635; Von vorne starten</button>'+
+    '</div>';
+  chk();
+}
+
+function chk(){
+  var ta=$("ta"), btn=$("nbtn");
+  if(ta&&btn) btn.disabled = !ta.value.trim();
+}
+
+function goNext(){
+  var ta=$("ta");
+  if(!ta||!ta.value.trim()) return;
+  ANS[STEP-1]=ta.value.trim();
+  if(STEP<5){showQ(STEP+1);}
+  else{generate();}
+}
+
+function goBack(){
+  var ta=$("ta");
+  if(ta) ANS[STEP-1]=ta.value.trim();
+  showQ(STEP-1);
+}
+
+function showLoading(){
+  $("card").innerHTML='<div class="body"><div class="spin-wrap"><div class="spin"></div><p style="font-size:14px;color:#7D6352;font-family:system-ui;font-style:italic">Susanne sucht deinen inneren Hebel...</p></div></div>';
+}
+
+function generate(){
+  showLoading();
+  var msg="";
+  var labels=["Was du gibst","Was der Hund zeigt","Deine Theorie ueber seine Beduerfnisse","Dein innerer Zustand","Dein Wunsch fuer eure Beziehung"];
+  for(var i=0;i<5;i++) msg+=labels[i]+": "+(ANS[i]||"keine Angabe")+"\n";
+
+  var sys="Du bist Susanne, erfahrene Hundetrainerin, Physiotherapeutin und systemische Coach mit ueber 30 Jahren Erfahrung in der Mensch-Hund-Beziehung. Du arbeitest mit dem 6-Felder-Modell der Mensch-Hund-Dynamik.\n\nFeld 3 ist der Innere Hebel: Was braucht der Hund wirklich vom Menschen – nicht Technik oder Training, sondern einen bestimmten inneren Zustand. Der Hund spiegelt oft genau das, was der Mensch innerlich noch nicht gefunden hat: Klarheit, Sicherheit, Ruhe, Praesenz, Vertrauen.\n\nDu schreibst warm, tief, direkt und ohne Floskeln. Keine Ratschlaege im Coaching-Ton. Du sprichst wie eine erfahrene Begleiterin, die wirklich hinschaut und benennt was sie sieht.\n\nBasierend auf den fuenf Antworten schreibst du fuenf Abschnitte mit diesen exakten Ueberschriften:\n\nWas du gibst – und was ankommt:\n[2-3 Saetze: Was gibst du wirklich – und was davon kommt beim Hund als Signal an? Manchmal ist Liebe als Energie nicht das, was der Hund braucht um sich zu orientieren.]\n\nWas dein Hund wirklich braucht:\n[2-3 Saetze: Benenne konkret was der Hund in dieser Beziehung vermisst oder sucht. Nicht als Kritik, sondern als ehrliche Einschaetzung.]\n\nDein innerer Hebel:\n[2-3 Saetze: Welcher innere Zustand wuerde sich sofort auf den Hund uebertragen? Das ist der Punkt, an dem sich alles dreht – nicht mehr Training, sondern innere Haltung.]\n\nSelbstreflexion:\n[2-3 Saetze: Was koennte der Mensch ueber sich erkennen, wenn er das Verhalten des Hundes als Spiegel betrachtet? Einladend, nicht konfrontativ.]\n\nDeine eine Veraenderung diese Woche:\n[1-2 Saetze: Eine einzige konkrete innere Handlung – kein Training. Etwas das man in sich beobachten, ausprobieren oder bewusst einueben kann.]\n\nKein Markdown. Deutsch, du-Ansprache.";
+
+  fetch("https://api.anthropic.com/v1/messages",{
+    method:"POST",
+    headers:{"Content-Type":"application/json","x-api-key":"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","anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},
+    body:JSON.stringify({
+      model:"claude-sonnet-4-20250514",
+      max_tokens:1100,
+      system:sys,
+      messages:[{role:"user",content:"Hier sind die fuenf Antworten:\n\n"+msg}]
+    })
+  })
+  .then(function(r){if(!r.ok)throw new Error("Fehler "+r.status);return r.json();})
+  .then(function(d){
+    if(d.error)throw new Error(d.error.message);
+    RES=d.content&&d.content[0]?d.content[0].text:"";
+    showResult();
+  })
+  .catch(function(e){
+    $("card").innerHTML='<div class="body"><div class="err">&#9888; '+e.message+'<br><button class="btn-p" style="margin-top:12px;width:auto;padding:9px 16px" onclick="generate()">&#8635; Nochmal versuchen</button></div></div>';
+  });
+}
+
+function showResult(){
+  var secs=[
+    {key:"was du gibst",lbl:"&#10024; Was du gibst – und was ankommt",col:"#6B4A1E",copy:false},
+    {key:"was dein hund wirklich braucht",lbl:"&#128062; Was dein Hund wirklich braucht",col:"#8B5E3C",copy:false},
+    {key:"dein innerer hebel",lbl:"&#9881;&#65039; Dein innerer Hebel",col:"#C4923A",copy:false},
+    {key:"selbstreflexion",lbl:"&#129309; Selbstreflexion",col:"#D4A853",copy:false},
+    {key:"deine eine veraenderung",lbl:"&#128336; Deine eine Veraenderung diese Woche",col:"#4A3728",copy:true}
+  ];
+  var parsed=[],cur=null;
+  var lines=RES.split("\n");
+  for(var i=0;i<lines.length;i++){
+    var line=lines[i].trim(),low=line.toLowerCase();
+    var found=false;
+    for(var j=0;j<secs.length;j++){
+      if(low.indexOf(secs[j].key)!==-1){
+        if(cur)parsed.push(cur);
+        cur={lbl:secs[j].lbl,col:secs[j].col,copy:secs[j].copy,txt:""};
+        found=true;break;
+      }
+    }
+    if(!found&&cur&&line) cur.txt+=(cur.txt?"\n":"")+line;
+  }
+  if(cur)parsed.push(cur);
+  if(!parsed.length)parsed=[{lbl:"&#9881;&#65039; Dein innerer Hebel",col:"#C4923A",copy:false,txt:RES}];
+
+  var html='<div class="body">'+
+    '<div class="badge-5f">6-Felder-Modell · Feld 3</div>'+
+    '<p style="font-size:16px;font-weight:700;color:#6B4A1E;margin-bottom:4px">Dein innerer Hebel &#9881;&#65039;</p>'+
+    '<p style="font-size:13px;color:#7D6352;font-family:system-ui;margin-bottom:16px;line-height:1.65">Lies es in Ruhe. Manchmal sitzt ein Satz tiefer als erwartet.</p>';
+
+  for(var k=0;k<parsed.length;k++){
+    var s=parsed[k];
+    var cp=s.copy?
+      '<p class="copy-hint">&#128070; Klick ins Feld &#8594; alles markiert &#8594; Strg+C</p>'+
+      '<textarea class="copy-field" readonly rows="3" onclick="this.select()">'+s.txt+'</textarea>':'';
+    html+='<div class="rbox" style="border-left:4px solid '+s.col+'">'+
+      '<div class="rs-lbl" style="color:'+s.col+'">'+s.lbl+'</div>'+
+      '<div class="rs-txt">'+s.txt.replace(/\n/g,"<br>")+'</div>'+cp+'</div>';
+  }
+
+  html+='<div class="bridge-box">'+
+    '<strong style="color:#6B4A1E">Und weiter?</strong> In Feld 3 schauen wir noch tiefer: Wie gestaltest du Beziehungen generell – und warum wiederholen sich bestimmte Muster mit deinem Hund immer wieder?'+
+    '</div>';
+
+  html+='<button class="btn-p" onclick="reset()" style="margin-top:4px">&#8635; Nochmal von vorne</button>'+
+    '</div>';
+  $("card").innerHTML=html;
+}
+
+function reset(){ANS=["","","","",""];STEP=0;RES="";showWelcome();}
+
+showWelcome();
+</script>
+</body>
+</html>

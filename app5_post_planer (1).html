@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Post-Planer · Tierbusiness Community</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: Georgia, serif; background: linear-gradient(160deg, #2D4A3E 0%, #1a3329 40%, #0f1e18 100%); min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 28px 16px 48px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+::-webkit-scrollbar{width:5px} ::-webkit-scrollbar-thumb{background:#8FAF9F;border-radius:3px}
+.hdr{text-align:center;margin-bottom:26px}
+.ey{font-size:11px;color:#D4A853;letter-spacing:3px;text-transform:uppercase;margin-bottom:8px;font-family:system-ui}
+.hdr h1{font-size:24px;font-weight:700;color:white;margin-bottom:4px}
+.hdr .sub{font-size:13px;color:#8FAF9F;font-family:system-ui}
+.card{width:100%;max-width:620px;background:white;border-radius:20px;overflow:hidden;box-shadow:0 20px 70px rgba(0,0,0,.3)}
+.card-hdr{background:linear-gradient(135deg,#2D4A3E,#4A7C6F);padding:22px 24px 18px;color:white}
+.card-hdr .e{font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:#D4A853;margin-bottom:6px;font-family:system-ui}
+.card-hdr h2{font-size:19px;font-weight:700;margin-bottom:8px;line-height:1.3}
+.card-hdr p{font-size:13px;color:rgba(255,255,255,.8);line-height:1.7;font-family:system-ui}
+.body{padding:20px 24px 26px}
+.feat{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.feat-icon{width:34px;height:34px;border-radius:10px;background:#F5F0E8;border:1px solid #E8DCC8;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.feat-text{font-size:13px;color:#1E2E28;font-family:system-ui;line-height:1.5}
+.tip{background:linear-gradient(135deg,#FFF8EC,#FFF0D4);border-left:4px solid #C4923A;border-radius:10px;padding:13px 15px;font-size:13px;color:#1E2E28;line-height:1.65;font-family:system-ui;margin:14px 0}
+.lbl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#2D4A3E;margin-bottom:6px;display:block;font-family:system-ui}
+textarea,input[type=text],select{width:100%;font-family:Georgia,serif;font-size:14px;color:#1E2E28;background:#F5F0E8;border:1.5px solid #8FAF9F;border-radius:10px;padding:11px 13px;outline:none;transition:border-color .15s;box-sizing:border-box}
+textarea{resize:vertical;line-height:1.65}
+textarea:focus,input[type=text]:focus,select:focus{border-color:#C4923A}
+.btn-p{background:linear-gradient(135deg,#2D4A3E,#4A7C6F);color:white;border:none;border-radius:10px;padding:13px 18px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;width:100%;margin-top:14px}
+.btn-p:disabled{background:#8FAF9F;cursor:not-allowed}
+.btn-o{background:transparent;border:1.5px solid #2D4A3E;color:#2D4A3E;border-radius:10px;padding:11px 18px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit}
+.spin-wrap{display:flex;flex-direction:column;align-items:center;gap:16px;padding:40px 0}
+.spin{width:36px;height:36px;border:3px solid #E8DCC8;border-top-color:#C4923A;border-radius:50%;animation:spin .8s linear infinite}
+.err{background:#fff0f0;border-left:4px solid #cc4444;border-radius:10px;padding:14px 16px;font-size:13px;color:#7a2222;font-family:system-ui;margin-top:10px}
+.week-hdr{background:linear-gradient(135deg,#2D4A3E,#4A7C6F);color:white;padding:12px 16px;border-radius:12px;margin-bottom:10px}
+.week-hdr .wt{font-size:14px;font-weight:700}
+.week-hdr .ws{font-size:12px;opacity:.8;font-family:system-ui;margin-top:2px}
+.post-card{background:linear-gradient(135deg,#F5F0E8,#E8DCC8);border-radius:12px;padding:14px 16px;margin-bottom:10px;border-left:4px solid #C4923A}
+.post-card .pc-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;gap:10px}
+.post-card .pc-day{font-size:12px;font-weight:700;color:#2D4A3E;font-family:system-ui;white-space:nowrap}
+.post-card .pc-cat{font-size:11px;color:white;background:#4A7C6F;padding:3px 9px;border-radius:6px;font-family:system-ui;font-weight:600;white-space:nowrap}
+.post-card .pc-title{font-size:14px;font-weight:700;color:#1E2E28;margin-bottom:6px}
+.post-card .pc-text{font-size:13px;color:#1E2E28;line-height:1.7}
+.post-card .pc-tip{font-size:12px;color:#6B8A7E;font-style:italic;margin-top:8px;line-height:1.6;font-family:system-ui}
+.copy-hint{font-size:11px;color:#6B8A7E;font-family:system-ui;margin:8px 0 4px}
+.copy-field{width:100%;background:white;border:1.5px solid #C4923A;border-radius:8px;padding:9px 11px;font-size:13px;color:#1E2E28;font-family:inherit;line-height:1.7;resize:none;outline:none;cursor:text;display:block}
+.cats-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px}
+.cat-btn{background:#F5F0E8;border:1.5px solid #E8DCC8;border-radius:10px;padding:10px 12px;font-size:13px;color:#1E2E28;cursor:pointer;font-family:inherit;text-align:left;transition:all .2s}
+.cat-btn.on{background:#2D4A3E;color:white;border-color:#2D4A3E}
+.field-group{margin-bottom:16px}
+.footer{margin-top:18px;font-size:11px;color:rgba(143,175,159,.5);font-family:system-ui}
+.section-divider{border:none;border-top:1px solid #E8DCC8;margin:20px 0}
+.result-nav{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.result-nav .rn-title{font-size:16px;font-weight:700;color:#2D4A3E}
+.result-nav .rn-sub{font-size:13px;color:#6B8A7E;font-family:system-ui;margin-top:2px}
+</style>
+</head>
+<body>
+<div class="hdr">
+  <div class="ey">Tierbusiness Community</div>
+  <h1>Post-Planer</h1>
+  <div class="sub">14 Tage · fertige Posts · richtige Kategorien</div>
+</div>
+<div class="card" id="card"></div>
+<div class="footer">🐾 Susanne Zischgl · Tierberufler-Kompass-System</div>
+
+<script>
+var CATS = [
+  "Tierbusiness Austausch",
+  "Mindset & Businessblockaden",
+  "Sichtbarkeit & Marketing",
+  "Positionierung & Angebote",
+  "KI fuer Tierberufler"
+];
+
+var CAT_COLORS = {
+  "Tierbusiness Austausch": "#4A7C6F",
+  "Mindset & Businessblockaden": "#7A4A2E",
+  "Sichtbarkeit & Marketing": "#C4923A",
+  "Positionierung & Angebote": "#2D4A3E",
+  "KI fuer Tierberufler": "#6B8A7E"
+};
+
+var selectedCats = [0,1,2,3,4];
+var thema = "";
+var startDatum = "";
+var postCount = "10";
+var result = "";
+
+function $(id){return document.getElementById(id);}
+
+function showWelcome(){
+  $("card").innerHTML =
+    '<div class="card-hdr"><div class="e">Fuer Susanne als Gastgeberin</div><h2>14 Tage Content – fertig geplant.</h2><p>Kein Ueberlegen mehr was heute gepostet werden soll. Thema eingeben, Kategorien auswaehlen, Startdatum setzen – und du bekommst einen fertigen Post-Plan mit kopierfertigen Texten.</p></div>'+
+    '<div class="body">'+
+    '<div class="feat"><div class="feat-icon">&#128197;</div><div class="feat-text">Bis zu 14 fertige Posts mit Datum und Kategorie</div></div>'+
+    '<div class="feat"><div class="feat-icon">&#9997;&#65039;</div><div class="feat-text">Jeder Post direkt kopierbar fuer Skool</div></div>'+
+    '<div class="feat"><div class="feat-icon">&#129517;</div><div class="feat-text">Passend zur Tierberufler-Kompass-Methode</div></div>'+
+    '<div class="feat"><div class="feat-icon">&#128172;</div><div class="feat-text">Mit Moderationstipp fuer jede Frage</div></div>'+
+    '<div class="tip"><strong style="color:#C4923A">Fuer wen ist das?</strong> Dieser Planer ist fuer dich als Gastgeberin – damit die Community immer mit frischen, passenden Impulsen versorgt ist.</div>'+
+    '<button class="btn-p" onclick="showForm()">&#128197; Plan erstellen</button>'+
+    '</div>';
+}
+
+function showForm(){
+  var catsHtml = "";
+  for(var i=0;i<CATS.length;i++){
+    var on = selectedCats.indexOf(i)!==-1;
+    catsHtml += '<button class="cat-btn'+(on?" on":"")+'" onclick="toggleCat('+i+')" id="catbtn'+i+'">'+CATS[i]+'</button>';
+  }
+
+  $("card").innerHTML =
+    '<div class="body">'+
+    '<div class="field-group">'+
+    '<span class="lbl">Schwerpunkt-Thema (optional)</span>'+
+    '<input type="text" id="thema" placeholder="z. B. Preisblockaden, Sichtbarkeit, Angebotsklarheit..." value="'+thema+'" oninput="thema=this.value">'+
+    '<p style="font-size:12px;color:#6B8A7E;font-family:system-ui;margin-top:6px;font-style:italic">Lass das Feld leer fuer einen ausgewogenen Mix aus allen Kompass-Bereichen.</p>'+
+    '</div>'+
+    '<div class="field-group">'+
+    '<span class="lbl">Kategorien auswaehlen</span>'+
+    '<div class="cats-grid" id="cats-grid">'+catsHtml+'</div>'+
+    '</div>'+
+    '<div class="field-group">'+
+    '<span class="lbl">Anzahl Posts</span>'+
+    '<select id="postcount" onchange="postCount=this.value">'+
+    '<option value="7"'+(postCount==="7"?" selected":"")+'>7 Posts (1 Woche)</option>'+
+    '<option value="10"'+(postCount==="10"?" selected":"")+'>10 Posts (2 Wochen – empfohlen)</option>'+
+    '<option value="14"'+(postCount==="14"?" selected":"")+'>14 Posts (2 Wochen intensiv)</option>'+
+    '</select>'+
+    '</div>'+
+    '<div class="field-group">'+
+    '<span class="lbl">Startdatum</span>'+
+    '<input type="text" id="startdat" placeholder="z. B. Montag, 24. Maerz 2026" value="'+startDatum+'" oninput="startDatum=this.value">'+
+    '</div>'+
+    '<button class="btn-p" id="genbtn" onclick="generate()">&#128197; Post-Plan generieren</button>'+
+    '<button class="btn-lnk" onclick="showWelcome()" style="background:none;border:none;color:#6B8A7E;font-size:12px;cursor:pointer;text-decoration:underline;font-family:inherit;padding:8px 0 0;display:block">&#8592; Zurueck</button>'+
+    '</div>';
+}
+
+function toggleCat(i){
+  var idx = selectedCats.indexOf(i);
+  if(idx===-1){selectedCats.push(i);}
+  else if(selectedCats.length>1){selectedCats.splice(idx,1);}
+  var btn = $("catbtn"+i);
+  if(btn){
+    if(selectedCats.indexOf(i)!==-1){btn.className="cat-btn on";}
+    else{btn.className="cat-btn";}
+  }
+}
+
+function showLoading(){
+  $("card").innerHTML='<div class="body"><div class="spin-wrap"><div class="spin"></div><p style="font-size:14px;color:#6B8A7E;font-family:system-ui;font-style:italic">Susanne plant deine naechsten 2 Wochen...</p></div></div>';
+}
+
+function generate(){
+  var cats = [];
+  for(var i=0;i<selectedCats.length;i++) cats.push(CATS[selectedCats[i]]);
+  showLoading();
+
+  var sys = "Du bist Susanne, Gastgeberin der Skool-Community 'Tierbusiness Community – Von Unsichtbar zu Uebersehbar'. Du planst fertige Community-Posts fuer die naechsten Wochen.\n\nDie Community hat diese Kategorien: Tierbusiness Austausch, Mindset & Businessblockaden, Sichtbarkeit & Marketing, Positionierung & Angebote, KI fuer Tierberufler.\n\nDu arbeitest mit dem Tierberufler-Kompass (5 Bereiche: Beziehung Mensch&Tier, Businessstruktur, Mentale Muster, Wert&Geld, Positionierung).\n\nErstelle den angeforderten Post-Plan. Fuer jeden Post schreibe exakt dieses Format (mit diesen Trennzeichen):\n\n###POST###\nDATUM: [Wochentag, Datum]\nKATEGORIE: [Kategorie]\nTITEL: [Kurzer Posttitel]\nTEXT: [Der fertige Post-Text, 3-5 Saetze, kopierfertiger, ein konkreter Impuls oder eine Frage an die Community]\nTIPP: [Moderationstipp fuer Susanne, wie sie auf Antworten reagieren kann]\n###ENDE###\n\nWarm, direkt, ohne Floskeln. Deutsch, du-Ansprache an die Community-Mitglieder.";
+
+  var userMsg = "Erstelle "+postCount+" fertige Community-Posts.\n";
+  userMsg += "Startdatum: "+(startDatum||"naechster Montag")+"\n";
+  userMsg += "Kategorien: "+cats.join(", ")+"\n";
+  if(thema) userMsg += "Schwerpunkt: "+thema+"\n";
+  userMsg += "\nVerteile die Posts sinnvoll ueber die Wochen, abwechslungsreich in Ton und Thema.";
+
+  fetch("https://api.anthropic.com/v1/messages",{
+    method:"POST",
+    headers:{"Content-Type":"application/json","x-api-key":"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","anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},
+    body:JSON.stringify({
+      model:"claude-sonnet-4-20250514",
+      max_tokens:2000,
+      system:sys,
+      messages:[{role:"user",content:userMsg}]
+    })
+  })
+  .then(function(r){if(!r.ok)throw new Error("Fehler "+r.status);return r.json();})
+  .then(function(d){
+    if(d.error)throw new Error(d.error.message);
+    result = d.content&&d.content[0]?d.content[0].text:"";
+    showResult();
+  })
+  .catch(function(e){
+    $("card").innerHTML='<div class="body"><div class="err">&#9888; '+e.message+'<br><button class="btn-p" style="margin-top:12px;width:auto;padding:9px 16px" onclick="generate()">&#8635; Nochmal versuchen</button></div></div>';
+  });
+}
+
+function showResult(){
+  var posts = [];
+  var parts = result.split("###POST###");
+  for(var i=1;i<parts.length;i++){
+    var part = parts[i].split("###ENDE###")[0].trim();
+    var post = {datum:"",kat:"",titel:"",text:"",tipp:""};
+    var lines = part.split("\n");
+    for(var j=0;j<lines.length;j++){
+      var line = lines[j].trim();
+      if(line.indexOf("DATUM:")==0) post.datum=line.substring(6).trim();
+      else if(line.indexOf("KATEGORIE:")==0) post.kat=line.substring(10).trim();
+      else if(line.indexOf("TITEL:")==0) post.titel=line.substring(6).trim();
+      else if(line.indexOf("TEXT:")==0) post.text=line.substring(5).trim();
+      else if(line.indexOf("TIPP:")==0) post.tipp=line.substring(5).trim();
+      else if(post.text&&!post.tipp&&line&&line.indexOf(":")===-1) post.text+=" "+line;
+    }
+    if(post.text) posts.push(post);
+  }
+
+  var html = '<div class="body">';
+  html += '<div class="result-nav">';
+  html += '<div><div class="rn-title">Dein Post-Plan &#128197;</div>';
+  html += '<div class="rn-sub">'+posts.length+' Posts fertig geplant</div></div>';
+  html += '<button class="btn-o" onclick="showForm()" style="font-size:13px;padding:9px 14px">&#8592; Neu planen</button>';
+  html += '</div>';
+
+  for(var k=0;k<posts.length;k++){
+    var p = posts[k];
+    var catColor = "#4A7C6F";
+    for(var cat in CAT_COLORS){
+      if(p.kat.toLowerCase().indexOf(cat.toLowerCase().substring(0,8))!==-1){
+        catColor=CAT_COLORS[cat];break;
+      }
+    }
+    var copyText = p.text;
+    var rows = Math.max(3, copyText.split(" ").length > 40 ? 5 : 3);
+    html += '<div class="post-card" style="border-left-color:'+catColor+'">';
+    html += '<div class="pc-top">';
+    html += '<div class="pc-day">'+p.datum+'</div>';
+    html += '<div class="pc-cat" style="background:'+catColor+'">'+p.kat+'</div>';
+    html += '</div>';
+    html += '<div class="pc-title">'+p.titel+'</div>';
+    html += '<div class="pc-text">'+p.text+'</div>';
+    if(p.tipp) html += '<div class="pc-tip">&#128172; Moderationstipp: '+p.tipp+'</div>';
+    html += '<p class="copy-hint">&#128070; Klick ins Feld &#8594; markieren &#8594; Strg+C</p>';
+    html += '<textarea class="copy-field" readonly rows="'+rows+'" onclick="this.select()">'+copyText+'</textarea>';
+    html += '</div>';
+  }
+
+  html += '<button class="btn-p" onclick="showForm()" style="margin-top:6px">&#128197; Neuen Plan erstellen</button>';
+  html += '</div>';
+  $("card").innerHTML = html;
+}
+
+function reset(){thema="";startDatum="";postCount="10";selectedCats=[0,1,2,3,4];result="";showWelcome();}
+
+showWelcome();
+</script>
+</body>
+</html>

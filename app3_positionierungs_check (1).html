@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Positionierungs-Check · Tierbusiness Community</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: Georgia, serif; background: linear-gradient(160deg, #2D4A3E 0%, #1a3329 40%, #0f1e18 100%); min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 28px 16px 48px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.header { text-align: center; margin-bottom: 26px; }
+.eyebrow { font-size: 11px; color: #D4A853; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 8px; font-family: system-ui; }
+h1 { font-size: 24px; font-weight: 700; color: white; margin-bottom: 4px; }
+.sub { font-size: 13px; color: #8FAF9F; font-family: system-ui; }
+.card { width: 100%; max-width: 580px; background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 20px 70px rgba(0,0,0,.3); }
+.card-hdr { background: linear-gradient(135deg, #2D4A3E, #4A7C6F); padding: 22px 24px 18px; color: white; }
+.card-hdr .ey { font-size: 10px; letter-spacing: 2.5px; text-transform: uppercase; color: #D4A853; margin-bottom: 6px; font-family: system-ui; }
+.card-hdr h2 { font-size: 19px; font-weight: 700; margin-bottom: 8px; line-height: 1.3; }
+.card-hdr p { font-size: 13px; color: rgba(255,255,255,.8); line-height: 1.7; font-family: system-ui; }
+.card-body { padding: 20px 24px 26px; }
+.feat { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+.feat-icon { width: 34px; height: 34px; border-radius: 10px; background: #F5F0E8; border: 1px solid #E8DCC8; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+.feat-text { font-size: 13px; color: #1E2E28; font-family: system-ui; }
+.tip { background: linear-gradient(135deg, #FFF8EC, #FFF0D4); border-left: 4px solid #C4923A; border-radius: 10px; padding: 13px 15px; font-size: 13px; color: #1E2E28; line-height: 1.65; font-family: system-ui; margin: 14px 0; }
+.btn-p { background: linear-gradient(135deg, #2D4A3E, #4A7C6F); color: white; border: none; border-radius: 10px; padding: 13px 18px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit; width: 100%; }
+.btn-g { background: linear-gradient(135deg, #C4923A, #D4A853); color: white; border: none; border-radius: 10px; padding: 13px 18px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit; }
+.btn-o { background: transparent; border: 1.5px solid #2D4A3E; color: #2D4A3E; border-radius: 10px; padding: 12px 18px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit; }
+.btn-p:disabled, .btn-g:disabled { background: #8FAF9F; cursor: not-allowed; }
+.btn-lnk { background: none; border: none; color: #6B8A7E; font-size: 12px; cursor: pointer; text-decoration: underline; font-family: inherit; padding: 8px 0 0; display: block; }
+.prog-meta { display: flex; justify-content: space-between; font-size: 11px; color: #6B8A7E; font-family: system-ui; margin-bottom: 6px; }
+.prog-track { background: #E8DCC8; border-radius: 999px; height: 6px; overflow: hidden; margin-bottom: 8px; }
+.prog-fill { height: 100%; background: linear-gradient(90deg, #2D4A3E, #4A7C6F); border-radius: 999px; }
+.dots { display: flex; gap: 6px; margin-bottom: 20px; }
+.dot { flex: 1; height: 4px; border-radius: 999px; }
+.q-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .6px; color: #C4923A; font-family: system-ui; margin-bottom: 4px; }
+.q-title { font-size: 18px; font-weight: 700; color: #2D4A3E; margin-bottom: 8px; line-height: 1.35; }
+.q-hint { font-size: 13px; color: #6B8A7E; font-style: italic; font-family: system-ui; line-height: 1.6; }
+textarea { width: 100%; font-family: Georgia, serif; font-size: 14px; color: #1E2E28; background: #F5F0E8; border: 1.5px solid #8FAF9F; border-radius: 10px; padding: 12px 14px; outline: none; resize: vertical; line-height: 1.65; margin: 14px 0; display: block; }
+textarea:focus { border-color: #C4923A; }
+.btn-row { display: flex; gap: 10px; }
+.btn-row .btn-p, .btn-row .btn-g { flex: 1; }
+.rbox { background: linear-gradient(135deg, #F5F0E8, #E8DCC8); border-radius: 12px; padding: 14px 16px; margin-bottom: 14px; }
+.rs-lbl { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .8px; margin-bottom: 8px; }
+.rs-txt { font-size: 14px; color: #1E2E28; line-height: 1.75; }
+.copy-hint { font-size: 11px; color: #6B8A7E; font-family: system-ui; margin: 10px 0 4px; }
+.copy-field { width: 100%; background: white; border: 1.5px solid #C4923A; border-radius: 8px; padding: 9px 11px; font-size: 13px; color: #1E2E28; font-family: inherit; line-height: 1.7; resize: none; outline: none; cursor: text; display: block; }
+.spin-wrap { display: flex; flex-direction: column; align-items: center; gap: 16px; padding: 40px 0; }
+.spin { width: 36px; height: 36px; border: 3px solid #E8DCC8; border-top-color: #C4923A; border-radius: 50%; animation: spin .8s linear infinite; }
+.err { background: #fff0f0; border-left: 4px solid #cc4444; border-radius: 10px; padding: 14px 16px; font-size: 13px; color: #7a2222; font-family: system-ui; }
+.footer { margin-top: 18px; font-size: 11px; color: rgba(143,175,159,.5); font-family: system-ui; }
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="eyebrow">Tierbusiness Community</div>
+  <h1>Positionierungs-Check</h1>
+  <div class="sub">Deinen roten Faden in 5 Fragen finden</div>
+</div>
+<div class="card" id="card"></div>
+<div class="footer">🐾 Susanne Zischgl · Tierberufler-Kompass-System</div>
+
+<script>
+var QS = [
+  {lbl:"Deine Lieblingskunden", q:"Mit wem arbeitest du am liebsten?", hint:"Denk an die Kunden, die nach eurer Zusammenarbeit begeistert waren – wer waren sie?", ph:"z. B. Hundehalter mit aengstlichen Hunden, die endlich entspannte Spaziergaenge wollen…"},
+  {lbl:"Deine staerksten Ergebnisse", q:"Bei welchem Problem erzielst du die besten Ergebnisse?", hint:"Nicht was du alles anbieten kannst – sondern wo du wirklich den Unterschied machst.", ph:"z. B. Wenn Hunde nach Operationen wieder in Bewegung kommen…"},
+  {lbl:"Deine Weiterempfehlungen", q:"Wofuer wirst du weiterempfohlen?", hint:"Was sagen andere ueber dich, wenn sie dich empfehlen? Oft steckt hier dein roter Faden.", ph:"z. B. Die erklaert alles so geduldig…"},
+  {lbl:"Deine Herzensarbeit", q:"Was wuerdest du auch ohne Bezahlung noch machen?", hint:"Das ist oft der echte Kern – nicht das Breiteste deines Angebots, sondern das Echteste.", ph:"z. B. Mit unsicheren Hunden arbeiten und sehen wie sie aufbluehen…"},
+  {lbl:"Dein Unterschied", q:"Was machst du anders als andere in deinem Bereich?", hint:"Das muss kein riesiger Unterschied sein – manchmal ist es die Haltung, der Ansatz.", ph:"z. B. Ich verbinde Physiotherapie mit Verhaltensarbeit…"}
+];
+var ANS = ["","","","",""];
+var STEP = 0;
+var RES = "";
+
+function $(id){return document.getElementById(id);}
+
+function showWelcome(){
+  $("card").innerHTML =
+    '<div class="card-hdr"><div class="ey">Schritt fuer Schritt</div><h2>Was macht dich unverwechselbar?</h2><p>Viele Tierberufler wissen genau, was sie koennen - aber nicht wie sie es klar nach aussen tragen. Dieser Check hilft dir, deinen roten Faden zu finden.</p></div>' +
+    '<div class="card-body">' +
+    '<div class="feat"><div class="feat-icon">&#9997;&#65039;</div><div class="feat-text">5 gezielte Fragen zu dir und deiner Arbeit</div></div>' +
+    '<div class="feat"><div class="feat-icon">&#129525;</div><div class="feat-text">Dein roter Faden - in einem klaren Satz formuliert</div></div>' +
+    '<div class="feat"><div class="feat-icon">&#128241;</div><div class="feat-text">Fertige Bio-Version fuer Instagram, Website oder Skool</div></div>' +
+    '<div class="feat"><div class="feat-icon">&#128172;</div><div class="feat-text">Dein Gespraechs-Einstieg fuer das naechste Was machst du?</div></div>' +
+    '<div class="feat"><div class="feat-icon">&#129517;</div><div class="feat-text">Susannes Blick - was sie in deinen Antworten sieht</div></div>' +
+    '<div class="tip"><strong style="color:#C4923A">Tipp:</strong> Antworte spontan und ehrlich - keine perfekten Saetze noetig.</div>' +
+    '<button class="btn-p" onclick="showQ(1)">&#129525; Check starten</button>' +
+    '</div>';
+}
+
+function showQ(n){
+  STEP = n;
+  var q = QS[n-1];
+  var pct = Math.round((n/5)*100);
+  var dots = "";
+  for(var i=0;i<5;i++){
+    var c = i<n-1?"#4A7C6F":i===n-1?"#C4923A":"#E8DCC8";
+    dots += '<div class="dot" style="background:'+c+'"></div>';
+  }
+  var back = n>1?'<button class="btn-o" onclick="goBack()">&#8592; Zurueck</button>':'';
+  var nextCls = n===5?"btn-g":"btn-p";
+  var nextLbl = n===5?"&#129525; Roten Faden finden":"Weiter &#8594;";
+  $("card").innerHTML =
+    '<div class="card-body">' +
+    '<div class="prog-meta"><span>Frage '+n+' von 5</span><span>'+pct+'%</span></div>' +
+    '<div class="prog-track"><div class="prog-fill" style="width:'+pct+'%"></div></div>' +
+    '<div class="dots">'+dots+'</div>' +
+    '<div class="q-label">'+q.lbl+'</div>' +
+    '<div class="q-title">'+q.q+'</div>' +
+    '<div class="q-hint">'+q.hint+'</div>' +
+    '<textarea id="ta" rows="5" placeholder="'+q.ph+'" oninput="chk()">'+(ANS[n-1]||'')+'</textarea>' +
+    '<p style="font-size:12px;color:#6B8A7E;font-family:system-ui;line-height:1.6;margin:6px 0 12px;font-style:italic">&#128161; Du kannst auch schreiben: <strong>Ich weiss es nicht</strong> – das ist eine vollwertige Antwort und oft der ehrlichste Einstieg.</p>' +
+    '<div class="btn-row">'+back+'<button class="'+nextCls+'" id="nbtn" onclick="goNext()">'+nextLbl+'</button></div>' +
+    '<button class="btn-lnk" onclick="reset()">&#8635; Von vorne starten</button>' +
+    '</div>';
+  chk();
+}
+
+function chk(){
+  var ta=$("ta"), btn=$("nbtn");
+  if(ta&&btn) btn.disabled = !ta.value.trim();
+}
+
+function goNext(){
+  var ta=$("ta");
+  if(!ta||!ta.value.trim()) return;
+  ANS[STEP-1]=ta.value.trim();
+  if(STEP<5){showQ(STEP+1);}
+  else{generate();}
+}
+
+function goBack(){
+  var ta=$("ta");
+  if(ta) ANS[STEP-1]=ta.value.trim();
+  showQ(STEP-1);
+}
+
+function showLoading(){
+  $("card").innerHTML='<div class="card-body"><div class="spin-wrap"><div class="spin"></div><p style="font-size:14px;color:#6B8A7E;font-family:system-ui;font-style:italic">Susanne findet deinen roten Faden…</p></div></div>';
+}
+
+function generate(){
+  showLoading();
+  var msg="";
+  for(var i=0;i<5;i++) msg+=QS[i].lbl+": "+(ANS[i]||"keine Antwort")+"\n";
+  fetch("https://api.anthropic.com/v1/messages",{
+    method:"POST",
+    headers:{"Content-Type":"application/json","x-api-key":"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","anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},
+    body:JSON.stringify({
+      model:"claude-sonnet-4-20250514",
+      max_tokens:1000,
+      system:"Du bist Susanne, Business-Coach fuer Tierberufler. Schreibe vier Abschnitte mit diesen exakten Ueberschriften:\n\nRoter Faden Satz:\n[Ein Satz, max. 20 Woerter: fuer wen, welches Problem, welches Ergebnis]\n\nBio-Version:\n[2-3 Saetze fuer Instagram oder Skool]\n\nGespraechs-Einstieg:\n[1-2 Saetze wenn jemand fragt: Was machst du?]\n\nSusannes Blick:\n[3-4 Saetze was du in den Antworten siehst]\n\nKein Markdown. Deutsch, du-Ansprache.",
+      messages:[{role:"user",content:"Meine fuenf Antworten:\n\n"+msg}]
+    })
+  })
+  .then(function(r){if(!r.ok)throw new Error("Fehler "+r.status);return r.json();})
+  .then(function(d){
+    if(d.error)throw new Error(d.error.message);
+    RES=d.content&&d.content[0]?d.content[0].text:"";
+    showResult();
+  })
+  .catch(function(e){
+    $("card").innerHTML='<div class="card-body"><div class="err">&#9888; '+e.message+'<br><button class="btn-p" style="margin-top:12px;width:auto;padding:9px 16px" onclick="generate()">&#8635; Nochmal versuchen</button></div></div>';
+  });
+}
+
+function showResult(){
+  var secs=[
+    {key:"roter faden",lbl:"🧵 Dein roter Faden",col:"#2D4A3E",copy:true},
+    {key:"bio-version",lbl:"📱 Bio-Version",col:"#4A7C6F",copy:true},
+    {key:"gesprächs-einstieg",lbl:"💬 Gesprächs-Einstieg",col:"#C4923A",copy:true},
+    {key:"susannes blick",lbl:"🧭 Susannes Blick",col:"#D4A853",copy:false}
+  ];
+  var parsed=[], cur=null;
+  var lines=RES.split("\n");
+  for(var i=0;i<lines.length;i++){
+    var line=lines[i].trim(), low=line.toLowerCase();
+    var found=false;
+    for(var j=0;j<secs.length;j++){
+      if(low.indexOf(secs[j].key)!==-1){
+        if(cur)parsed.push(cur);
+        cur={lbl:secs[j].lbl,col:secs[j].col,copy:secs[j].copy,txt:""};
+        found=true;break;
+      }
+    }
+    if(!found&&cur&&line) cur.txt+=(cur.txt?"\n":"")+line;
+  }
+  if(cur)parsed.push(cur);
+  if(!parsed.length)parsed=[{lbl:"🧵 Ergebnis",col:"#2D4A3E",copy:true,txt:RES}];
+
+  var html='<div class="card-body"><p style="font-size:16px;font-weight:700;color:#2D4A3E;margin-bottom:4px">Dein roter Faden &#129525;</p><p style="font-size:13px;color:#6B8A7E;font-family:system-ui;margin-bottom:16px;line-height:1.6">Lies es in Ruhe durch - und nimm dir den Satz, der sich am echtesten anfuehlt.</p>';
+  for(var k=0;k<parsed.length;k++){
+    var s=parsed[k];
+    var rows=Math.max(2,s.txt.split("\n").length+1);
+    var cp=s.copy?'<p class="copy-hint">&#128070; Klick ins Feld &#8594; alles markiert &#8594; Strg+C</p><textarea class="copy-field" readonly rows="'+rows+'" onclick="this.select()">'+s.txt+'</textarea>':"";
+    html+='<div class="rbox" style="border-left:4px solid '+s.col+'"><div class="rs-lbl" style="color:'+s.col+'">'+s.lbl+'</div><div class="rs-txt">'+s.txt.replace(/\n/g,"<br>")+'</div>'+cp+'</div>';
+  }
+  html+='<button class="btn-p" onclick="reset()" style="margin-top:6px">&#8635; Check nochmal machen</button></div>';
+  $("card").innerHTML=html;
+}
+
+function reset(){ANS=["","","","",""];STEP=0;RES="";showWelcome();}
+
+showWelcome();
+</script>
+</body>
+</html>
