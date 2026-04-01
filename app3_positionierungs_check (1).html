@@ -142,7 +142,7 @@ function generate(){
   showLoading();
   var msg="";
   for(var i=0;i<5;i++) msg+=QS[i].lbl+": "+(ANS[i]||"keine Antwort")+"\n";
-  fetch("https://api.anthropic.com/v1/messages",{
+  fetch("https://tierakademie-proxy.tierakademie.workers.dev",{
     method:"POST",
     headers:{"Content-Type":"application/json","x-api-key":"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","anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},
     body:JSON.stringify({
