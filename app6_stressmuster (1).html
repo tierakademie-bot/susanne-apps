@@ -71,7 +71,7 @@ textarea:focus{border-color:#C4923A}
 <div class="hdr">
   <div class="ey">Die unsichtbaren Fäden</div>
   <h1>Welches Stressmuster<br>bringst du mit?</h1>
-  <div class="sub">6-Felder-Modell der Mensch-Hund-Dynamik</div>
+  <div class="sub">7-Felder-Modell der Mensch-Hund-Dynamik</div>
 </div>
 <div class="card" id="card"></div>
 <div class="footer">🐾 Susanne Zischgl · Die unsichtbaren Fäden zwischen Mensch und Hund</div>
@@ -124,7 +124,7 @@ function showWelcome(){
     '<p>Viele Hundehalter denken: „Mein Hund hat ein Problem." Aber oft passiert etwas ganz anderes: Du bringst eine bestimmte Energie mit – vielleicht Unsicherheit, Kontrolle, Druck oder Rueckzug – und dein Hund reagiert genau darauf.</p>'+
     '</div>'+
     '<div class="body">'+
-    '<div class="badge-5f">6-Felder-Modell · Feld 1</div>'+
+    '<div class="badge-5f">7-Felder-Modell · Feld 1</div>'+
     '<div class="feat"><div class="feat-icon">&#129704;</div><div class="feat-text"><strong>Wie du unter Stress reagierst</strong> – und wie genau das automatisch in die Beziehung zu deinem Hund einfließt.</div></div>'+
     '<div class="feat"><div class="feat-icon">&#128262;</div><div class="feat-text"><strong>Was du aussendest, ohne es zu merken</strong> – dein Hund liest Koerpersprache, Atem und Energie, bevor du ein Wort sagst.</div></div>'+
     '<div class="feat"><div class="feat-icon">&#128270;</div><div class="feat-text"><strong>Welches Muster sich wiederholt</strong> – und warum es sich wiederholt, obwohl du es so nicht willst.</div></div>'+
@@ -191,7 +191,7 @@ function generate(){
   var labels=["Reaktion in schwierigen Momenten","Koerper unter Stress","Wiederkehrende Muster","Innere Ueberzeugungen","Ausgestrahlte Energie"];
   for(var i=0;i<5;i++) msg+=labels[i]+": "+(ANS[i]||"keine Angabe")+"\n";
 
-  var sys="Du bist Susanne, erfahrene Hundetrainerin, Physiotherapeutin und systemische Coach mit ueber 30 Jahren Erfahrung in der Mensch-Hund-Beziehung. Du arbeitest mit dem 6-Felder-Modell der Mensch-Hund-Dynamik. Feld 1 ist das Stressmuster – wie der Mensch unter Stress reagiert und was er dadurch unbewusst in die Beziehung mit dem Hund einbringt.\n\nDu schreibst warm, tief, ehrlich und ohne Floskeln. Keine Ratschlaege, kein Coaching-Sprech. Du sprichst wie eine erfahrene Freundin, die wirklich hinschaut.\n\nBasierend auf den fuenf Antworten schreibst du vier Abschnitte mit diesen exakten Ueberschriften:\n\nDein Stressmuster:\n[Beschreibe in 3-4 Saetzen, welches Stressmuster du in den Antworten siehst. Konkret, warm, ohne Bewertung. Nenne das Muster beim Namen – z.B. Kontrollmuster, Rueckzugsmuster, Ueberanpassung.]\n\nWas dein Hund sieht:\n[2-3 Saetze: Was nimmt der Hund wahr, wenn dieses Muster aktiv wird? Nicht was er denkt – sondern was er koerperlich und energetisch wahrnimmt.]\n\nDer Spiegel:\n[2-3 Saetze: Was koennte das Verhalten des Hundes ueber dieses Muster spiegeln? Vorsichtig und einladend formuliert – nicht als Diagnose, sondern als Einladung zum Nachdenken.]\n\nDein naechster Schritt:\n[1-2 Saetze: Eine einzige, konkrete innere Handlung – kein Training, keine Technik. Etwas das man in sich beobachten oder ausprobieren kann.]\n\nKein Markdown. Deutsch, du-Ansprache.";
+  var sys="Du bist Susanne, erfahrene Hundetrainerin, Physiotherapeutin und systemische Coach mit ueber 30 Jahren Erfahrung in der Mensch-Hund-Beziehung. Du arbeitest mit dem 7-Felder-Modell der Mensch-Hund-Dynamik. Feld 1 ist das Stressmuster – wie der Mensch unter Stress reagiert und was er dadurch unbewusst in die Beziehung mit dem Hund einbringt.\n\nDu schreibst warm, tief, ehrlich und ohne Floskeln. Keine Ratschlaege, kein Coaching-Sprech. Du sprichst wie eine erfahrene Freundin, die wirklich hinschaut.\n\nBasierend auf den fuenf Antworten schreibst du vier Abschnitte mit diesen exakten Ueberschriften:\n\nDein Stressmuster:\n[Beschreibe in 3-4 Saetzen, welches Stressmuster du in den Antworten siehst. Konkret, warm, ohne Bewertung. Nenne das Muster beim Namen – z.B. Kontrollmuster, Rueckzugsmuster, Ueberanpassung.]\n\nWas dein Hund sieht:\n[2-3 Saetze: Was nimmt der Hund wahr, wenn dieses Muster aktiv wird? Nicht was er denkt – sondern was er koerperlich und energetisch wahrnimmt.]\n\nDer Spiegel:\n[2-3 Saetze: Was koennte das Verhalten des Hundes ueber dieses Muster spiegeln? Vorsichtig und einladend formuliert – nicht als Diagnose, sondern als Einladung zum Nachdenken.]\n\nDein naechster Schritt:\n[1-2 Saetze: Eine einzige, konkrete innere Handlung – kein Training, keine Technik. Etwas das man in sich beobachten oder ausprobieren kann.]\n\nKein Markdown. Deutsch, du-Ansprache.";
 
   fetch("https://tierakademie-proxy.tierakademie.workers.dev",{
     method:"POST",
@@ -239,7 +239,7 @@ function showResult(){
   if(!parsed.length)parsed=[{lbl:"&#129704; Dein Stressmuster",col:"#4A3728",copy:false,txt:RES}];
 
   var html='<div class="body">'+
-    '<div class="badge-5f">6-Felder-Modell · Feld 1</div>'+
+    '<div class="badge-5f">7-Felder-Modell · Feld 1</div>'+
     '<p style="font-size:16px;font-weight:700;color:#4A3728;margin-bottom:4px">Dein Spiegel &#129704;</p>'+
     '<p style="font-size:13px;color:#7D6352;font-family:system-ui;margin-bottom:16px;line-height:1.65">Lies es langsam. Lass es ankommen. Es ist kein Urteil – es ist eine Einladung.</p>';
 
