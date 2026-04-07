@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zustands-Decoder | Tierakademie Zischgl</title>
+<meta name="description" content="Was zeigt dieser Hund wirklich? Der Zustands-Decoder hilft Hundetrainern, emotionale Zustände hinter dem Verhalten zu erkennen – schnell, konkret, ohne Methode.">
+<meta name="keywords" content="Hundetrainer Tool, Hundeverhalten analysieren, emotionale Zustände Hund, Angst Frustration Aggression Hund, Tierakademie Zischgl">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --forest: #2D4A3E;
+    --moss: #4A6741;
+    --ochre: #C17F3B;
+    --cream: #F7F3EE;
+    --sand: #E8E0D4;
+    --text: #1C1C1A;
+    --text-mid: #4A4A46;
+    --text-muted: #8A8A84;
+    --border: rgba(44,40,34,0.14);
+    --border-mid: rgba(44,40,34,0.22);
+    --radius-md: 8px;
+    --radius-lg: 14px;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    background: var(--cream);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  .wrap {
+    max-width: 560px;
+    margin: 0 auto;
+    padding: 2.5rem 1.25rem 4rem;
+  }
+
+  .logo {
+    font-size: 12px;
+    color: var(--text-muted);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .logo-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--ochre);
+    display: inline-block;
+  }
+
+  .screen { display: none; }
+  .screen.active { display: block; }
+
+  h1 {
+    font-size: 26px;
+    font-weight: 600;
+    color: var(--forest);
+    line-height: 1.3;
+    margin-bottom: 0.625rem;
+  }
+
+  .subtitle {
+    font-size: 15px;
+    color: var(--text-mid);
+    line-height: 1.65;
+    margin-bottom: 1.75rem;
+  }
+
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 1.5rem 0;
+  }
+
+  .list-label {
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 0.75rem;
+  }
+
+  .scard {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1rem 1.125rem;
+    margin-bottom: 0.5rem;
+    cursor: pointer;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+
+  .scard:hover {
+    border-color: var(--moss);
+    box-shadow: 0 2px 8px rgba(44,40,34,0.08);
+  }
+
+  .scard h3 {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--forest);
+    margin-bottom: 3px;
+  }
+
+  .scard p {
+    font-size: 13px;
+    color: var(--text-mid);
+    line-height: 1.45;
+  }
+
+  .back-btn {
+    background: none;
+    border: none;
+    font-size: 13px;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 0;
+    margin-bottom: 1.75rem;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-family: inherit;
+    transition: color 0.12s;
+  }
+
+  .back-btn:hover { color: var(--text-mid); }
+
+  .scenario-tag {
+    font-size: 12px;
+    color: var(--moss);
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    margin-bottom: 1.25rem;
+    display: block;
+  }
+
+  .progress {
+    display: flex;
+    gap: 5px;
+    margin-bottom: 2rem;
+  }
+
+  .prog {
+    height: 3px;
+    flex: 1;
+    border-radius: 2px;
+    background: var(--sand);
+    transition: background 0.25s;
+  }
+
+  .prog.done { background: var(--forest); }
+  .prog.active { background: var(--moss); }
+
+  .q-label {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 0.75rem;
+    letter-spacing: 0.04em;
+  }
+
+  .q-text {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--forest);
+    line-height: 1.4;
+    margin-bottom: 1.375rem;
+  }
+
+  .opt {
+    display: block;
+    width: 100%;
+    text-align: left;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 0.875rem 1.125rem;
+    margin-bottom: 0.5rem;
+    cursor: pointer;
+    font-size: 14px;
+    color: var(--text);
+    font-family: inherit;
+    line-height: 1.5;
+    transition: border-color 0.12s, background 0.12s;
+  }
+
+  .opt:hover {
+    border-color: var(--moss);
+    background: #f8fbf8;
+  }
+
+  .result-tag {
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 0.375rem;
+  }
+
+  .result-name {
+    font-size: 30px;
+    font-weight: 700;
+    color: var(--forest);
+    margin-bottom: 4px;
+    line-height: 1.2;
+  }
+
+  .result-hint {
+    font-size: 14px;
+    color: var(--ochre);
+    font-style: italic;
+    margin-bottom: 1.375rem;
+    font-weight: 500;
+  }
+
+  .result-box {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1.25rem 1.375rem;
+    margin-bottom: 1.75rem;
+    border-left: 3px solid var(--moss);
+  }
+
+  .result-box p {
+    font-size: 15px;
+    color: var(--text-mid);
+    line-height: 1.7;
+  }
+
+  .btn-row {
+    display: flex;
+    gap: 0.625rem;
+    flex-wrap: wrap;
+    margin-bottom: 2rem;
+  }
+
+  .btn-primary {
+    background: var(--forest);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius-md);
+    padding: 0.75rem 1.375rem;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.15s;
+  }
+
+  .btn-primary:hover { background: var(--moss); }
+
+  .btn-outline {
+    background: #fff;
+    border: 1px solid var(--border-mid);
+    border-radius: var(--radius-md);
+    padding: 0.75rem 1.375rem;
+    font-size: 14px;
+    color: var(--text-mid);
+    cursor: pointer;
+    font-family: inherit;
+    transition: border-color 0.12s, color 0.12s;
+  }
+
+  .btn-outline:hover { border-color: var(--forest); color: var(--forest); }
+
+  .community-section p {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 0.625rem;
+  }
+
+  .clink {
+    display: block;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1.125rem 1.25rem;
+    text-decoration: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+
+  .clink:hover {
+    border-color: var(--ochre);
+    box-shadow: 0 2px 8px rgba(44,40,34,0.08);
+  }
+
+  .clink-label {
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+
+  .clink-name {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--forest);
+  }
+
+  .clink-sub {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+
+  footer {
+    margin-top: 3rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+    font-size: 12px;
+    color: var(--text-muted);
+    text-align: center;
+    line-height: 1.7;
+  }
+
+  footer a { color: var(--text-muted); text-decoration: none; }
+  footer a:hover { color: var(--forest); }
+
+  @media (max-width: 480px) {
+    .wrap { padding: 1.5rem 1rem 3rem; }
+    h1 { font-size: 22px; }
+    .q-text { font-size: 16px; }
+    .result-name { font-size: 26px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="logo"><span class="logo-dot"></span>Tierakademie Zischgl</div>
+
+  <!-- START -->
+  <div class="screen active" id="screen-start">
+    <h1>Was zeigt dieser Hund wirklich?</h1>
+    <p class="subtitle">Wähle ein Szenario. Beantworte drei Beobachtungsfragen. Du bekommst eine Einschätzung des emotionalen Zustands – keine Methode, keine Übung. Nur eine Richtung.</p>
+    <div class="list-label">Szenario wählen</div>
+    <div id="scenario-list"></div>
+  </div>
+
+  <!-- FRAGEN -->
+  <div class="screen" id="screen-question">
+    <button class="back-btn" onclick="showStart()">← zurück zur Auswahl</button>
+    <span class="scenario-tag" id="q-stag"></span>
+    <div class="progress" id="progress-bar"></div>
+    <div class="q-label" id="q-label"></div>
+    <div class="q-text" id="q-text"></div>
+    <div id="options-list"></div>
+  </div>
+
+  <!-- ERGEBNIS -->
+  <div class="screen" id="screen-result">
+    <button class="back-btn" onclick="showStart()">← neues Szenario</button>
+    <div class="result-tag">Ergebnis</div>
+    <div class="result-name" id="r-name"></div>
+    <div class="result-hint" id="r-hint"></div>
+    <div class="result-box"><p id="r-desc"></p></div>
+    <div class="btn-row">
+      <button class="btn-primary" onclick="showStart()">Neues Szenario</button>
+      <button class="btn-outline" onclick="retryScenario()">Wiederholen</button>
+    </div>
+    <div class="community-section">
+      <div class="divider"></div>
+      <p>Wenn du tiefer in diese Denkweise willst, schau hier.</p>
+      <a href="https://www.tierakademie-zischgl.de" class="clink" target="_blank">
+        <div class="clink-label">Tierakademie Zischgl</div>
+        <div class="clink-name">Mehr über diese Denkweise</div>
+        <div class="clink-sub">www.tierakademie-zischgl.de →</div>
+      </a>
+    </div>
+  </div>
+
+  <footer>
+    © 2026 Susanne Zischgl · Tierakademie Zischgl<br>
+    <a href="https://www.tierakademie-zischgl.de" target="_blank">www.tierakademie-zischgl.de</a>
+  </footer>
+
+</div>
+
+<script>
+const states = {
+  UI: { name: "Unsicherheit", hint: "Nicht mehr Training – mehr Klarheit.", desc: "Dieser Hund weiß nicht, was er tun soll. Er ist weder klar ängstlich noch klar aggressiv – er sucht Orientierung. Training hilft hier wenig. Was hilft: Klarheit. Struktur. Ein Mensch, der weiß, wohin er geht." },
+  AN: { name: "Angst", hint: "Abstand schafft Lernraum.", desc: "Dieser Hund ist in einem echten Schutzzustand. Er zeigt nach außen, was er innen empfindet. Belohnung erreicht ihn jetzt kaum. Was er braucht: Abstand, Verlangsamung, und einen Menschen, der ruhig bleibt." },
+  PA: { name: "Panik", hint: "Kein Training – erst Sicherheit.", desc: "Dieser Hund ist über die Grenze. Er reagiert nicht mehr – er überlebt. In diesem Zustand ist kein Training möglich und kein Lernen. Erste Aufgabe: Reizabstand schaffen, bevor irgendetwas anderes gemacht wird." },
+  OA: { name: "Offene Aggression", hint: "Ehrliche Einschätzung vor jeder Intervention.", desc: "Dieser Hund geht vor. Er hat keine Angst – er hat eine Absicht. Das wird selten so benannt, weil es unbequem ist. Hier braucht es keine Technik, sondern eine ehrliche Bewertung: Was hat diesen Hund dahin gebracht?" },
+  DA: { name: "Defensive Aggression", hint: "Rückzug muss sicher sein.", desc: "Dieser Hund greift an, weil er sich bedroht fühlt. Die Aggression ist Schutz, nicht Angriff. Das klingt harmloser – ist es aber nicht. Was hier fehlt: das Gefühl, dass Rückzug wirklich sicher ist." },
+  FR: { name: "Frustration", hint: "Erst regulieren, dann trainieren.", desc: "Dieser Hund will etwas – und kommt nicht ran. Die Energie sucht einen Ausweg. Das sieht oft aus wie Aggression, ist aber etwas anderes. Was hilft: nicht mehr Belohnung, sondern erst Regulation. Dann Training." },
+  IM: { name: "Impulskontrollproblem", hint: "Innehalten lernen – das ist das Ziel.", desc: "Dieser Hund hat keine Bremse. Er ist nicht böse, nicht ängstlich – er ist schlicht überwältigt von seiner eigenen Erregung. Das ist kein Charakterfehler. Das ist ein Trainingsziel: Pause lernen. Innehalten lernen." }
+};
+
+const scenarios = [
+  { id:1, title:"Leinenaggression bei Hundebegegnung", desc:"Ein Hund bellt laut und zieht massiv an der Leine, sobald er einen anderen Hund sieht.",
+    questions:[
+      { text:"Wie ist die Körperhaltung des Hundes?", options:[
+        { text:"Hart, aufgerichtet, Gewicht deutlich nach vorne verlagert", s:{OA:3,FR:2,IM:1} },
+        { text:"Unruhig, wechselt zwischen vorwärts und rückwärts", s:{DA:3,UI:2,FR:1} },
+        { text:"Geduckt, Rute eingezogen, Körper niedrig gehalten", s:{AN:3,PA:2,UI:1} }
+      ]},
+      { text:"Wie ist der Blick des Hundes?", options:[
+        { text:"Starr fixiert, anhaltender direkter Blickkontakt zum anderen Hund", s:{OA:3,FR:2,IM:1} },
+        { text:"Flackernd, kurze Blicke, weicht dem Blick aus", s:{DA:3,AN:2,UI:2} },
+        { text:"Weitaufgerissen, überwältigt wirkend, kein Halt", s:{PA:3,AN:2} }
+      ]},
+      { text:"Was passiert, wenn du deutlich mehr Abstand zum anderen Hund gibst?", options:[
+        { text:"Hund bleibt fokussiert, kaum sichtbare Veränderung", s:{OA:2,FR:3,IM:2} },
+        { text:"Hund beruhigt sich spürbar, sucht selbst Abstand", s:{AN:3,PA:2,DA:1} },
+        { text:"Pendelt zwischen Beruhigung und neuer Erregung", s:{UI:3,DA:2,FR:1} }
+      ]}
+    ]
+  },
+  { id:2, title:"Ressourcenverteidigung am Futternapf", desc:"Ein Hund erstarrt und knurrt tief, wenn jemand sich seinem Futternapf nähert.",
+    questions:[
+      { text:"Was macht der Hund bei der ersten Annäherung?", options:[
+        { text:"Erstarrt sofort, Körper steinhart, direktes Fixieren", s:{DA:3,OA:2} },
+        { text:"Frisst schneller, weicht leicht mit dem Körper aus", s:{AN:3,UI:2,DA:1} },
+        { text:"Hört auf zu fressen, zieht sich komplett zurück", s:{PA:3,AN:2,UI:1} }
+      ]},
+      { text:"Was macht der Hund, wenn die Person direkt neben dem Napf stehenbleibt?", options:[
+        { text:"Hält Blickkontakt, knurrt weiter, bewegt sich nicht", s:{DA:3,OA:2} },
+        { text:"Schaut weg, Ohren zurück, Körper flach", s:{AN:3,UI:2} },
+        { text:"Eskaliert schnell – Schnappen ohne viel Vorwarnung", s:{OA:3,PA:2} }
+      ]},
+      { text:"Wie verhält sich der Hund, wenn die Person sich wieder entfernt?", options:[
+        { text:"Entspannt sich sofort sichtbar", s:{DA:3,AN:2,UI:1} },
+        { text:"Bleibt angespannt, beobachtet weiter wachsam", s:{OA:2,FR:2,UI:2} },
+        { text:"Verlässt den Napf sofort, sucht Abstand", s:{PA:3,AN:2} }
+      ]}
+    ]
+  },
+  { id:3, title:"Hochgradige Erregung beim Leineanlegen", desc:"Ein Hund springt an, dreht Kreise und jault, sobald der Besitzer die Leine in die Hand nimmt.",
+    questions:[
+      { text:"Wie hoch ist der Erregungslevel?", options:[
+        { text:"Extrem hochgedreht, kaum steuerbar, kein kurzes Innehalten möglich", s:{IM:3,FR:2} },
+        { text:"Aufgeregt, aber durch ruhige Stimme kurz unterbrechbar", s:{FR:3,IM:2,UI:1} },
+        { text:"Wirkt fast panisch, unkontrollierte Bewegungen, sucht Ausweg", s:{PA:3,AN:2} }
+      ]},
+      { text:"Reagiert der Hund auf seinen Namen?", options:[
+        { text:"Kein erkennbares Registrieren – wie taub für äußere Reize", s:{IM:3,PA:2,FR:1} },
+        { text:"Kurzes Hinschauen, dann sofort wieder in die Erregung", s:{FR:3,IM:2} },
+        { text:"Reagiert, wirkt aber gleichzeitig verängstigt oder überfordert", s:{AN:3,UI:2} }
+      ]},
+      { text:"Was passiert, wenn die Person wartet und die Leine einfach weglegt?", options:[
+        { text:"Hund beruhigt sich nach kurzer Zeit spürbar", s:{FR:3,IM:2} },
+        { text:"Hund bleibt hocherregt, Erregung hält unvermindert an", s:{IM:3,PA:1} },
+        { text:"Hund zieht sich zurück, wirkt erschöpft oder leer", s:{PA:3,AN:2,UI:1} }
+      ]}
+    ]
+  },
+  { id:4, title:"Trainingsverweigerung und Rückzug", desc:"Ein Hund bricht im Training immer wieder ab, verweigert Signale und weicht dem Blick aus.",
+    questions:[
+      { text:"Was zeigt der Hund körperlich?", options:[
+        { text:"Gähnt, schüttelt sich, leckt die Maulspalte, Ohren angelegt", s:{AN:3,UI:2} },
+        { text:"Schnüffelt am Boden, dreht sich weg, sucht Ablenkung", s:{FR:2,UI:3,AN:1} },
+        { text:"Legt sich hin, dreht sich komplett weg, kaum reaktiv", s:{PA:2,AN:3,UI:1} }
+      ]},
+      { text:"Wie reagiert der Hund auf Lob und Zuwendung?", options:[
+        { text:"Kaum Reaktion, nimmt Lob nicht wirklich an", s:{AN:3,PA:2,UI:1} },
+        { text:"Reagiert kurz, fällt aber schnell wieder in Passivität", s:{UI:3,FR:2} },
+        { text:"Reagiert auf Lob normal, verweigert aber weiter die Signale", s:{FR:3,IM:1} }
+      ]},
+      { text:"Was verändert sich, wenn Druck komplett rausgenommen wird?", options:[
+        { text:"Hund entspannt sofort, wird deutlich zugänglicher", s:{AN:3,UI:2,DA:1} },
+        { text:"Keine sichtbare Veränderung, Hund bleibt passiv", s:{PA:3,AN:1} },
+        { text:"Hund wird kurz aktiver, fällt dann wieder zurück", s:{FR:3,UI:2} }
+      ]}
+    ]
+  },
+  { id:5, title:"Aggression gegenüber Besuch in der Wohnung", desc:"Ein Hund springt Menschen an und schnappt nach Händen, wenn Besuch die Wohnung betritt.",
+    questions:[
+      { text:"Wie wirkt der Hund bei Ankunft des Besuchs?", options:[
+        { text:"Hochgedreht, scheinbar freudig, aber kein Stopp möglich", s:{IM:3,FR:2} },
+        { text:"Aufgeregt und gleichzeitig nervös, unruhige wechselnde Energie", s:{UI:3,DA:2,AN:1} },
+        { text:"Sofort fokussiert und angespannt, kein spielerisches Element", s:{OA:3,DA:2} }
+      ]},
+      { text:"Was macht der Hund, wenn der Besuch sich abwendet und ignoriert?", options:[
+        { text:"Beruhigt sich nicht, sucht weiter Kontakt, eskaliert", s:{IM:3,OA:2} },
+        { text:"Wird kurz ruhiger, eskaliert beim nächsten Blickkontakt wieder", s:{FR:3,UI:2} },
+        { text:"Zieht sich zurück, beobachtet aus sicherer Distanz", s:{AN:3,DA:2,UI:1} }
+      ]},
+      { text:"Wie ist das Schnappverhalten?", options:[
+        { text:"Gezielt, mit klarer Vorwarnung (Knurren, Fixieren, Erstarren)", s:{DA:3,OA:2} },
+        { text:"Impulsiv, kaum erkennbares Warnsignal, überraschend schnell", s:{IM:3,FR:2,PA:1} },
+        { text:"Eher Zwicken, Hund weicht danach sofort selbst zurück", s:{AN:3,DA:2,UI:1} }
+      ]}
+    ]
+  },
+  { id:6, title:"Unverträglichkeit mit anderen Hunden", desc:"Ein Hund eskaliert regelmäßig bei direkten Begegnungen mit anderen Hunden – unabhängig von der Leine.",
+    questions:[
+      { text:"Ab welcher Distanz reagiert der Hund auf den anderen Hund?", options:[
+        { text:"Sehr früh – fixiert schon auf große Entfernung, Anspannung sofort sichtbar", s:{OA:3,FR:2,DA:1} },
+        { text:"Erst auf kurze Distanz, davor kaum Anzeichen", s:{IM:3,FR:2,UI:1} },
+        { text:"Sehr unterschiedlich – manchmal früh, manchmal gar nicht", s:{UI:3,AN:2,FR:1} }
+      ]},
+      { text:"Was passiert, wenn ein direkter Kontakt nicht vermeidbar ist?", options:[
+        { text:"Geht sofort in die Offensive, kaum Vorwarnung, direkter Angriff", s:{OA:3,IM:2} },
+        { text:"Erstarrt zuerst, knurrt, eskaliert dann wenn der andere nicht weicht", s:{DA:3,AN:2} },
+        { text:"Dreht Kopf weg, signalisiert Abstand, eskaliert nur wenn ignoriert", s:{AN:3,DA:2,UI:1} }
+      ]},
+      { text:"Wie verhält sich der Hund gegenüber bekannten, vertrauten Hunden?", options:[
+        { text:"Kaum Unterschied – auch dort Spannungen und Probleme", s:{OA:3,IM:2} },
+        { text:"Toleriert vertraute Hunde, bei fremden Hunden sofortige Eskalation", s:{DA:3,AN:2,FR:1} },
+        { text:"Wechselhaft – mal gut, mal nicht, sehr situationsabhängig", s:{UI:3,FR:2,AN:1} }
+      ]}
+    ]
+  },
+  { id:7, title:"Aggression gegenüber Menschen", desc:"Ein Hund knurrt, schnappt oder beißt in Begegnungen mit Menschen – auf der Straße, im Training oder zu Hause.",
+    questions:[
+      { text:"Wann zeigt der Hund die Reaktion gegenüber Menschen?", options:[
+        { text:"Schon auf Distanz, bei direktem Blick oder zügiger Annäherung", s:{OA:3,DA:2,FR:1} },
+        { text:"Erst bei direktem Kontaktversuch oder Anfassen", s:{DA:3,AN:2,UI:1} },
+        { text:"Situationsabhängig und schwer vorhersehbar", s:{UI:3,AN:2,FR:1} }
+      ]},
+      { text:"Wie sieht die Reaktion aus?", options:[
+        { text:"Geht aktiv auf die Person zu, kein Ausweichen, direktes Vorgehen", s:{OA:3,IM:2} },
+        { text:"Erstarrt, knurrt tief, schnappt wenn Person nicht reagiert", s:{DA:3,AN:2} },
+        { text:"Weicht aus wenn möglich, eskaliert nur wenn kein Ausweg bleibt", s:{AN:3,DA:2,UI:1} }
+      ]},
+      { text:"Wie verhält sich der Hund mit vertrauten, bekannten Menschen?", options:[
+        { text:"Auch dort gelegentliche Anspannung oder Reaktionen", s:{OA:3,IM:2,UI:1} },
+        { text:"Komplett entspannt – nur Fremde sind das Problem", s:{DA:3,AN:2,FR:1} },
+        { text:"Wechselhaft – auch bei Bekannten manchmal unberechenbar", s:{UI:3,AN:2,FR:1} }
+      ]}
+    ]
+  },
+  { id:8, title:"Hund kann nicht alleine bleiben", desc:"Ein Hund zeigt starke Stressreaktionen, sobald er alleine gelassen wird – Bellen, Zerstören, Unsauberkeit.",
+    questions:[
+      { text:"Was passiert, wenn die Bezugsperson sich zum Gehen vorbereitet?", options:[
+        { text:"Hund wird sofort unruhig, folgt überall hin, lässt sich kaum lösen", s:{PA:3,AN:2,FR:1} },
+        { text:"Zeigt Unruhe erst wenn die Tür sich schließt oder die Person weg ist", s:{FR:3,IM:2,AN:1} },
+        { text:"Wirkt zunächst normal, eskaliert aber nach einigen Minuten Alleinsein", s:{AN:3,FR:2} }
+      ]},
+      { text:"Wie äußert sich das Alleinsein konkret?", options:[
+        { text:"Anhaltendes Bellen oder Heulen, Kratzen an der Tür", s:{FR:3,IM:2,AN:1} },
+        { text:"Zerstört Dinge – vor allem in der Nähe der Tür oder Besitzersachen", s:{FR:3,AN:2,PA:1} },
+        { text:"Macht kaum etwas, frisst nicht, liegt apathisch – wirkt abwesend", s:{PA:3,AN:2} }
+      ]},
+      { text:"Wie verhält sich der Hund, wenn die Bezugsperson zurückkommt?", options:[
+        { text:"Extreme, lang anhaltende Begrüßung, kaum zu beruhigen", s:{FR:3,IM:2,AN:1} },
+        { text:"Kaum Reaktion – wirkt leer, erschöpft oder teilnahmslos", s:{PA:3,AN:2} },
+        { text:"Normale Begrüßung, hängt sich aber danach eng an die Person", s:{AN:3,UI:2,FR:1} }
+      ]}
+    ]
+  }
+];
+
+let cur = null, qIdx = 0, sc = {};
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+function showStart() {
+  cur = null; qIdx = 0; sc = {};
+  const list = document.getElementById('scenario-list');
+  list.innerHTML = scenarios.map((s,i) =>
+    `<div class="scard" onclick="startScenario(${i})"><h3>${s.title}</h3><p>${s.desc}</p></div>`
+  ).join('');
+  showScreen('start');
+}
+
+function startScenario(i) {
+  cur = scenarios[i]; qIdx = 0;
+  sc = {UI:0,AN:0,PA:0,OA:0,DA:0,FR:0,IM:0};
+  renderQ();
+  showScreen('question');
+}
+
+function renderQ() {
+  const q = cur.questions[qIdx];
+  document.getElementById('q-stag').textContent = cur.title;
+  document.getElementById('q-label').textContent = 'Frage ' + (qIdx+1) + ' von 3';
+  document.getElementById('q-text').textContent = q.text;
+  document.getElementById('progress-bar').innerHTML = [0,1,2].map(i => {
+    let c = 'prog' + (i < qIdx ? ' done' : i === qIdx ? ' active' : '');
+    return `<div class="${c}"></div>`;
+  }).join('');
+  document.getElementById('options-list').innerHTML = q.options.map((o,i) =>
+    `<button class="opt" onclick="pick(${i})">${o.text}</button>`
+  ).join('');
+}
+
+function pick(i) {
+  const opt = cur.questions[qIdx].options[i];
+  for (const [k,v] of Object.entries(opt.s)) sc[k] = (sc[k]||0) + v;
+  qIdx++;
+  if (qIdx >= 3) showResult(); else renderQ();
+}
+
+function showResult() {
+  const top = Object.entries(sc).reduce((a,b) => b[1] > a[1] ? b : a);
+  const st = states[top[0]];
+  document.getElementById('r-name').textContent = st.name;
+  document.getElementById('r-hint').textContent = st.hint;
+  document.getElementById('r-desc').textContent = st.desc;
+  showScreen('result');
+}
+
+function retryScenario() {
+  startScenario(scenarios.findIndex(s => s.id === cur.id));
+}
+
+showStart();
+</script>
+</body>
+</html>
