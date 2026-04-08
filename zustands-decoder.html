@@ -233,6 +233,29 @@
     font-size: 15px;
     color: var(--text-mid);
     line-height: 1.7;
+    margin-bottom: 0.875rem;
+  }
+
+  .result-box p:last-child {
+    margin-bottom: 0;
+  }
+
+  .result-question {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--forest);
+    line-height: 1.6;
+    padding: 0.875rem 1rem;
+    background: var(--sand);
+    border-radius: var(--radius-md);
+    margin: 0.875rem 0;
+  }
+
+  .result-cta {
+    font-size: 14px;
+    color: var(--moss);
+    font-style: italic;
+    margin-top: 0.75rem;
   }
 
   .btn-row {
@@ -362,7 +385,7 @@
     <div class="result-tag">Ergebnis</div>
     <div class="result-name" id="r-name"></div>
     <div class="result-hint" id="r-hint"></div>
-    <div class="result-box"><p id="r-desc"></p></div>
+    <div class="result-box" id="r-desc-box"></div>
     <div class="btn-row">
       <button class="btn-primary" onclick="showStart()">Neues Szenario</button>
       <button class="btn-outline" onclick="retryScenario()">Wiederholen</button>
@@ -387,13 +410,76 @@
 
 <script>
 const states = {
-  UI: { name: "Unsicherheit", hint: "Nicht mehr Training – mehr Klarheit.", desc: "Dieser Hund weiß nicht, was er tun soll. Er ist weder klar ängstlich noch klar aggressiv – er sucht Orientierung. Training hilft hier wenig. Was hilft: Klarheit. Struktur. Ein Mensch, der weiß, wohin er geht." },
-  AN: { name: "Angst", hint: "Abstand schafft Lernraum.", desc: "Dieser Hund ist in einem echten Schutzzustand. Er zeigt nach außen, was er innen empfindet. Belohnung erreicht ihn jetzt kaum. Was er braucht: Abstand, Verlangsamung, und einen Menschen, der ruhig bleibt." },
-  PA: { name: "Panik", hint: "Kein Training – erst Sicherheit.", desc: "Dieser Hund ist über die Grenze. Er reagiert nicht mehr – er überlebt. In diesem Zustand ist kein Training möglich und kein Lernen. Erste Aufgabe: Reizabstand schaffen, bevor irgendetwas anderes gemacht wird." },
-  OA: { name: "Offene Aggression", hint: "Ehrliche Einschätzung vor jeder Intervention.", desc: "Dieser Hund geht vor. Er hat keine Angst – er hat eine Absicht. Das wird selten so benannt, weil es unbequem ist. Hier braucht es keine Technik, sondern eine ehrliche Bewertung: Was hat diesen Hund dahin gebracht?" },
-  DA: { name: "Defensive Aggression", hint: "Rückzug muss sicher sein.", desc: "Dieser Hund greift an, weil er sich bedroht fühlt. Die Aggression ist Schutz, nicht Angriff. Das klingt harmloser – ist es aber nicht. Was hier fehlt: das Gefühl, dass Rückzug wirklich sicher ist." },
-  FR: { name: "Frustration", hint: "Erst regulieren, dann trainieren.", desc: "Dieser Hund will etwas – und kommt nicht ran. Die Energie sucht einen Ausweg. Das sieht oft aus wie Aggression, ist aber etwas anderes. Was hilft: nicht mehr Belohnung, sondern erst Regulation. Dann Training." },
-  IM: { name: "Impulskontrollproblem", hint: "Innehalten lernen – das ist das Ziel.", desc: "Dieser Hund hat keine Bremse. Er ist nicht böse, nicht ängstlich – er ist schlicht überwältigt von seiner eigenen Erregung. Das ist kein Charakterfehler. Das ist ein Trainingsziel: Pause lernen. Innehalten lernen." }
+  UI: {
+    name: "Unsicherheit",
+    hint: "Nicht mehr Training – mehr Klarheit.",
+    desc: [
+      "Dieser Hund sucht Orientierung. Er ist weder klar ängstlich noch klar aggressiv – er wartet darauf, dass jemand weiß, wohin es geht. Training allein gibt ihm das nicht.",
+      "Was hier fehlt: ein Mensch, der selbst klar ist. Nicht laut – sondern eindeutig.",
+      "FRAGE: Wann hast du zuletzt geprüft, ob deine eigene Richtung in diesem Moment wirklich klar war?",
+      "→ Wenn dich diese Frage interessiert, schau dir die Denkweise dahinter genauer an."
+    ]
+  },
+  AN: {
+    name: "Angst",
+    hint: "Abstand schafft Lernraum.",
+    desc: [
+      "Dieser Hund ist in einem echten Schutzzustand. Er zeigt nach außen, was er innen empfindet. Belohnung erreicht ihn jetzt kaum – nicht weil er nicht will, sondern weil sein System auf Überleben geschaltet hat.",
+      "Was hier fehlt: Abstand. Nicht als Rückzug, sondern als Voraussetzung für alles Weitere.",
+      "FRAGE: Ab welchem Punkt hört dieser Hund auf zu lernen – und wann merkst du das eigentlich?",
+      "→ Wenn du tiefer in diese Denkweise willst, schau hier."
+    ]
+  },
+  PA: {
+    name: "Panik",
+    hint: "Kein Training – erst Sicherheit.",
+    desc: [
+      "Dieser Hund ist über die Grenze. Er reagiert nicht mehr – er überlebt. In diesem Zustand ist kein Training möglich und kein Lernen. Das ist kein Vorwurf, sondern eine schlichte Tatsache über Physiologie.",
+      "Was hier fehlt: Sicherheit, bevor irgendetwas anderes beginnt.",
+      "FRAGE: Was bräuchte dieser Hund, um auch nur eine Minute lang wirklich sicher zu sein – und hat er das je erlebt?",
+      "→ Wenn du verstehen willst, was dahintersteckt, schau hier."
+    ]
+  },
+  OA: {
+    name: "Offene Aggression",
+    hint: "Ehrliche Einschätzung vor jeder Intervention.",
+    desc: [
+      "Dieser Hund geht vor. Er hat keine Angst – er hat eine Absicht. Das wird selten so direkt benannt, weil es unbequem ist. Aber genau diese Ehrlichkeit ist der erste Schritt.",
+      "Was hier fehlt: keine Technik – sondern eine klare Bewertung, was diesen Hund dahin gebracht hat.",
+      "FRAGE: Welche Erfahrungen haben diesem Hund beigebracht, dass Vorgehen funktioniert?",
+      "→ Wenn du diese Frage weiterdenken willst, schau hier."
+    ]
+  },
+  DA: {
+    name: "Defensive Aggression",
+    hint: "Rückzug muss sicher sein.",
+    desc: [
+      "Dieser Hund greift an, weil er sich bedroht fühlt. Die Aggression ist Schutz, nicht Angriff. Das klingt harmloser – ist es aber nicht.",
+      "Was hier fehlt: das Gefühl, dass Rückzug wirklich sicher ist. Nicht erlaubt – sondern verlässlich wirksam.",
+      "FRAGE: Wann hat dieser Hund aufgehört zu glauben, dass Ausweichen hilft?",
+      "→ Wenn du verstehen willst, wie du genau dort ansetzt, schau hier."
+    ]
+  },
+  FR: {
+    name: "Frustration",
+    hint: "Erst regulieren, dann trainieren.",
+    desc: [
+      "Dieser Hund will etwas – und kommt nicht ran. Die Energie sucht einen Ausweg. Das sieht oft aus wie Aggression, ist aber etwas anderes: aufgestauter Antrieb ohne Kanal.",
+      "Was hier fehlt: kein besseres Training – erst Regulation. Dann Training.",
+      "FRAGE: Was will dieser Hund eigentlich – und hat er irgendeinen Weg, das zu bekommen?",
+      "→ Wenn dich diese Perspektive interessiert, schau hier."
+    ]
+  },
+  IM: {
+    name: "Impulskontrollproblem",
+    hint: "Innehalten lernen – das ist das Ziel.",
+    desc: [
+      "Dieser Hund hat keine Bremse. Er ist nicht böse, nicht ängstlich – er ist schlicht überwältigt von seiner eigenen Erregung. Das ist kein Charakterfehler. Es ist ein Trainingsziel.",
+      "Was hier fehlt: nicht mehr Anreiz, sondern das Erleben, dass Pause möglich ist.",
+      "FRAGE: Hat dieser Hund je gelernt, dass Innehalten sich lohnt – oder wurde immer weitergemacht?",
+      "→ Wenn du wissen willst, wo man damit ansetzt, schau hier."
+    ]
+  }
 };
 
 const scenarios = [
@@ -601,7 +687,16 @@ function showResult() {
   const st = states[top[0]];
   document.getElementById('r-name').textContent = st.name;
   document.getElementById('r-hint').textContent = st.hint;
-  document.getElementById('r-desc').textContent = st.desc;
+
+  const box = document.getElementById('r-desc-box');
+  const [treffer, luecke, frage, cta] = st.desc;
+  box.innerHTML = `
+    <p>${treffer}</p>
+    <p>${luecke}</p>
+    <div class="result-question">${frage.replace('FRAGE: ', '')}</div>
+    <p class="result-cta">${cta}</p>
+  `;
+
   showScreen('result');
 }
 
