@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anlage-Kompass – Tierakademie Zischgl</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --forest: #2D4A3E;
+    --ochre: #C4872A;
+    --ochre-dark: #8B6914;
+    --cream: #F5F0E8;
+    --moss: #6B7C5C;
+    --moss-dark: #5a6a4c;
+    --sand: #E8DFC5;
+    --text: #1a1a1a;
+    --text-muted: #666;
+    --text-light: #888;
+    --border: rgba(0,0,0,0.1);
+    --border-mid: rgba(0,0,0,0.18);
+    --bg-card: #ffffff;
+    --bg-soft: #f9f6f0;
+    --radius: 12px;
+    --radius-sm: 8px;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--cream);
+    color: var(--text);
+    font-family: 'Georgia', 'Times New Roman', serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  /* Header */
+  header {
+    width: 100%;
+    background: var(--forest);
+    padding: 1.25rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .brand {
+    font-family: 'Georgia', serif;
+    font-size: 15px;
+    color: rgba(245,240,232,0.85);
+    letter-spacing: 0.03em;
+  }
+
+  .brand strong {
+    color: #F5F0E8;
+    font-weight: normal;
+  }
+
+  /* Main content */
+  main {
+    width: 100%;
+    max-width: 620px;
+    padding: 3rem 1.5rem 4rem;
+    flex: 1;
+  }
+
+  /* Progress */
+  .prog-wrap {
+    margin-bottom: 2.5rem;
+  }
+
+  .prog-label {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 12px;
+    color: var(--text-light);
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .prog-bg {
+    height: 3px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .prog-fill {
+    height: 100%;
+    background: var(--ochre);
+    border-radius: 2px;
+    transition: width 0.45s ease;
+  }
+
+  /* Card */
+  .card {
+    background: var(--bg-card);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 2.25rem 2.5rem;
+    box-shadow: 0 2px 16px rgba(45,74,62,0.06);
+  }
+
+  .hidden { display: none !important; }
+
+  /* Welcome screen */
+  .welcome-eyebrow {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 11px;
+    color: var(--ochre-dark);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 1.25rem;
+  }
+
+  .welcome-title {
+    font-size: 26px;
+    font-weight: normal;
+    color: var(--forest);
+    line-height: 1.3;
+    margin-bottom: 1.25rem;
+  }
+
+  .welcome-text {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 15px;
+    color: var(--text-muted);
+    line-height: 1.75;
+    margin-bottom: 2rem;
+  }
+
+  .start-btn {
+    padding: 0.8rem 2.25rem;
+    background: var(--moss);
+    border: none;
+    border-radius: var(--radius-sm);
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 14px;
+    color: #F5F0E8;
+    cursor: pointer;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    transition: background 0.15s;
+  }
+
+  .start-btn:hover { background: var(--moss-dark); }
+
+  /* Question screen */
+  .q-num {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 11px;
+    color: var(--text-light);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 0.875rem;
+  }
+
+  .q-text {
+    font-size: 19px;
+    font-weight: normal;
+    color: var(--forest);
+    line-height: 1.5;
+    margin-bottom: 1.75rem;
+  }
+
+  .opt {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: 1rem 1.25rem;
+    margin-bottom: 0.625rem;
+    background: var(--bg-soft);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 14px;
+    color: var(--text);
+    line-height: 1.55;
+    transition: background 0.15s, border-color 0.15s;
+  }
+
+  .opt:hover {
+    background: var(--sand);
+    border-color: var(--border-mid);
+  }
+
+  .opt:active { transform: scale(0.995); }
+
+  /* Result screen */
+  .res-eyebrow {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 11px;
+    color: var(--ochre-dark);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+
+  .res-title {
+    font-size: 21px;
+    font-weight: normal;
+    color: var(--forest);
+    line-height: 1.4;
+    margin-bottom: 2rem;
+  }
+
+  .drive-row { margin-bottom: 1.2rem; }
+
+  .drive-hd {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 0.4rem;
+  }
+
+  .drive-name {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+  }
+
+  .drive-name.top { color: var(--ochre-dark); }
+
+  .drive-pct {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 12px;
+    color: var(--text-light);
+  }
+
+  .bar-bg {
+    height: 5px;
+    background: var(--border);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .bar-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 1s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .divider {
+    border: none;
+    border-top: 0.5px solid var(--border);
+    margin: 1.75rem 0;
+  }
+
+  .act-section { margin-bottom: 1.5rem; }
+
+  .act-lbl {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 11px;
+    color: var(--text-light);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 0.4rem;
+  }
+
+  .act-title {
+    font-size: 16px;
+    font-weight: normal;
+    color: var(--forest);
+    margin-bottom: 0.7rem;
+  }
+
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+  }
+
+  .tag {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 12px;
+    padding: 5px 11px;
+    border-radius: var(--radius-sm);
+    border: 0.5px solid var(--border-mid);
+    color: var(--text-muted);
+    background: var(--bg-soft);
+  }
+
+  .note {
+    margin-top: 1.75rem;
+    padding: 1rem 1.25rem;
+    background: var(--bg-soft);
+    border-radius: var(--radius-sm);
+    border-left: 3px solid var(--ochre);
+    font-family: 'Georgia', serif;
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.7;
+    font-style: italic;
+  }
+
+  .reset-btn {
+    margin-top: 1.5rem;
+    padding: 0.6rem 1.25rem;
+    background: transparent;
+    border: 0.5px solid var(--border-mid);
+    border-radius: var(--radius-sm);
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 13px;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+
+  .reset-btn:hover { background: var(--bg-soft); }
+
+  /* Footer */
+  footer {
+    width: 100%;
+    background: var(--forest);
+    padding: 1.25rem 2rem;
+    text-align: center;
+  }
+
+  footer p {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 12px;
+    color: rgba(245,240,232,0.55);
+    letter-spacing: 0.03em;
+  }
+
+  footer a {
+    color: rgba(245,240,232,0.75);
+    text-decoration: none;
+  }
+
+  footer a:hover { color: #F5F0E8; }
+
+  @media (max-width: 480px) {
+    .card { padding: 1.5rem 1.25rem; }
+    .welcome-title { font-size: 22px; }
+    .q-text { font-size: 17px; }
+    main { padding: 2rem 1rem 3rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand"><strong>Tierakademie Zischgl</strong> &nbsp;·&nbsp; Susanne Zischgl</div>
+</header>
+
+<main>
+  <div class="prog-wrap">
+    <div class="prog-label">
+      <span id="prog-text">Anlage-Kompass</span>
+      <span id="prog-steps"></span>
+    </div>
+    <div class="prog-bg"><div class="prog-fill" id="prog" style="width:0%"></div></div>
+  </div>
+
+  <!-- Welcome -->
+  <div id="screen-welcome" class="card">
+    <div class="welcome-eyebrow">Tierakademie Zischgl</div>
+    <div class="welcome-title">Was steckt in deinem Hund?</div>
+    <div class="welcome-text">
+      Kein Hund ist nur ein Typ. Er trägt Anteile verschiedener innerer Programme –
+      und genau da entstehen die spannenden Persönlichkeiten.<br><br>
+      8 kurze Fragen zeigen dir, welche Anlagen deinen Hund antreiben und welche
+      Aktivitäten wirklich zu ihm passen.
+    </div>
+    <button class="start-btn" id="btn-start">Los geht's</button>
+  </div>
+
+  <!-- Quiz -->
+  <div id="screen-quiz" class="card hidden">
+    <div class="q-num" id="q-num"></div>
+    <div class="q-text" id="q-text"></div>
+    <div id="q-opts"></div>
+  </div>
+
+  <!-- Result -->
+  <div id="screen-result" class="card hidden">
+    <div class="res-eyebrow">Triebprofil</div>
+    <div class="res-title" id="res-title">Dein Hund trägt verschiedene Anlagen – hier sind die stärksten:</div>
+    <div id="bars"></div>
+    <hr class="divider">
+    <div id="activities"></div>
+    <div class="note">
+      Eine Anlage lässt sich nicht wegtrainieren – aber in sinnvolle Bahnen lenken.
+      Dieses Profil ist ein Einstieg, kein Urteil. Der individuelle Hund muss immer
+      selbst gelesen werden.
+    </div>
+    <button class="reset-btn" id="btn-reset">Nochmal starten</button>
+  </div>
+</main>
+
+<footer>
+  <p>&copy; 2025 Susanne Zischgl · <a href="https://www.tierakademie-zischgl.de" target="_blank">tierakademie-zischgl.de</a> · Alle Rechte vorbehalten</p>
+</footer>
+
+<script>
+var DRIVES = [
+  { id: 'jagd',     label: 'Jagd & Spür',        color: '#C4872A' },
+  { id: 'hüte',    label: 'Hüte & Treib',        color: '#6B7C5C' },
+  { id: 'schutz',  label: 'Schutz & Wacht',      color: '#4A6741' },
+  { id: 'sozial',  label: 'Sozial & Bindung',    color: '#8B6914' },
+  { id: 'bewegung',label: 'Bewegung & Spiel',    color: '#A0522D' },
+  { id: 'selbst',  label: 'Selbstständigkeit',   color: '#8B7355' },
+  { id: 'molosser',label: 'Ruhe & Substanz',     color: '#556B2F' }
+];
+
+var ACTS = {
+  jagd:     ['Nasenarbeit', 'Mantrailing', 'Dummytraining', 'Schnüffelmatten', 'Fährtenarbeit'],
+  'hüte':   ['Treibball', 'Agility', 'Tricks & Verhaltensketten', 'Rally Obedience'],
+  schutz:   ['Nasenarbeit mit Suchanzeige', 'Obedience mit Ablenkung', 'Klare Alltagsstruktur'],
+  sozial:   ['Kurze Trainingssequenzen täglich', 'Rally Obedience', 'Besuchshundearbeit', 'Gemeinsame Aktivitäten'],
+  bewegung: ['Canicross / Bikejöring', 'Flyball oder Frisbee', 'Schwimmen', 'Agility für Tempo'],
+  selbst:   ['Freiläufe in gesichertem Gelände', 'Schnüffelspaziergänge im eigenen Tempo', 'Sportarten mit wenig Gehorsamkeitsdruck'],
+  molosser: ['Kurze Spaziergänge mit Schnüffelpausen', 'Klare Tagesstruktur', 'Ruhige Interaktionen']
+};
+
+var Qs = [
+  { t: 'Dein Hund findet auf dem Spaziergang eine interessante Spur. Was passiert?', opts: [
+    { t: 'Er folgt ihr sofort – kaum noch ansprechbar.',                              d: { jagd: 3 } },
+    { t: 'Er schnüffelt neugierig, kommt dann aber von selbst zurück.',               d: { jagd: 1, sozial: 1 } },
+    { t: 'Er beobachtet lieber die Umgebung, als zu schnüffeln.',                     d: { schutz: 2 } },
+    { t: 'Interessiert sich kurz dafür, macht dann sein eigenes Ding.',               d: { selbst: 2 } }
+  ]},
+  { t: 'Es klingelt an der Tür. Wie reagiert dein Hund?', opts: [
+    { t: 'Bellt laut, bleibt lange angespannt – auch bei bekannten Gästen.',          d: { schutz: 3 } },
+    { t: 'Freut sich überschwänglich und springt auf alle zu.',                       d: { sozial: 3 } },
+    { t: 'Beobachtet ruhig und wartet abwartend ab.',                                 d: { molosser: 2, schutz: 1 } },
+    { t: 'Interessiert sich kaum dafür.',                                             d: { selbst: 3 } }
+  ]},
+  { t: 'Was macht dein Hund am liebsten draußen?', opts: [
+    { t: 'Rennen, toben – immer in Bewegung, kaum zu stoppen.',                       d: { bewegung: 3 } },
+    { t: 'Schnüffeln, Spuren verfolgen, suchen.',                                     d: { jagd: 3 } },
+    { t: 'Nah bei dir bleiben und auf dich achten.',                                  d: { sozial: 2 } },
+    { t: 'Alles überblicken und die Situation im Griff haben.',                       d: { 'hüte': 2, schutz: 1 } }
+  ]},
+  { t: 'Dein Hund sieht ein anderes Tier – Katze, Reh, fremder Hund. Was passiert?', opts: [
+    { t: 'Er fixiert es sofort und zieht stark – kaum zu halten.',                    d: { jagd: 3 } },
+    { t: 'Er versucht, die Bewegung des Tieres zu kontrollieren.',                    d: { 'hüte': 3 } },
+    { t: 'Er reagiert scharf und stellt sich schützend vor.',                         d: { schutz: 3 } },
+    { t: 'Er schaut kurz und wendet sich wieder ab.',                                 d: { selbst: 2, molosser: 1 } }
+  ]},
+  { t: 'Wie ist dein Hund, wenn du nach Hause kommst?', opts: [
+    { t: 'Ausgelassen – dreht Runden, springt, ist kaum zu beruhigen.',               d: { sozial: 3, bewegung: 1 } },
+    { t: 'Freut sich herzlich, bleibt aber entspannt.',                               d: { molosser: 2, sozial: 1 } },
+    { t: 'Kurze Begrüßung – dann geht er wieder seinen Weg.',                         d: { selbst: 3 } },
+    { t: 'Trägt dir etwas entgegen – Spielzeug, Socke, irgendetwas.',                 d: { sozial: 2, jagd: 1 } }
+  ]},
+  { t: 'Wie gut kommt dein Hund damit klar, allein zu sein?', opts: [
+    { t: 'Sehr schlecht – er ist deutlich gestresst.',                                d: { sozial: 3 } },
+    { t: 'Er akzeptiert es, mag es aber nicht.',                                      d: { sozial: 1 } },
+    { t: 'Gut – er schläft einfach.',                                                 d: { molosser: 2, selbst: 1 } },
+    { t: 'Kein Problem – beschäftigt sich selbst.',                                   d: { selbst: 3 } }
+  ]},
+  { t: 'Was passiert beim Trainieren?', opts: [
+    { t: 'Hochmotiviert – vor allem wenn Bewegung oder Beute im Spiel ist.',          d: { bewegung: 2, jagd: 1 } },
+    { t: 'Liebt es, wenn du dabei bist und ihn lobst.',                               d: { sozial: 3 } },
+    { t: 'Sehr fokussiert – will es genau richtig machen.',                           d: { 'hüte': 3 } },
+    { t: 'Kurze Aufmerksamkeit – macht eine Weile mit, dann ist er fertig.',          d: { selbst: 2, molosser: 1 } }
+  ]},
+  { t: 'Welcher Satz trifft auf deinen Hund am besten zu?', opts: [
+    { t: 'Er ist ein Energiebündel – immer in Bewegung.',                             d: { bewegung: 3 } },
+    { t: 'Er braucht mich – Nähe ist das Wichtigste für ihn.',                        d: { sozial: 3 } },
+    { t: 'Er hat immer alles im Blick – nichts entgeht ihm.',                         d: { schutz: 2, 'hüte': 1 } },
+    { t: 'Er ist tiefenentspannt – solange die Basics stimmen.',                      d: { molosser: 3 } }
+  ]}
+];
+
+var step = 0;
+var scores = { jagd: 0, 'hüte': 0, schutz: 0, sozial: 0, bewegung: 0, selbst: 0, molosser: 0 };
+
+function show(id) {
+  ['screen-welcome', 'screen-quiz', 'screen-result'].forEach(function(s) {
+    document.getElementById(s).classList.add('hidden');
+  });
+  document.getElementById(id).classList.remove('hidden');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function renderQ() {
+  var q = Qs[step];
+  var pct = Math.round((step / Qs.length) * 100);
+  document.getElementById('prog').style.width = pct + '%';
+  document.getElementById('prog-steps').textContent = (step + 1) + ' / ' + Qs.length;
+  document.getElementById('q-num').textContent = 'Frage ' + (step + 1) + ' von ' + Qs.length;
+  document.getElementById('q-text').textContent = q.t;
+  var opts = document.getElementById('q-opts');
+  opts.innerHTML = '';
+  q.opts.forEach(function(o, i) {
+    var btn = document.createElement('button');
+    btn.className = 'opt';
+    btn.textContent = o.t;
+    btn.addEventListener('click', function() { pick(i); });
+    opts.appendChild(btn);
+  });
+  show('screen-quiz');
+}
+
+function pick(i) {
+  var drives = Qs[step].opts[i].d;
+  for (var k in drives) scores[k] = (scores[k] || 0) + drives[k];
+  step++;
+  if (step < Qs.length) { renderQ(); } else { showResult(); }
+}
+
+function showResult() {
+  document.getElementById('prog').style.width = '100%';
+  document.getElementById('prog-steps').textContent = '';
+  document.getElementById('prog-text').textContent = 'Ergebnis';
+
+  var total = 0;
+  for (var k in scores) total += scores[k];
+  if (total === 0) total = 1;
+
+  var sorted = DRIVES.map(function(d) {
+    return { id: d.id, label: d.label, color: d.color, pct: Math.round((scores[d.id] / total) * 100) };
+  }).sort(function(a, b) { return b.pct - a.pct; });
+
+  var top2 = sorted.slice(0, 2);
+
+  var barsEl = document.getElementById('bars');
+  barsEl.innerHTML = '';
+  sorted.forEach(function(d) {
+    var isTop = top2.some(function(x) { return x.id === d.id; });
+    var row = document.createElement('div');
+    row.className = 'drive-row';
+    row.innerHTML =
+      '<div class="drive-hd">' +
+        '<span class="drive-name' + (isTop ? ' top' : '') + '">' + d.label + '</span>' +
+        '<span class="drive-pct">' + d.pct + ' %</span>' +
+      '</div>' +
+      '<div class="bar-bg"><div class="bar-fill" id="bar-' + d.id + '" style="background:' + d.color + ';width:0%"></div></div>';
+    barsEl.appendChild(row);
+  });
+
+  var actEl = document.getElementById('activities');
+  actEl.innerHTML = '';
+  top2.forEach(function(d) {
+    var sec = document.createElement('div');
+    sec.className = 'act-section';
+    sec.innerHTML =
+      '<div class="act-lbl">Starker Anteil</div>' +
+      '<div class="act-title">' + d.label + '</div>' +
+      '<div class="tags">' + ACTS[d.id].map(function(a) { return '<span class="tag">' + a + '</span>'; }).join('') + '</div>';
+    actEl.appendChild(sec);
+  });
+
+  show('screen-result');
+
+  setTimeout(function() {
+    sorted.forEach(function(d) {
+      var el = document.getElementById('bar-' + d.id);
+      if (el) el.style.width = d.pct + '%';
+    });
+  }, 120);
+}
+
+function reset() {
+  step = 0;
+  scores = { jagd: 0, 'hüte': 0, schutz: 0, sozial: 0, bewegung: 0, selbst: 0, molosser: 0 };
+  document.getElementById('prog').style.width = '0%';
+  document.getElementById('prog-steps').textContent = '';
+  document.getElementById('prog-text').textContent = 'Anlage-Kompass';
+  show('screen-welcome');
+}
+
+document.getElementById('btn-start').addEventListener('click', function() { renderQ(); });
+document.getElementById('btn-reset').addEventListener('click', function() { reset(); });
+</script>
+</body>
+</html>
