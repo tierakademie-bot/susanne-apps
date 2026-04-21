@@ -338,11 +338,30 @@
 
   footer a:hover { color: #F5F0E8; }
 
-  @media (max-width: 480px) {
+  @media (max-width: 600px) {
+    main { padding: 1.75rem 1rem 3rem; }
     .card { padding: 1.5rem 1.25rem; }
     .welcome-title { font-size: 22px; }
-    .q-text { font-size: 17px; }
-    main { padding: 2rem 1rem 3rem; }
+    .welcome-text { font-size: 14px; }
+    .q-text { font-size: 16px; }
+    .res-title { font-size: 18px; }
+    header { padding: 1rem 1.25rem; }
+    .brand { font-size: 13px; }
+  }
+
+  @media (max-width: 380px) {
+    .card { padding: 1.25rem 1rem; }
+    .welcome-title { font-size: 19px; }
+    .q-text { font-size: 15px; }
+    .opt { padding: 0.875rem 1rem; font-size: 13px; }
+    .start-btn { width: 100%; text-align: center; }
+  }
+
+  /* Touch targets – minimum 44px tap height on all interactive elements */
+  @media (hover: none) {
+    .opt { min-height: 52px; display: flex; align-items: center; }
+    .start-btn { min-height: 48px; }
+    .reset-btn { min-height: 44px; }
   }
 </style>
 </head>
