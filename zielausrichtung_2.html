@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zielausrichtung – Tierakademie Zischgl</title>
+<style>
+  :root {
+    --forest: #2D4A3E;
+    --forest-dark: #1E3330;
+    --moss: #5C7A5A;
+    --ochre: #B8843A;
+    --sand: #F2EDE4;
+    --cream: #FAF7F2;
+    --white: #ffffff;
+    --text: #2A2A2A;
+    --text-muted: #7A7A72;
+    --border: #E0D8CC;
+    --btn-green: #4A6B50;
+    --btn-green-hover: #3A5540;
+    --tag-bg: #EEF2EE;
+    --tag-border: #B0C4AE;
+    --tag-text: #2D4A3E;
+    --error-bg: #fdf0f0;
+    --error-text: #8B2020;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: Georgia, 'Times New Roman', serif; background: var(--sand); color: var(--text); min-height: 100vh; }
+  .topbar { background: var(--forest); padding: 0 2rem; height: 52px; display: flex; align-items: center; }
+  .topbar-title { color: rgba(255,255,255,0.92); font-size: 15px; font-family: Georgia, serif; }
+  .topbar-sep { color: rgba(255,255,255,0.4); margin: 0 10px; }
+  .page { min-height: calc(100vh - 52px); padding: 3rem 1.5rem; display: flex; flex-direction: column; align-items: center; }
+  .section-label { font-size: 11px; letter-spacing: 0.18em; color: var(--text-muted); text-transform: uppercase; margin-bottom: 1.6rem; text-align: center; border-bottom: 1px solid var(--border); width: 100%; max-width: 660px; padding-bottom: 1rem; }
+  .card { background: var(--white); border-radius: 12px; padding: 2.8rem 2.6rem; max-width: 660px; width: 100%; }
+  .brand-label { font-size: 11px; letter-spacing: 0.18em; color: var(--ochre); text-transform: uppercase; margin-bottom: 0.9rem; }
+  .card h1 { font-size: 32px; font-weight: normal; color: var(--text); margin-bottom: 1.2rem; line-height: 1.25; }
+  .card-intro { font-size: 16px; color: var(--text-muted); line-height: 1.75; margin-bottom: 1rem; }
+  .progress-bar { display: flex; gap: 6px; margin-bottom: 2.4rem; }
+  .progress-step { flex: 1; height: 3px; border-radius: 2px; background: var(--border); transition: background 0.4s; }
+  .progress-step.active { background: var(--moss); }
+  .progress-step.done { background: var(--forest); }
+  .phase-label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.14em; margin-bottom: 0.5rem; }
+  .phase-title { font-size: 22px; font-weight: normal; color: var(--text); margin-bottom: 0.6rem; }
+  .phase-desc { font-size: 15px; color: var(--text-muted); line-height: 1.75; margin-bottom: 2rem; }
+  .question-block { margin-bottom: 1.8rem; }
+  .question-label { font-size: 16px; color: var(--text); margin-bottom: 0.4rem; line-height: 1.5; }
+  .question-hint { font-size: 13px; color: var(--text-muted); margin-bottom: 0.7rem; font-style: italic; line-height: 1.5; }
+  textarea { width: 100%; min-height: 90px; padding: 12px 14px; font-size: 15px; font-family: Georgia, serif; color: var(--text); background: var(--cream); border: 1px solid var(--border); border-radius: 8px; resize: vertical; line-height: 1.65; transition: border-color 0.2s; }
+  textarea:focus { outline: none; border-color: var(--moss); background: var(--white); }
+  textarea::placeholder { color: #bbb; }
+  .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .option-btn { padding: 12px 14px; font-size: 14px; font-family: Georgia, serif; color: var(--text-muted); background: var(--cream); border: 1px solid var(--border); border-radius: 8px; cursor: pointer; text-align: left; line-height: 1.45; transition: all 0.2s; }
+  .option-btn:hover { border-color: var(--moss); color: var(--text); background: var(--white); }
+  .option-btn.selected { border-color: var(--forest); background: var(--tag-bg); color: var(--forest); }
+  .nav { display: flex; justify-content: space-between; align-items: center; margin-top: 2.2rem; padding-top: 1.5rem; border-top: 1px solid var(--border); }
+  .btn-primary { display: inline-block; padding: 13px 28px; font-size: 15px; font-family: Georgia, serif; color: var(--white); background: var(--btn-green); border: none; border-radius: 8px; cursor: pointer; transition: background 0.2s; text-decoration: none; }
+  .btn-primary:hover { background: var(--btn-green-hover); }
+  .btn-primary:disabled { background: var(--border); cursor: not-allowed; color: var(--text-muted); }
+  .btn-secondary { padding: 12px 20px; font-size: 14px; font-family: Georgia, serif; color: var(--text-muted); background: transparent; border: 1px solid var(--border); border-radius: 8px; cursor: pointer; transition: all 0.2s; }
+  .btn-secondary:hover { border-color: var(--moss); color: var(--text); }
+  .result-section { margin-bottom: 1.4rem; }
+  .result-section-label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.14em; margin-bottom: 0.9rem; }
+  .result-para { font-size: 16px; color: var(--text); line-height: 1.85; margin-bottom: 1.1rem; }
+  .result-para:last-child { margin-bottom: 0; }
+  .divider { border: none; border-top: 1px solid var(--border); margin: 1.5rem 0; }
+  .result-tag { display: inline-block; padding: 5px 13px; border-radius: 20px; font-size: 13px; background: var(--tag-bg); color: var(--tag-text); margin: 4px 4px 4px 0; border: 1px solid var(--tag-border); }
+  .loading { text-align: center; padding: 3rem 0 2rem; }
+  .loading-dots { display: flex; justify-content: center; gap: 7px; margin: 1.2rem 0; }
+  .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--moss); animation: bounce 1.3s infinite; }
+  .dot:nth-child(2) { animation-delay: 0.2s; }
+  .dot:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes bounce { 0%,80%,100%{transform:translateY(0)} 40%{transform:translateY(-9px)} }
+  .loading p { font-size: 14px; color: var(--text-muted); font-style: italic; }
+  .cta-box { background: var(--cream); border: 1px solid var(--border); border-left: 3px solid var(--ochre); border-radius: 8px; padding: 1.4rem 1.6rem; margin-top: 1.8rem; }
+  .cta-box p { font-size: 15px; color: var(--text-muted); line-height: 1.7; margin-bottom: 1rem; }
+  .error-msg { background: var(--error-bg); color: var(--error-text); padding: 12px 16px; border-radius: 8px; font-size: 14px; margin-bottom: 1.2rem; border: 1px solid #f0c0c0; line-height: 1.5; }
+  .screen { display: none; }
+  .screen.active { display: block; }
+  @media (max-width: 520px) {
+    .card { padding: 1.8rem 1.4rem; }
+    .card h1 { font-size: 26px; }
+    .options-grid { grid-template-columns: 1fr; }
+    .topbar { padding: 0 1.2rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <span class="topbar-title">Tierakademie Zischgl <span class="topbar-sep">·</span> Susanne Zischgl</span>
+</div>
+
+<div class="page">
+  <div class="section-label">Zielausrichtung</div>
+  <div class="card">
+
+    <!-- SCREEN 0: Intro -->
+    <div class="screen active" id="screen0">
+      <p class="brand-label">Tierakademie Zischgl</p>
+      <h1>Wohin wollt ihr – du und dein Hund?</h1>
+      <p class="card-intro">Bevor irgendetwas trainiert, erklärt oder verändert werden kann, braucht es eine Richtung. Nicht irgendeine – sondern deine.</p>
+      <p class="card-intro">In zwei kurzen Schritten entstehen Klarheit und ein persönliches Ziel-Profil für euch beide.</p>
+      <div style="margin-top:2rem;">
+        <button class="btn-primary" onclick="goTo(1)">Los geht's</button>
+      </div>
+    </div>
+
+    <!-- SCREEN 1: Reflexion -->
+    <div class="screen" id="screen1">
+      <div class="progress-bar">
+        <div class="progress-step active"></div>
+        <div class="progress-step"></div>
+      </div>
+      <p class="phase-label">Schritt 1 · Reflexion</p>
+      <p class="phase-title">Was trägt dich wirklich?</p>
+      <p class="phase-desc">Keine richtigen oder falschen Antworten. Schreib, was dir spontan in den Sinn kommt – so ehrlich wie möglich.</p>
+      <div class="question-block">
+        <p class="question-label">Was wünschst du dir am meisten für dein Leben mit deinem Hund?</p>
+        <p class="question-hint">Denk ruhig groß – alltägliche Wünsche sind genauso wertvoll wie große Träume.</p>
+        <textarea id="r1" placeholder="Ich wünsche mir..."></textarea>
+      </div>
+      <div class="question-block">
+        <p class="question-label">In welchen Momenten fühlst du dich mit deinem Hund wirklich verbunden?</p>
+        <p class="question-hint">Was passiert da genau – wo seid ihr, was tut ihr?</p>
+        <textarea id="r2" placeholder="Das sind die Momente, wenn..."></textarea>
+      </div>
+      <div class="question-block">
+        <p class="question-label">Was möchtest du verändern – und warum ist dir das gerade wichtig?</p>
+        <p class="question-hint">Was drückt dich? Was träumst du davon, anders zu erleben?</p>
+        <textarea id="r3" placeholder="Ich möchte verändern, dass..."></textarea>
+      </div>
+      <div class="nav">
+        <button class="btn-secondary" onclick="goTo(0)">← Zurück</button>
+        <button class="btn-primary" onclick="goTo(2)">Weiter →</button>
+      </div>
+    </div>
+
+    <!-- SCREEN 2: Klarheits-Check -->
+    <div class="screen" id="screen2">
+      <div class="progress-bar">
+        <div class="progress-step done"></div>
+        <div class="progress-step active"></div>
+      </div>
+      <p class="phase-label">Schritt 2 · Klarheits-Check</p>
+      <p class="phase-title">Wo stehst du gerade?</p>
+      <p class="phase-desc">Wähle bei jeder Frage die Antwort, die am ehesten zu euch passt – auch wenn sie sich nicht perfekt anfühlt.</p>
+      <div class="question-block">
+        <p class="question-label">Wie würdest du eure Situation gerade beschreiben?</p>
+        <div class="options-grid" id="q1">
+          <button class="option-btn" onclick="sel('q1',0)">Wir sind noch am Anfang und suchen unseren Weg</button>
+          <button class="option-btn" onclick="sel('q1',1)">Wir kommen gut zurecht, aber irgendetwas fehlt noch</button>
+          <button class="option-btn" onclick="sel('q1',2)">Wir kämpfen täglich mit denselben Schwierigkeiten</button>
+          <button class="option-btn" onclick="sel('q1',3)">Grundsätzlich läuft es gut – ich will tiefer gehen</button>
+        </div>
+      </div>
+      <div class="question-block">
+        <p class="question-label">Was ist dein wichtigstes Ziel mit deinem Hund?</p>
+        <div class="options-grid" id="q2">
+          <button class="option-btn" onclick="sel('q2',0)">Mehr Harmonie und Leichtigkeit im Alltag</button>
+          <button class="option-btn" onclick="sel('q2',1)">Mehr Sicherheit – für mich und für ihn</button>
+          <button class="option-btn" onclick="sel('q2',2)">Tiefere Verbindung und echtes gegenseitiges Verstehen</button>
+          <button class="option-btn" onclick="sel('q2',3)">Konkrete Verhaltensveränderungen erreichen</button>
+        </div>
+      </div>
+      <div class="question-block">
+        <p class="question-label">Was blockiert euch am meisten?</p>
+        <div class="options-grid" id="q3">
+          <button class="option-btn" onclick="sel('q3',0)">Stress und Überreaktionen meines Hundes</button>
+          <button class="option-btn" onclick="sel('q3',1)">Ich verstehe nicht, was er mir sagen will</button>
+          <button class="option-btn" onclick="sel('q3',2)">Zu wenig Zeit oder Energie für konsequentes Training</button>
+          <button class="option-btn" onclick="sel('q3',3)">Ich weiß ehrlich gesagt noch nicht genau</button>
+        </div>
+      </div>
+      <div class="question-block">
+        <p class="question-label">Was erwartest du dir von Unterstützung?</p>
+        <div class="options-grid" id="q4">
+          <button class="option-btn" onclick="sel('q4',0)">Konkrete Übungen und klare Methoden</button>
+          <button class="option-btn" onclick="sel('q4',1)">Jemand, der uns wirklich versteht – nicht nur Technik</button>
+          <button class="option-btn" onclick="sel('q4',2)">Einen neuen Blickwinkel auf meinen Hund und mich</button>
+          <button class="option-btn" onclick="sel('q4',3)">Beides – Tiefe und praktische Werkzeuge</button>
+        </div>
+      </div>
+      <div class="nav">
+        <button class="btn-secondary" onclick="goTo(1)">← Zurück</button>
+        <button class="btn-primary" id="btnAnalyse" onclick="goTo(3)" disabled>Mein Ziel-Profil erstellen →</button>
+      </div>
+    </div>
+
+    <!-- SCREEN 3: Ergebnis -->
+    <div class="screen" id="screen3">
+      <div id="loadingState" class="loading">
+        <p class="phase-label">Dein Ziel-Profil entsteht</p>
+        <div class="loading-dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+        <p>Einen Moment – ich lese, was du geschrieben hast…</p>
+      </div>
+      <div id="resultState" style="display:none;">
+        <p class="brand-label">Tierakademie Zischgl</p>
+        <h1 style="font-size:26px;margin-bottom:1.6rem;">Dein Ziel-Profil</h1>
+        <div id="errorBox" class="error-msg" style="display:none;"></div>
+        <div class="result-section" id="profileSection" style="display:none;">
+          <div id="profileText"></div>
+        </div>
+        <hr class="divider" id="tagDivider" style="display:none;">
+        <div class="result-section" id="tagSection" style="display:none;">
+          <p class="result-section-label">Deine Schlüsselthemen</p>
+          <div id="tagContainer"></div>
+        </div>
+        <div class="cta-box">
+          <p>Dieses Profil zeigt dir, wo euer Weg beginnt. In einer persönlichen Beratung gehen wir gemeinsam tiefer.</p>
+          <a class="btn-primary" href="https://DEINE-BERATUNGS-URL.de" target="_blank">Zur 1:1-Beratung →</a>
+        </div>
+        <div class="nav">
+          <button class="btn-secondary" onclick="goTo(2)">← Antworten anpassen</button>
+          <button class="btn-secondary" onclick="restart()">Neu starten</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  const PROXY_URL = 'https://tierakademie-proxy.tierakademie.workers.dev';
+
+  const ans = { q1:-1, q2:-1, q3:-1, q4:-1 };
+  const opts = {
+    q1: ['Noch am Anfang – suchen unseren Weg','Kommen gut zurecht, aber etwas fehlt noch','Kämpfen täglich mit denselben Schwierigkeiten','Läuft grundsätzlich gut – will tiefer gehen'],
+    q2: ['Mehr Harmonie und Leichtigkeit im Alltag','Mehr Sicherheit für uns beide','Tiefere Verbindung und echtes gegenseitiges Verstehen','Konkrete Verhaltensveränderungen erreichen'],
+    q3: ['Stress und Überreaktionen des Hundes','Verständnis fehlt – weiß nicht, was er meint','Zu wenig Zeit oder Energie','Noch nicht klar'],
+    q4: ['Konkrete Übungen und klare Methoden','Jemand, der uns wirklich versteht','Neuen Blickwinkel auf Hund und mich','Tiefe und praktische Werkzeuge']
+  };
+
+  function sel(qid, idx) {
+    ans[qid] = idx;
+    document.querySelectorAll('#'+qid+' .option-btn').forEach((b,i) => b.classList.toggle('selected', i===idx));
+    document.getElementById('btnAnalyse').disabled = Object.values(ans).some(v => v < 0);
+  }
+
+  function goTo(n) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById('screen'+n).classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (n === 3) doAnalyse();
+  }
+
+  function restart() {
+    ['r1','r2','r3'].forEach(id => document.getElementById(id).value = '');
+    Object.keys(ans).forEach(k => ans[k] = -1);
+    document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+    document.getElementById('btnAnalyse').disabled = true;
+    goTo(0);
+  }
+
+  async function doAnalyse() {
+    document.getElementById('loadingState').style.display = 'block';
+    document.getElementById('resultState').style.display = 'none';
+    ['profileSection','tagSection','tagDivider','errorBox'].forEach(id => document.getElementById(id).style.display = 'none');
+
+    const r1 = document.getElementById('r1').value.trim() || '(keine Angabe)';
+    const r2 = document.getElementById('r2').value.trim() || '(keine Angabe)';
+    const r3 = document.getElementById('r3').value.trim() || '(keine Angabe)';
+
+    const prompt = `Du bist eine erfahrene Hundetrainerin und systemische Beraterin (Tierakademie Zischgl). Erstelle ein persönliches Ziel-Profil für einen Hundehalter.
+
+REFLEXION:
+1. Wunsch für das Leben mit dem Hund: "${r1}"
+2. Verbindungsmomente: "${r2}"
+3. Was sich verändern soll: "${r3}"
+
+KLARHEITS-CHECK:
+- Aktuelle Situation: ${opts.q1[ans.q1]}
+- Wichtigstes Ziel: ${opts.q2[ans.q2]}
+- Größte Blockade: ${opts.q3[ans.q3]}
+- Erwartung an Unterstützung: ${opts.q4[ans.q4]}
+
+Schreibe ein persönliches Ziel-Profil in genau drei Absätzen (Du-Form, warm, direkt, ohne Floskeln):
+Absatz 1: Das eigentliche Herzanliegen – was diese Person wirklich sucht
+Absatz 2: Was euch gerade noch voneinander trennt – ehrlich, ohne Bewertung
+Absatz 3: Wohin euer nächster Schritt führt – konkret und ermutigend
+
+Maximal 2-3 Sätze pro Absatz. Keine Nummerierung, keine Überschriften. Absätze durch Leerzeile trennen.
+
+Schreibe danach auf einer neuen Zeile: ===
+Dann 4 Schlüsselthemen (2-4 Wörter), getrennt durch |||`;
+
+    try {
+      const res = await fetch(PROXY_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-6',
+          max_tokens: 700,
+          system: 'Du bist Susanne Zischgl, erfahrene Hundetrainerin der Tierakademie Zischgl. Du schreibst persönlich, warm, direkt, in der Du-Form, ohne Fachsprache.',
+          messages: [{ role: 'user', content: prompt }]
+        })
+      });
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error?.message || 'Server-Fehler ' + res.status);
+      }
+
+      const data = await res.json();
+      const full = (data.content?.[0]?.text || '').trim();
+      const splitIdx = full.indexOf('===');
+      const textPart = splitIdx >= 0 ? full.slice(0, splitIdx).trim() : full;
+      const tagPart  = splitIdx >= 0 ? full.slice(splitIdx + 3).trim() : '';
+
+      const paras = textPart.split(/\n\n+/).filter(p => p.trim());
+      document.getElementById('profileText').innerHTML = paras.map(p => `<p class="result-para">${p.replace(/\n/g,'<br>')}</p>`).join('');
+      document.getElementById('profileSection').style.display = 'block';
+
+      if (tagPart) {
+        const tags = tagPart.split('|||').map(t => t.trim()).filter(Boolean);
+        if (tags.length) {
+          document.getElementById('tagContainer').innerHTML = tags.map(t => `<span class="result-tag">${t}</span>`).join('');
+          document.getElementById('tagSection').style.display = 'block';
+          document.getElementById('tagDivider').style.display = 'block';
+        }
+      }
+
+      document.getElementById('loadingState').style.display = 'none';
+      document.getElementById('resultState').style.display = 'block';
+
+    } catch(e) {
+      document.getElementById('errorBox').textContent = 'Es ist ein Fehler aufgetreten: ' + e.message;
+      document.getElementById('errorBox').style.display = 'block';
+      document.getElementById('loadingState').style.display = 'none';
+      document.getElementById('resultState').style.display = 'block';
+    }
+  }
+</script>
+</body>
+</html>
