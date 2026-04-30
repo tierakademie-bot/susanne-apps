@@ -73,7 +73,7 @@ textarea:focus{border-color:#C4923A}
 <div class="hdr">
   <div class="ey">Die unsichtbaren Fäden</div>
   <h1>Wer hat hier eigentlich<br>das Impulsproblem?</h1>
-  <div class="sub">Impulskontrolle & Frustrationstoleranz – bei dir und deinem Hund</div>
+  <div class="sub">Impulskontrolle – bei dir und deinem Hund</div>
 </div>
 <div class="card" id="card"></div>
 <div class="footer">🐾 Susanne Zischgl · Die unsichtbaren Fäden zwischen Mensch und Hund</div>
@@ -84,7 +84,7 @@ var QS = [
     lbl: "Der Ausloeser",
     q: "In welchen Situationen verliert dein Hund die Kontrolle ueber seine Impulse?",
     hint: "Konkret bitte – nicht allgemein. Welche Situation, welcher Reiz, welcher Moment? Je genauer, desto hilfreicher.",
-    ph: "z. B. Wenn er andere Hunde sieht, springt er sofort an der Leine hoch und zieht wie verrueckt. Oder beim Klingeln der Tuerscbell dreht er durch..."
+    ph: "z. B. Wenn er andere Hunde sieht, springt er sofort an der Leine hoch und zieht wie verrueckt. Oder beim Klingeln der Tuerschell dreht er durch..."
   },
   {
     lbl: "Deine Reaktion",
@@ -93,8 +93,8 @@ var QS = [
     ph: "z. B. Ich werde sofort angespannt, ziehe die Leine straffer und denke: Nicht schon wieder. Ich schaeme mich manchmal vor anderen..."
   },
   {
-    lbl: "Deine Frustrationstoleranz",
-    q: "Wie lange kannst du ruhig bleiben, wenn dein Hund sich nicht so verhalt wie du es dir wuenschst?",
+    lbl: "Deine Geduld",
+    q: "Wie lange kannst du ruhig bleiben, wenn dein Hund sich nicht so verhaelt wie du es dir wuenschst?",
     hint: "Ehrlich bitte. Sekunden? Minuten? Oder verlierst du schon bei der zweiten Wiederholung die Geduld?",
     ph: "z. B. Eigentlich nicht lange. Beim dritten Mal klaffen wird meine Stimme lauter und ich merke wie mein Frust steigt..."
   },
@@ -121,7 +121,7 @@ function $(id){return document.getElementById(id);}
 function showWelcome(){
   $("card").innerHTML =
     '<div class="card-hdr">'+
-    '<div class="e">Impulskontrolle & Frustrationstoleranz</div>'+
+    '<div class="e">Impulskontrolle</div>'+
     '<h2>Mal ehrlich gefragt:<br>Wer hat hier das Impulsproblem?</h2>'+
     '<p>Die meisten kommen mit der Frage: „Wie bekomme ich meinem Hund Impulskontrolle bei?" Aber die entscheidendere Frage ist eine andere.</p>'+
     '</div>'+
@@ -139,7 +139,7 @@ function showWelcome(){
 
     '<div class="feat"><div class="feat-icon">&#128270;</div><div class="feat-text"><strong>Dein ehrlicher Spiegel</strong> – was passiert wirklich in dir, wenn dein Hund die Kontrolle verliert?</div></div>'+
     '<div class="feat"><div class="feat-icon">&#128062;</div><div class="feat-text"><strong>Konkrete Hinweise fuer deinen Hund</strong> – was ihm wirklich hilft, Impulse zu regulieren.</div></div>'+
-    '<div class="feat"><div class="feat-icon">&#129309;</div><div class="feat-text"><strong>Konkrete Hinweise fuer dich</strong> – wie du selbst mehr Ruhe und Frustrationstoleranz entwickelst.</div></div>'+
+    '<div class="feat"><div class="feat-icon">&#129309;</div><div class="feat-text"><strong>Konkrete Hinweise fuer dich</strong> – wie du selbst mehr Ruhe und innere Klarheit entwickelst.</div></div>'+
     '<div class="feat"><div class="feat-icon">&#128336;</div><div class="feat-text"><strong>Dein naechster Schritt</strong> – eine einzige Sache fuer diese Woche.</div></div>'+
 
     '<div class="tip"><strong style="color:#C4923A">Tipp:</strong> Antworte so ehrlich wie moeglich – gerade bei Frage 4. Und schreib <strong>Ich weiss es nicht</strong> wenn du unsicher bist. Das ist hier besonders wertvoll.</div>'+
@@ -201,10 +201,10 @@ function showLoading(){
 function generate(){
   showLoading();
   var msg="";
-  var labels=["Situationen wo der Hund Impulse verliert","Was beim Menschen in diesem Moment passiert","Frustrationstoleranz des Menschen","Impulsmuster des Menschen ausserhalb der Hundehaltung","Gewuenschtes Gefuehl beim gemeinsamen Meistern"];
+  var labels=["Situationen wo der Hund Impulse verliert","Was beim Menschen in diesem Moment passiert","Geduld und Ruhe des Menschen","Impulsmuster des Menschen ausserhalb der Hundehaltung","Gewuenschtes Gefuehl beim gemeinsamen Meistern"];
   for(var i=0;i<5;i++) msg+=labels[i]+": "+(ANS[i]||"keine Angabe")+"\n";
 
-  var sys="Du bist Susanne, erfahrene Hundetrainerin, Physiotherapeutin und systemische Coach mit ueber 30 Jahren Erfahrung in der Mensch-Hund-Beziehung.\n\nDiese App befasst sich mit Impulskontrolle und Frustrationstoleranz – bei Mensch UND Hund. Dein Kerngedanke: Impulskontrolle lernt der Hund nicht durch Training allein. Er lernt sie durch einen Menschen der selbst innehalten kann. Hund und Mensch beeinflussen sich gegenseitig – der Stress des Menschen uebertraegt sich auf den Hund und umgekehrt.\n\nDu schreibst direkt, warm, ehrlich und ohne Beschoenigung. Du darfst auch provokant sein – liebevoll provokant. Du gibst KONKRETE Hinweise fuer den Hund UND fuer den Menschen. Keine Theorie, kein Trainings-Handbuch, sondern echte alltagstaugliche Impulse.\n\nBasierend auf den fuenf Antworten schreibst du sechs Abschnitte mit diesen exakten Ueberschriften:\n\nWer hat hier das Impulsproblem:\n[2-3 Saetze: Ehrlich und direkt – was erkennst du in den Antworten? Liegt das Problem nur beim Hund, oder auch beim Menschen? Liebevoll provokant, ohne zu verurteilen.]\n\nWas wirklich passiert zwischen euch:\n[2-3 Saetze: Wie beeinflussen sich Mensch und Hund gegenseitig in diesen Momenten? Was uebertraegt sich wie?]\n\nKonkrete Hinweise fuer deinen Hund:\n[4-5 konkrete, alltagstaugliche Uebungen oder Ansaetze die dem Hund helfen, Impulse zu regulieren. Jeder Hinweis in einem Satz. Praxisnah, einfach umsetzbar.]\n\nKonkrete Hinweise fuer dich:\n[4-5 konkrete Dinge die der Mensch selbst tun kann um mehr Ruhe und Frustrationstoleranz zu entwickeln – im Umgang mit dem Hund und darueber hinaus. Ehrlich, direkt, alltagstauglich.]\n\nDer Schluessel fuer euch beide:\n[2-3 Saetze: Was ist der entscheidende Punkt der alles veraendert? Der Satz der sitzt.]\n\nDeine eine Sache diese Woche:\n[1-2 Saetze: Eine einzige konkrete Aufgabe – fuer den Menschen, nicht fuer den Hund. Etwas das sofort umsetzbar ist.]\n\nKein Markdown. Deutsch, du-Ansprache.";
+  var sys="Du bist Susanne, erfahrene Hundetrainerin, Physiotherapeutin und systemische Coach mit ueber 30 Jahren Erfahrung in der Mensch-Hund-Beziehung.\n\nDiese App befasst sich mit Impulskontrolle – bei Mensch UND Hund. Dein Kerngedanke: Impulskontrolle lernt der Hund nicht durch Training allein. Er lernt sie durch einen Menschen der selbst innehalten kann. Hund und Mensch beeinflussen sich gegenseitig – der Stress des Menschen uebertraegt sich auf den Hund und umgekehrt.\n\nDu schreibst direkt, warm, ehrlich und ohne Beschoenigung. Du darfst auch provokant sein – liebevoll provokant. Du gibst KONKRETE Hinweise fuer den Hund UND fuer den Menschen. Keine Theorie, kein Trainings-Handbuch, sondern echte alltagstaugliche Impulse.\n\nBasierend auf den fuenf Antworten schreibst du sechs Abschnitte mit diesen exakten Ueberschriften:\n\nWer hat hier das Impulsproblem:\n[2-3 Saetze: Ehrlich und direkt – was erkennst du in den Antworten? Liegt das Problem nur beim Hund, oder auch beim Menschen? Liebevoll provokant, ohne zu verurteilen.]\n\nWas wirklich passiert zwischen euch:\n[2-3 Saetze: Wie beeinflussen sich Mensch und Hund gegenseitig in diesen Momenten? Was uebertraegt sich wie?]\n\nKonkrete Hinweise fuer deinen Hund:\n[4-5 konkrete, alltagstaugliche Uebungen oder Ansaetze die dem Hund helfen, Impulse zu regulieren. Jeder Hinweis in einem Satz. Praxisnah, einfach umsetzbar.]\n\nKonkrete Hinweise fuer dich:\n[4-5 konkrete Dinge die der Mensch selbst tun kann um mehr Ruhe und innere Klarheit zu entwickeln – im Umgang mit dem Hund und darueber hinaus. Ehrlich, direkt, alltagstauglich.]\n\nDer Schluessel fuer euch beide:\n[2-3 Saetze: Was ist der entscheidende Punkt der alles veraendert? Der Satz der sitzt.]\n\nDeine eine Sache diese Woche:\n[1-2 Saetze: Eine einzige konkrete Aufgabe – fuer den Menschen, nicht fuer den Hund. Etwas das sofort umsetzbar ist.]\n\nKein Markdown. Deutsch, du-Ansprache.";
 
   fetch("https://tierakademie-proxy.tierakademie.workers.dev",{
     method:"POST",
