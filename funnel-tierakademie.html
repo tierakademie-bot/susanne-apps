@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mein Funnel – Tierakademie Zischgl</title>
+<style>
+  :root {
+    --forest: #2D4A35;
+    --ochre:  #C4863A;
+    --sand:   #E8D8B8;
+    --moss:   #5A7A4A;
+    --cream:  #F5F0E8;
+    --teal:   #1D9E75;
+    --teal-light: #E1F5EE;
+    --purple: #534AB7;
+    --purple-light: #EEEDFE;
+    --gray:   #5F5E5A;
+    --gray-light: #F1EFE8;
+    --text:   #2C2C2A;
+    --text-muted: #5F5E5A;
+    --border: rgba(44,44,42,0.15);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --forest: #9FE1CB;
+      --ochre:  #FAC775;
+      --sand:   #444441;
+      --moss:   #9FE1CB;
+      --cream:  #2C2C2A;
+      --teal:   #5DCAA5;
+      --teal-light: #085041;
+      --purple: #AFA9EC;
+      --purple-light: #26215C;
+      --gray:   #B4B2A9;
+      --gray-light: #444441;
+      --text:   #F1EFE8;
+      --text-muted: #B4B2A9;
+      --border: rgba(241,239,232,0.15);
+    }
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--cream);
+    color: var(--text);
+    font-family: Georgia, 'Times New Roman', serif;
+    min-height: 100vh;
+  }
+
+  header {
+    background: var(--forest);
+    color: #fff;
+    padding: 20px 32px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  header h1 { font-size: 18px; font-weight: 400; letter-spacing: 0.02em; }
+  header span { opacity: 0.6; font-size: 13px; }
+
+  .layout {
+    display: flex;
+    gap: 0;
+    min-height: calc(100vh - 64px);
+  }
+
+  .diagram-area {
+    flex: 1;
+    padding: 32px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .diagram-area h2 {
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 20px;
+  }
+
+  svg { max-width: 680px; width: 100%; cursor: default; }
+
+  .stage { cursor: pointer; }
+  .stage rect { transition: opacity 0.15s; }
+  .stage:hover rect { opacity: 0.82; }
+  .stage.active rect { stroke-width: 2px !important; }
+
+  .info-panel {
+    width: 320px;
+    background: var(--sand);
+    border-left: 1px solid var(--border);
+    padding: 28px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .info-panel .hint {
+    color: var(--text-muted);
+    font-size: 13px;
+    font-style: italic;
+    margin-top: 48px;
+    line-height: 1.6;
+    text-align: center;
+  }
+
+  .info-panel h3 {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+  }
+
+  .info-panel .stage-title {
+    font-size: 20px;
+    font-weight: 400;
+    color: var(--text);
+    margin-bottom: 4px;
+    line-height: 1.3;
+  }
+
+  .info-panel .stage-price {
+    font-size: 13px;
+    color: var(--ochre);
+    margin-bottom: 20px;
+    font-family: Georgia, serif;
+  }
+
+  .info-panel .stage-desc {
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--text);
+    margin-bottom: 20px;
+  }
+
+  .info-panel .questions-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+  }
+
+  .info-panel .question-btn {
+    display: block;
+    width: 100%;
+    text-align: left;
+    background: var(--cream);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 13px;
+    font-family: Georgia, serif;
+    color: var(--text);
+    cursor: pointer;
+    margin-bottom: 8px;
+    line-height: 1.5;
+    transition: background 0.15s, border-color 0.15s;
+  }
+  .info-panel .question-btn:hover {
+    background: #fff;
+    border-color: var(--ochre);
+  }
+
+  .info-panel .open-claude {
+    display: block;
+    margin-top: 16px;
+    padding: 10px 16px;
+    background: var(--forest);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 13px;
+    font-family: Georgia, serif;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    transition: opacity 0.15s;
+  }
+  .info-panel .open-claude:hover { opacity: 0.85; }
+
+  .divider { border: none; border-top: 1px solid var(--border); margin: 20px 0; }
+
+  .legend {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    margin-top: 12px;
+    font-size: 12px;
+    color: var(--text-muted);
+    font-family: Georgia, serif;
+  }
+  .legend-dot {
+    width: 12px; height: 12px; border-radius: 3px; display: inline-block;
+  }
+
+  @media (max-width: 700px) {
+    .layout { flex-direction: column; }
+    .info-panel { width: 100%; border-left: none; border-top: 1px solid var(--border); }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>Mein Funnel</h1>
+    <span>Tierakademie Zischgl · Susanne Zischgl</span>
+  </div>
+</header>
+
+<div class="layout">
+  <div class="diagram-area">
+    <h2>Klick auf eine Stufe für Details</h2>
+
+    <svg viewBox="0 0 680 548" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M2 1L8 5L2 9" fill="none" stroke="#888780" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </marker>
+      </defs>
+
+      <!-- Divider -->
+      <line x1="340" y1="8" x2="340" y2="530" stroke="#D3D1C7" stroke-width="0.5" stroke-dasharray="4 4"/>
+
+      <!-- Headers -->
+      <text font-family="Georgia,serif" font-size="14" font-weight="600" fill="#2D4A35" x="170" y="22" text-anchor="middle">Hundebesitzer</text>
+      <text font-family="Georgia,serif" font-size="12" fill="#888780" x="170" y="40" text-anchor="middle">Die unsichtbaren Fäden</text>
+      <text font-family="Georgia,serif" font-size="14" font-weight="600" fill="#2D4A35" x="510" y="22" text-anchor="middle">Tierberufler</text>
+      <text font-family="Georgia,serif" font-size="12" fill="#888780" x="510" y="40" text-anchor="middle">Tierbusiness Community</text>
+
+      <!-- FREE SEPARATOR LINE -->
+      <line x1="40" y1="282" x2="640" y2="282" stroke="#D3D1C7" stroke-width="0.5" stroke-dasharray="3 3"/>
+      <text font-family="Georgia,serif" font-size="10" fill="#B4B2A9" x="340" y="276" text-anchor="middle">kostenlos</text>
+      <text font-family="Georgia,serif" font-size="10" fill="#B4B2A9" x="340" y="291" text-anchor="middle">kostenpflichtig</text>
+
+      <!-- === LEFT FUNNEL === -->
+      <!-- Stage L1 -->
+      <g class="stage" data-id="l1" onclick="showInfo('l1')">
+        <rect x="40" y="56" width="260" height="52" rx="8" fill="#F1EFE8" stroke="#B4B2A9" stroke-width="0.5"/>
+        <text font-family="Georgia,serif" font-size="13" font-weight="600" fill="#444441" x="170" y="79" text-anchor="middle" dominant-baseline="central">Was verrät dein Hund</text>
+        <text font-family="Georgia,serif" font-size="11" fill="#888780" x="170" y="99" text-anchor="middle" dominant-baseline="central">Kostenlose App · Aha-Moment</text>
+      </g>
+      <line x1="170" y1="108" x2="170" y2="132" stroke="#B4B2A9" stroke-width="1" marker-end="url(#arr)"/>
+
+      <!-- Stage L2 -->
+      <g class="stage" data-id="l2" onclick="showInfo('l2')">
+        <rect x="40" y="134" width="260" height="52" rx="8" fill="#F1EFE8" stroke="#B4B2A9" stroke-width="0.5"/>
+        <text font-family="Georgia,serif" font-size="13" font-weight="600" fill="#444441" x="170" y="157" text-anchor="middle" dominant-baseline="central">Social Media &amp; Artikel</text>
+        <text font-family="Georgia,serif" font-size="11" fill="#888780" x="170" y="177" text-anchor="middle" dominant-baseline="central">Vertrauen aufbauen</text>
+      </g>
+      <line x1="170" y1="186" x2="170" y2="210" stroke="#B4B2A9" stroke-width="1" marker-end="url(#arr)"/>
+
+      <!-- Stage L3 -->
+      <g class="stage" data-id="l3" onclick="showInfo('l3')">
+        <rect x="40" y="212" width="260" height="52" rx="8" fill="#F1EFE8" stroke="#B4B2A9" stroke-width="0.5"/>
+        <text font-family="Georgia,serif" font-size="13" font-weight="600" fill="#444441" x="170" y="235" text-anchor="middle" dominant-baseline="central">Skool Free Tier</text>
+        <text font-family="Georgia,serif" font-size="11" fill="#888780" x="170" y="255" text-anchor="middle" dominant-baseline="central">Community kostenlos erleben</text>
+      </g>
+      <line x1="170" y1="264" x2="170" y2="288" stroke="#B4B2A9" stroke-width="1" marker-end="url(#arr)"/>
+
+      <!-- Stage L4 -->
+      <g class="stage" data-id="l4" onclick="showInfo('l4')">
+        <rect x="40" y="290" width="260" height="52" rx="8" fill="#E1F5EE" stroke="#1D9E75" stroke-width="0.5"/>
+        <text font-family="Georgia,serif" font-size="13" font-weight="600" fill="#085041" x="170" y="313" text-anchor="middle" dominant-baseline="central">Apps &amp; Workbooks</text>
+        <text font-family="Georgia,serif" font-size="11" fill="#0F6E56" x="170" y="333" text-anchor="middle" dominant-baseline="central">15–25 € · erstes Investment</text>
+      </g>
+      <line x1="170" y1="342" x2="170" y2="366" stroke="#1D9E75" stroke-width="1" marker-end="url(#arr)"/>
+
+      <!-- Stage L5 -->
+      <g class="stage" data-id="l5" onclick="showInfo('l5')">
+        <rect x="40" y="368" width="260" height="52" rx="8" fill="#E1F5EE" stroke="#1D9E75" stroke-width="0.5"/>
+        <text font-family="Georgia,serif" font-size="13" font-weight="600" fill="#085041" x="170" y="391" text-anchor="middle" dominant-baseline="central">Monatsgruppe</text>
+        <text font-family="Georgia,serif" font-size="11" fill="#0F6E56" x="170" y="411" text-anchor="middle" dominant-baseline="central">39 € · regelmäßig dabei</text>
+      </g>
+      <line x1="170" y1="420" x2="170" y2="444" stroke="#1D9E75" stroke-width="1" marker-end="url(#arr)"/>
+
+      <!-- Stage L6 -->
+      <g class="stage" data-id="l6" onclick="showInfo('l6')">
+        <rect x="40" y="446" width="260" height="52" rx="8" fill="#1D9E75" stroke="#0F6E56" stroke-width="0.5"/>
+        <text font-family="Georgia,serif" font-size="13" font-weight="600" fill="#fff" x="170" y="469" text-anchor="middle" dominant-baseline="central">1:1 Beratung</text>
+        <text font-family="Georgia,serif" font-size="11" fill="#9FE1CB" x="170" y="489" text-anchor="middle" dominant-baseline="central">120 € · tiefste Begleitung</text>
+      </g>
+
+      <!-- === RIGHT FUNNEL === -->
+      <!-- Stage R1 -->
+      <g class="stage" data-id="r1" onclick="showInfo('r1')">
+        <rect x="380" y="56" width="260" height="52" rx="8" fill="#F1EFE8" stroke="#B4B2A9" stroke-width="0.5"/>
+        <text font-family="Georgia,serif" font-size="13" font-weight="600" fill="#444441" x="510" y="79" text-anchor="middle" dominant-baseline="central">Content &amp; Fachartikel</text>
+        <text font-family="Georgia,serif" font-size="11" fill="#888780" x="510" y="99" text-anchor="middle" dominant-baseline="central">Expertise sichtbar machen</text>
+      </g>
+      <line x1="510" y1="108" x2="510" y2="132" stroke="#B4B2A9" stroke-width="1" marker-end="url(#arr)"/>
+
+      <!-- Stage R2 -->
+      <g class="stage" data-id="r2" onclick="showInfo('r2')">
+        <rect x="380" y="134" width="260" height="52" rx="8" fill="#F1EFE8" stroke="#B4B2A9" stroke-width="0.5"/>
+        <text font-family="Georgia,serif" font-size="13" font-weight="600" fill="#444441" x="510" y="157" text-anchor="middle" dominant-baseline="central">Medium &amp; Social Media</text>
+        <text font-family="Georgia,serif" font-size="11" fill="#888780" x="510" y="177" text-anchor="middle" dominant-baseline="central">Reichweite aufbauen</text>
+      </g>
+      <line x1="510" y1="186" x2="510" y2="210" stroke="#B4B2A9" stroke-width="1" marker-end="url(#arr)"/>
+
+      <!-- Stage R3 -->
+      <g class="stage" data-id="r3" onclick="showInfo('r3')">
+        <rect x="380" y="212" width="260" height="52" rx="8" fill="#F1EFE8" stroke="#B4B2A9" stroke-width="0.5"/>
+        <text font-family="Georgia,serif" font-size="13" font-weight="600" fill="#444441" x="510" y="235" text-anchor="middle" dominant-baseline="central">Tierbusiness Community</text>
+        <text font-family="Georgia,serif" font-size="11" fill="#888780" x="510" y="255" text-anchor="middle" dominant-baseline="central">Free Level · Einstieg</text>
+      </g>
+      <line x1="510" y1="264" x2="510" y2="288" stroke="#B4B2A9" stroke-width="1" marker-end="url(#arr)"/>
+
+      <!-- Stage R4 -->
+      <g class="stage" data-id="r4" onclick="showInfo('r4')">
+        <rect x="380" y="290" width="260" height="52" rx="8" fill="#EEEDFE" stroke="#534AB7" stroke-width="0.5"/>
+        <text font-family="Georgia,serif" font-size="13" font-weight="600" fill="#26215C" x="510" y="313" text-anchor="middle" dominant-baseline="central">Workbooks &amp; Apps</text>
+        <text font-family="Georgia,serif" font-size="11" fill="#3C3489" x="510" y="333" text-anchor="middle" dominant-baseline="central">15–25 € · Profession stärken</text>
+      </g>
+      <line x1="510" y1="342" x2="510" y2="366" stroke="#534AB7" stroke-width="1" marker-end="url(#arr)"/>
+
+      <!-- Stage R5 -->
+      <g class="stage" data-id="r5" onclick="showInfo('r5')">
+        <rect x="380" y="368" width="260" height="52" rx="8" fill="#EEEDFE" stroke="#534AB7" stroke-width="0.5"/>
+        <text font-family="Georgia,serif" font-size="13" font-weight="600" fill="#26215C" x="510" y="391" text-anchor="middle" dominant-baseline="central">Monatsgruppe</text>
+        <text font-family="Georgia,serif" font-size="11" fill="#3C3489" x="510" y="411" text-anchor="middle" dominant-baseline="central">39 € · Peer-Learning</text>
+      </g>
+      <line x1="510" y1="420" x2="510" y2="444" stroke="#534AB7" stroke-width="1" marker-end="url(#arr)"/>
+
+      <!-- Stage R6 -->
+      <g class="stage" data-id="r6" onclick="showInfo('r6')">
+        <rect x="380" y="446" width="260" height="52" rx="8" fill="#534AB7" stroke="#3C3489" stroke-width="0.5"/>
+        <text font-family="Georgia,serif" font-size="13" font-weight="600" fill="#fff" x="510" y="469" text-anchor="middle" dominant-baseline="central">1:1 Mentoring</text>
+        <text font-family="Georgia,serif" font-size="11" fill="#CECBF6" x="510" y="489" text-anchor="middle" dominant-baseline="central">120 € · individuelle Begleitung</text>
+      </g>
+    </svg>
+
+    <div class="legend">
+      <span><span class="legend-dot" style="background:#F1EFE8;border:1px solid #B4B2A9;"></span> Kostenlos</span>
+      <span><span class="legend-dot" style="background:#E1F5EE;border:1px solid #1D9E75;"></span> Hundebesitzer (bezahlt)</span>
+      <span><span class="legend-dot" style="background:#EEEDFE;border:1px solid #534AB7;"></span> Tierberufler (bezahlt)</span>
+    </div>
+  </div>
+
+  <div class="info-panel" id="info-panel">
+    <p class="hint">Klick auf eine Stufe, um Details und Ideen für diesen Schritt zu sehen.</p>
+  </div>
+</div>
+
+<script>
+const data = {
+  l1: {
+    title: "Was verrät dein Hund",
+    sub: "Hundebesitzer · Kostenlos",
+    desc: "Die App ist dein stärkster Einstiegspunkt – sie erzeugt Aha-Momente, ohne dass du präsent sein musst. Jemand testet die App, versteht seinen Hund ein bisschen besser – und will mehr davon. Auf der Ergebnisseite kommt dein CTA Richtung Community.",
+    questions: [
+      "Was sollte auf der Ergebnisseite der App stehen, um in die Community zu leiten?",
+      "Welche Aha-Momente erzeuge ich mit der App und wie verbinde ich diese mit meiner Community?",
+      "Wie texte ich den CTA auf der App-Ergebnisseite?"
+    ]
+  },
+  l2: {
+    title: "Social Media & Artikel",
+    sub: "Hundebesitzer · Kostenlos",
+    desc: "Hier baust du Vertrauen auf, bevor jemand etwas kauft. Posts und Artikel zeigen, wie du denkst – nicht nur, was du weißt. Das ist die Stufe, die aus Fremden wohlwollende Beobachter macht. Konsistenz schlägt hier Kreativität.",
+    questions: [
+      "Welche Social-Media-Formate funktionieren am besten für Hundebesitzer?",
+      "Wie verlinke ich von einem Artikel in meine Skool-Community?",
+      "Welche Themen ziehen Hundebesitzer in meinem Segment an?",
+      "Wie viele Posts pro Woche brauche ich für diesen Funnel-Schritt?"
+    ]
+  },
+  l3: {
+    title: "Skool Free Tier",
+    sub: "Hundebesitzer · Kostenlos",
+    desc: "Der Free Tier ist keine Warteschleife – er ist schon ein echtes Angebot. Hier lernen Menschen deine Art zu denken kennen, erleben Community-Gefühl und entscheiden sich dann freiwillig für mehr. Was du hier zeigst, bestimmt, ob jemand aufsteigt.",
+    questions: [
+      "Was gehört in den Free Tier meiner Hundebesitzer-Community?",
+      "Wie gestalte ich den Übergang von Free zu Paid so, dass er sich natürlich anfühlt?",
+      "Wie oft soll ich im Free Tier posten, um Menschen zum Aufsteigen zu motivieren?"
+    ]
+  },
+  l4: {
+    title: "Apps & Workbooks",
+    sub: "Hundebesitzer · 15–25 €",
+    desc: "Das erste Investment – niedrige Hemmschwelle, hoher Wert. Wer hier kauft, sagt damit: Ich glaube dir. Apps und Workbooks können auch ohne Monatsgruppe funktionieren und sind deshalb der ideale erste Schritt. Sie zahlen sich selbst und bereiten auf mehr vor.",
+    questions: [
+      "Wie präsentiere ich meine Apps und Workbooks überzeugend in der Community?",
+      "Welche Apps eignen sich als Einstiegsprodukt für Hundebesitzer?",
+      "Wie texte ich eine überzeugende Produktseite für ein 19-Euro-Workbook?"
+    ]
+  },
+  l5: {
+    title: "Monatsgruppe",
+    sub: "Hundebesitzer · 39 €/Monat",
+    desc: "Hier entsteht echte Bindung. Die Gruppe gibt Rhythmus, Community und die Gewissheit, dass du regelmäßig erreichbar bist. 39 € fühlen sich bei echtem Mehrwert klein an. Der Schlüssel: Was passiert in der Gruppe, das nirgendwo sonst passiert?",
+    questions: [
+      "Was sollte in meiner Monatsgruppe für Hundebesitzer stattfinden?",
+      "Wie rechtfertige ich den monatlichen Preis von 39 € überzeugend?",
+      "Wie viele Mitglieder brauche ich, damit die Monatsgruppe lebendig wirkt?"
+    ]
+  },
+  l6: {
+    title: "1:1 Beratung",
+    sub: "Hundebesitzer · 120 €",
+    desc: "Nicht alle brauchen 1:1 – aber die, die es brauchen, wissen es. Wer vorher schon die App genutzt, Artikel gelesen und vielleicht ein Workbook gekauft hat, kommt mit klaren Erwartungen und echtem Vertrauen. Das macht die 1:1-Stunde leichter für beide.",
+    questions: [
+      "Wie positioniere ich die 1:1-Beratung, ohne aufdringlich zu wirken?",
+      "Welche Signale zeigen mir, wann jemand bereit für 1:1 ist?",
+      "Wie texte ich die Beschreibung meiner 1:1-Stunde für Hundebesitzer?"
+    ]
+  },
+  r1: {
+    title: "Content & Fachartikel",
+    sub: "Tierberufler · Kostenlos",
+    desc: "Fachkollegen kaufen bei jemandem, dem sie fachlich vertrauen. Artikel, die wirklich in die Tiefe gehen – Lerntheorie, neurobiologische Grundlagen, kritische Einordnung von Trends – zeigen, dass du nicht nur ausbildest, sondern selbst denkst.",
+    questions: [
+      "Welche Fachthemen sollte ich für Tierberufler aufschreiben?",
+      "Wie unterscheidet sich Content für Tierberufler von Content für Hundebesitzer?",
+      "Welche Artikel-Formate funktionieren für Tierberufler am besten?"
+    ]
+  },
+  r2: {
+    title: "Medium & Social Media",
+    sub: "Tierberufler · Kostenlos",
+    desc: "Medium eignet sich besonders gut für Fachkolleginnen, weil längere Texte dort normal sind. LinkedIn kann ergänzend sinnvoll sein. Das Ziel: Deine Haltung sichtbar machen – nicht nur deine Inhalte. Tierberufler folgen Menschen, nicht Marken.",
+    questions: [
+      "Wie nutze ich Medium strategisch für Tierberufler?",
+      "Welche Social-Media-Plattform eignet sich am besten für Tierberufler?",
+      "Wie verlinke ich von Medium-Artikeln in meine Tierbusiness-Community?"
+    ]
+  },
+  r3: {
+    title: "Tierbusiness Community",
+    sub: "Tierberufler · Kostenlos",
+    desc: "Der Free Level zeigt, dass in dieser Community echtes Denken stattfindet – kein flaches Networking, kein gegenseitiges Bewerben. Was du hier gratis gibst, muss gut genug sein, dass jemand sagt: Wenn das kostenlos ist, was bekomme ich dann für 39 Euro?",
+    questions: [
+      "Was gehört in den Free Level der Tierbusiness-Community?",
+      "Wie motiviere ich Tierberufler, von Free auf Paid zu wechseln?",
+      "Welche Community-Formate sprechen Tierberufler besonders an?"
+    ]
+  },
+  r4: {
+    title: "Workbooks & Apps",
+    sub: "Tierberufler · 15–25 €",
+    desc: "Für Tierberufler sind Workbooks Arbeitsmittel, keine Inspiration – das ist ein Unterschied in der Tonalität. Die 7-Felder-Modell-Apps und der Tierberufler-Kompass sind hier ideal. Sie sparen Zeit und strukturieren, was bisher im Kopf war.",
+    questions: [
+      "Welche meiner Apps und Workbooks eignen sich besonders für Tierberufler?",
+      "Wie beschreibe ich den praktischen Nutzen meiner Apps für den Berufsalltag?",
+      "Wie texte ich eine Produktseite für ein Workbook für Tierberufler?"
+    ]
+  },
+  r5: {
+    title: "Monatsgruppe",
+    sub: "Tierberufler · 39 €/Monat",
+    desc: "Peer-Learning unter Fachleuten ist ein starkes Format – weil niemand alleine vor seinem Fall sitzt. Austausch, Fallbesprechungen, deine fachliche Einordnung. Tierberufler schätzen, dass jemand mit 30 Jahren Erfahrung mitdenkt, ohne ihnen zu sagen, wie es geht.",
+    questions: [
+      "Wie gestalte ich die Monatsgruppe für Tierberufler inhaltlich?",
+      "Was unterscheidet meine Monatsgruppe von anderen Fortbildungsformaten?",
+      "Wie viele Teilnehmende brauche ich für eine lebendige Tierberufler-Gruppe?"
+    ]
+  },
+  r6: {
+    title: "1:1 Mentoring",
+    sub: "Tierberufler · 120 €",
+    desc: "Das Mentoring für Fachkollegen ist etwas anderes als die Beratung für Hundebesitzer – hier geht es um Fälle, Positionierung, Selbstverständnis als Profi. Wer 15 Jahre Ausbildungserfahrung mitbringt, kann das in einer Stunde verdichtet weitergeben.",
+    questions: [
+      "Wie positioniere ich das 1:1-Mentoring für Tierberufler?",
+      "Was sind typische Anliegen, mit denen Tierberufler in die 1:1-Beratung kommen?",
+      "Wie unterscheidet sich mein Mentoring-Angebot von klassischen Supervisionsformaten?"
+    ]
+  }
+};
+
+let activeId = null;
+
+function showInfo(id) {
+  if (activeId) {
+    const prev = document.querySelector('.stage[data-id="'+activeId+'"]');
+    if (prev) prev.classList.remove('active');
+  }
+  activeId = id;
+  const el = document.querySelector('.stage[data-id="'+id+'"]');
+  if (el) el.classList.add('active');
+
+  const d = data[id];
+  const panel = document.getElementById('info-panel');
+  const prompt = encodeURIComponent(d.questions[0]);
+
+  panel.innerHTML = `
+    <h3>${d.sub}</h3>
+    <div class="stage-title">${d.title}</div>
+    <hr class="divider">
+    <p class="stage-desc">${d.desc}</p>
+    <div class="questions-label">Fragen für Claude</div>
+    ${d.questions.map(q => `<button class="question-btn" onclick="copyQ(this,'${encodeURIComponent(q)}')">${q}</button>`).join('')}
+    <a class="open-claude" href="https://claude.ai/new?q=${prompt}" target="_blank">In Claude öffnen ↗</a>
+  `;
+}
+
+function copyQ(btn, encodedQ) {
+  const q = decodeURIComponent(encodedQ);
+  navigator.clipboard.writeText(q).then(() => {
+    const orig = btn.textContent;
+    btn.textContent = '✓ Kopiert';
+    setTimeout(() => btn.textContent = orig, 1800);
+  });
+}
+</script>
+</body>
+</html>
