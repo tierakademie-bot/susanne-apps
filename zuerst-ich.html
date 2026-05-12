@@ -1,6 +1,12 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
+  <script>
+  const token = new URLSearchParams(window.location.search).get('token');
+  if (token !== 'katze2024') {
+    document.documentElement.innerHTML = '<h2 style="font-family:sans-serif;padding:2rem;">Dieser Link ist nicht gültig oder abgelaufen.</h2>';
+  }
+</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>Zuerst ich. – Tierakademie Zischgl</title>
