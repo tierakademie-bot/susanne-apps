@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Welpenerziehung – Tierakademie Zischgl</title>
+<meta name="description" content="Welpenerziehung mit allen vier Lernquadranten – praktische Tipps, Mensch-Check und KI-Fragen von Susanne Zischgl, zertifizierte Hundetrainerin.">
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: system-ui, -apple-system, sans-serif; background: #f9fafb; min-height: 100vh; }
+  #root { max-width: 720px; margin: 0 auto; padding: 1.5rem 1rem 4rem; }
+  a { text-decoration: none; }
+  a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel">
+const { useState } = React;
+
+const PROXY = "https://tierakademie-proxy.tierakademie.workers.dev";
+
+const TOPICS = [
+  { id:0, icon:"🐾", title:"Die ersten Tage", sub:"Ankommen · Orientierung · Erste Schritte", featured:true,
+    desc:"Der erste Tag im neuen Zuhause ist für deinen Welpen einer der größten Einschnitte seines Lebens. Er kennt nichts mehr – keinen Geruch, keine Geräusche, keine Geschwister. Was er jetzt braucht, ist kein Training. Was er jetzt braucht, ist Orientierung.",
+    mensch:"Die meisten Fehler in der Welpenzeit passieren nicht aus Unwissen, sondern aus Ungeduld. Wer die ersten Tage ruhig hält, legt das Fundament für alles was danach kommt.",
+    blocks:[
+      {type:"mc",label:"Was jetzt wichtig ist",items:["Ruhig ankommen lassen – kein Besucher-Marathon in den ersten Tagen.","Feste Struktur von Anfang an: Schlafplatz, Fresszeiten, Auslasszeiten.","Alle im Haushalt auf eine Linie bringen – unterschiedliche Regeln verwirren.","Erkundung in überschaubarem Raum ermöglichen – nicht die ganze Wohnung auf einmal.","Körperkontakt anbieten, nicht aufzwingen – der Welpe entscheidet wann er kommt.","Tierarzttermin in der ersten Woche einplanen."]},
+      {type:"no",label:"Was du nicht tun solltest",items:["Jeden einladen um den Welpen zu bestaunen – das überfordert.","Sofort überall mitnehmen – zu viele neue Reize auf einmal.","Fehler in der ersten Woche bereits bestrafen – er kennt die Regeln noch nicht.","Erwarten dass er sofort funktioniert – er braucht Zeit zum Ankommen.","Den Welpen ununterbrochen beschäftigen – Ruhephasen sind Lernphasen.","Verschiedene Regeln je nach Laune – Konsistenz gibt Sicherheit."]},
+      {type:"au",label:"Erste Lernaufgaben",items:["Namen lernen: Name sagen wenn der Welpe zu dir schaut → loben.","Körperberührung tolerieren: Pfoten, Ohren, Maul anfassen – immer mit Leckerli.","Auf Zuruf kommen: Welpe rufen wenn er sowieso kommt → feiern.","Sitz: Leckerli über die Nase führen bis er sitzt → Wort sagen, belohnen.","Kurz allein sein: Welpe kurz im Raum lassen, ruhig zurückkommen.","Leinengewöhnung: Leine anlegen ohne sofort losgehen."]},
+    ],
+    steps:[], theory:[],
+    apiTopic:"Die ersten Tage mit dem Welpen – Ankommen, Orientierung, erste Lernaufgaben" },
+  { id:1, icon:"🌙", title:"Unruhige Nächte", sub:"Erste 2–4 Wochen",
+    desc:"Der Welpe winselt, jammert oder bellt nachts – besonders in den ersten Wochen. Er hat alles Vertraute verloren. Das ist kein Trotz. Das ist echter Trennungsschmerz. Aber er winselt auch wenn er muss – und das ist etwas anderes.",
+    mensch:"Viele Halter schwanken: sofort ins Bett holen oder kompromisslos durchweinen lassen. Beides ist zu viel. In den ersten Wochen geht es nicht um Training – es geht um Sicherheit.",
+    blocks:[{type:"tip",label:"Wenn er muss",items:["Kein großes Theater. Welpe ruhig hochnehmen, zum Lösungsplatz tragen, warten bis er gemacht hat – kein Lob, kein Spiel, kein Licht. Dann ruhig zurück zum Schlafplatz, ablegen, Licht aus. Fertig."]}],
+    steps:["Schlafplatz in der ersten Zeit neben dem Bett – Körpernähe ohne Kuscheln im Bett.","Box mit getragenem Kleidungsstück ausstatten – vertrauter Geruch beruhigt.","Winseln: erst kurz abwarten – muss er, oder ist es Trennungsschmerz?","Muss er: ruhig hochnehmen, Lösungsplatz, kein Licht, kein Spiel, zurück, Licht aus.","Echter Stress: kurz ruhig melden ohne hochzunehmen oder ins Bett zu holen.","Nach 2–4 Wochen: Schlafplatz schrittweise in den gewünschten Bereich verschieben."],
+    theory:[{q:"R−",t:"Nähe reduziert Anspannung – nichts Schlimmes passiert."},{q:"R+",t:"Ruhige Momente am Schlafplatz sanft bestätigen."},{q:"P−",t:"Auf anhaltendes Winseln nicht sofort reagieren – gilt erst ab Woche 2–3 und nur wenn kein Toilettendrang vorliegt."}],
+    apiTopic:"Unruhige Nächte beim Welpen – Trennungsschmerz, Toilettendrang, Schlafplatz" },
+  { id:2, icon:"🏠", title:"Stubenreinheit", sub:"Fehler im Haus",
+    desc:"Der Welpe macht trotz Auslassintervallen im Haus – oft wenn der Halter kurz nicht aufgepasst hat.",
+    mensch:"Fehler passieren fast immer weil das Intervall zu lang war. Schimpfen nachträglich ist wirkungslos – der Welpe verbindet das nicht mit der Handlung.",
+    blocks:[], steps:["Feste Auslasszeiten: nach Schlafen, Fressen, Spielen – alle 1–2 Stunden.","Draußen warten bis Geschäft erledigt – sofort danach belohnen.","Im Haus: Welpe im Blick oder Raum begrenzen.","Fehler: ruhig beseitigen, kein Drama, keine Strafe.","Reinigungsmittel ohne Ammoniak verwenden."],
+    theory:[{q:"R+",t:"Belohnung direkt beim Geschäft draußen."},{q:"P+",t:"Nur auf frischer Tat: ruhiges Nein, dann direkt nach draußen."}],
+    apiTopic:"Stubenreinheit beim Welpen – Auslasszeiten, Fehler im Haus" },
+  { id:3, icon:"✋", title:"Schnappen & Beißen", sub:"Hände, Finger, Kleidung",
+    desc:"Der Welpe schnappt beim Spielen oder bei der Begrüßung in Hände, Finger oder Kleidung. Für ihn ist das normales Welpenspiel – für uns schmerzhaft und lästig.",
+    mensch:"Viele Halter ziehen die Hand abrupt zurück oder kreischen – das wirkt wie Spielaufforderung. Manche strafen hart, was Verwirrung statt Klarheit schafft.",
+    blocks:[], steps:["Schnappt der Welpe: kein Aufschrei, keine Gegenbewegung.","Sofort ruhig aufstehen oder wegdrehen – alle Interaktion stoppt.","10–15 Sekunden ignorieren, dann entspannt wieder zuwenden.","Sanftes Spielverhalten direkt belohnen.","Bei wiederholtem Schnappen: Spielzeug als Umleitung anbieten."],
+    theory:[{q:"R+",t:"Sanftes Spielverhalten belohnen."},{q:"P−",t:"Spiel und Aufmerksamkeit entziehen."},{q:"R−",t:"Igitt als Signal – Unangenehmes hört auf sobald der Welpe ruhig ist."}],
+    apiTopic:"Schnappen und Beißen beim Welpen – Beißhemmung, Spielverhalten" },
+  { id:4, icon:"🚪", title:"Allein bleiben lernen", sub:"Ab der 1. Woche nach Einzug",
+    desc:"Alleinbleiben muss systematisch trainiert werden – in winzigen Schritten, lange bevor der erste Arbeitstag kommt.",
+    mensch:"Die meisten Halter planen das Alleinbleiben nicht. Ausgiebige Abschiede oder aufgeregte Rückkehr machen die Situation emotional größer als nötig.",
+    blocks:[], steps:["Beginnen wenn der Welpe entspannt ist – nie nach Aufregung.","Schritt 1: Halter verlässt kurz den Sichtbereich (5 Sekunden).","Schritt 2: Tür dazwischen, sofort wieder auf – immer unter der Stressgrenze.","Dauer steigern: 10 Sek → 1 Min → 5 Min → 20 Min. Keine Sprünge.","Abschied und Ankommen immer ruhig und emotionsarm.","Kauartikel beim Alleinbleiben anbieten."],
+    theory:[{q:"R+",t:"Ruhige Phase allein → Belohnung beim Zurückkommen."},{q:"R−",t:"Kurze Trennungen – Anspannung sinkt weil nichts Schlimmes passiert."},{q:"P−",t:"Bellen öffnet die Tür nicht."}],
+    apiTopic:"Alleinbleiben lernen beim Welpen – systematischer Aufbau, erste Woche" },
+  { id:5, icon:"▭", title:"Platzzuweisung", sub:"Ab der 2. Woche",
+    desc:"Der Welpe soll auf Aufforderung einen bestimmten Platz aufsuchen und dort ruhig bleiben. Aktives Aufbautraining – ab der zweiten Woche.",
+    mensch:"Manche schicken ihn dorthin als Strafe – das besetzt den Platz negativ. Der Platz soll ein sicherer Ort werden, kein Strafraum.",
+    blocks:[], steps:["Platz mit einem klaren Wort verknüpfen – immer dasselbe.","Leckerli auf die Decke werfen, Welpe drauf → loben. Noch kein Kommando.","Welpe betritt Decke → Kommando sagen, direkt belohnen.","Dauer aufbauen: erst 5 Sek, dann länger.","Verlässt er die Decke: ruhig abbrechen, Pause, neu starten.","Platz nie als Strafe nutzen. Endsignal: Fertig oder Okay."],
+    theory:[{q:"R+",t:"Jede Sekunde auf dem Platz wird belohnt."},{q:"P−",t:"Platz verlassen → Interaktion endet sofort."},{q:"R−",t:"Auf dem Platz passiert nichts Unangenehmes."}],
+    apiTopic:"Platzzuweisung beim Welpen – Decke, Körbchen, ab 2. Woche" },
+  { id:6, icon:"📢", title:"Bellen & Winseln", sub:"Aufmerksamkeit & Stress",
+    desc:"Der Welpe bellt oder winselt um Aufmerksamkeit oder in Situationen die ihn überfordern.",
+    mensch:"Wer nachgibt wenn der Welpe winselt, trainiert Winseln als Strategie. Wer gar nicht reagiert obwohl echter Stress vorliegt, schadet der Bindung.",
+    blocks:[], steps:["Echter Stress vs. Aufmerksamkeit unterscheiden: zittert, hechelt der Welpe?","Aufmerksamkeitsbellen: komplett ignorieren – kein Blick, kein Wort.","Kurze Stille → sofort ruhig zuwenden und loben.","Überfordernde Situationen entschärfen statt aushalten lassen.","Nie nachgeben nach langem Bellen – das trainiert Ausdauer."],
+    theory:[{q:"P−",t:"Aufmerksamkeit erst bei Stille geben."},{q:"R+",t:"Stille belohnen: Ruhe → Kontakt, Lob, Nähe."},{q:"R−",t:"Stressauslöser reduzieren."}],
+    apiTopic:"Bellen und Winseln beim Welpen – Aufmerksamkeit, Stress" },
+  { id:7, icon:"🦴", title:"Kauen & Stehlen", sub:"Schuhe, Möbel, Kabel",
+    desc:"Der Welpe kaut an Dingen die ihm nicht gehören. Kauen ist ein Grundbedürfnis, kein Trotzverhalten.",
+    mensch:"Schimpfen nachträglich bringt nichts. Wer nachläuft und entreißt, macht daraus ein Jagdspiel.",
+    blocks:[], steps:["Umgebung welpengerecht einrichten – Versuchung entfernen.","Genug Kaumaterial bereitstellen: Kaurollen, Kauschnecken, Spielzeug.","Direkt erwischt: ruhiges Nein + Tausch gegen erlaubtes Stück.","Tausch klappt → loben.","Kaut er ruhig am eigenen Spielzeug → ruhig loben."],
+    theory:[{q:"P+",t:"Direkt erwischt: Nein als Konsequenz, dann Tausch."},{q:"R+",t:"Kauen am eigenen Spielzeug belohnen."},{q:"P−",t:"Verbotenes Kauen ohne Aufmerksamkeit beenden."}],
+    apiTopic:"Kauen und Stehlen beim Welpen – Kaumaterial, Tausch" },
+  { id:8, icon:"🥣", title:"Betteln beim Essen", sub:"Am Tisch, beim Kochen",
+    desc:"Der Welpe sitzt jammernd neben dem Esstisch – immer in der Hoffnung auf Futter von der Menschenmahlzeit.",
+    mensch:"Betteln funktioniert weil es irgendwann geklappt hat. Manchmal klappt es, manchmal nicht – genau das macht es so hartnäckig.",
+    blocks:[], steps:["Platztraining vor den Mahlzeiten fest etablieren.","Während des Essens: Welpe auf Platz, kein Blickkontakt.","Nach dem Essen: wenn Welpe geblieben ist → Lob.","Einmal gegeben → Wochen Arbeit verloren.","Gäste informieren: kein Füttern vom Tisch, auch nicht einmal."],
+    theory:[{q:"P−",t:"Betteln vollständig ignorieren."},{q:"R+",t:"Ruhiges Liegen auf dem Platz wird nach dem Essen belohnt."},{q:"P+",t:"Annähern an den Tisch → Herausschicken auf den Platz."}],
+    apiTopic:"Betteln beim Essen beim Welpen – Platztraining, Konsequenz" },
+  { id:9, icon:"⬆️", title:"Anspringen", sub:"Begrüßung & Aufregung",
+    desc:"Der Welpe springt freudig an Menschen hoch – niedlich mit 8 Wochen, ein Problem mit 30 kg.",
+    mensch:"Das Problem entsteht durch inkonsistente Reaktion: manchmal wird gekuschelt, manchmal geschimpft.",
+    blocks:[], steps:["Welpe springt an: sofort umdrehen, kein Augenkontakt, kein Wort.","Warten bis alle vier Pfoten auf dem Boden sind.","Sofort ruhig begrüßen – nicht jubeln, das reizt wieder auf.","Alle im Haushalt müssen gleich reagieren.","Besucher einweisen: erst begrüßen wenn der Welpe ruhig ist."],
+    theory:[{q:"P−",t:"Aufmerksamkeit entziehen beim Anspringen."},{q:"R+",t:"Vier Pfoten am Boden sofort belohnen."},{q:"P+",t:"Körpersperre als ruhige Konsequenz."}],
+    apiTopic:"Anspringen beim Welpen – Begrüßung, Konsequenz" },
+  { id:10, icon:"〰️", title:"Leinenziehen vermeiden", sub:"Erste Schritte",
+    desc:"Leinenführigkeit beginnt nicht auf der Straße – sie beginnt im Wohnzimmer.",
+    mensch:"Wer mitgeht, belohnt den Zug. Hunde drücken gegen Druck – das ist ein Reflex, kein Trotz.",
+    blocks:[], steps:["Leine zuerst ohne Bewegung einführen – anlegen, loben, abnehmen.","Erste Schritte drinnen: lockere Leine → loben und weitergehen.","Bei Zug: sofort stehen bleiben, kein Schritt weiter.","Warten bis die Leine locker wird – dann loben und weitergehen.","Kurze Einheiten: 5 Minuten, dann Pause.","Ziel: J-förmige Leine – hängt durch, keine Spannung."],
+    theory:[{q:"R−",t:"Leine locker → Druck hört auf."},{q:"P−",t:"Stehenbleiben entzieht das Ziel."},{q:"R+",t:"Lockere Leine und Blickkontakt werden belohnt."}],
+    apiTopic:"Leinenziehen vermeiden beim Welpen – erste Schritte" },
+  { id:11, icon:"↩️", title:"Rückruf richtig aufbauen", sub:"Schritt für Schritt",
+    desc:"Ein zuverlässiger Rückruf ist kein Kommando – er ist eine Beziehungsaussage. Kommen muss sich immer lohnen.",
+    mensch:"Halter rufen zu oft ohne Konsequenz – das Wort verliert seinen Wert. Viele schimpfen wenn der Hund endlich kommt. Das Kommen wird zur Strafe.",
+    blocks:[], steps:["Rückrufwort festlegen – nur für den echten Rückruf nutzen.","Erste Übungen drinnen: Welpe rufen wenn er sowieso kommt → größte Belohnung.","Rückrufwort nur einmal sagen – nie wiederholen wenn ignoriert.","Welpe kommt nicht: Halter läuft weg – Welpe folgt instinktiv, dann feiern.","Welpe kommt → immer belohnen. Nie schimpfen.","Freilauf erst wenn Rückruf unter Ablenkung sicher sitzt."],
+    theory:[{q:"R+",t:"Kommen = immer etwas Wertvolles."},{q:"P−",t:"Halter geht weg – Verlust der Bezugsperson wirkt stärker als jede Strafe."}],
+    apiTopic:"Rückruf richtig aufbauen beim Welpen – Rückrufwort, Belohnung" },
+  { id:12, icon:"😨", title:"Angst & Schreckhaftigkeit", sub:"Neue Reize, fremde Situationen",
+    desc:"Der Welpe friert ein, zittert, weicht zurück oder versteckt sich. Angst ist kein Charakterfehler. Sie ist ein Warnsignal des Nervensystems.",
+    mensch:"Entweder wird der Welpe in die Angstsituation gezwungen – oder übermäßig bemitleidet. Das erste kann traumatisieren. Das zweite bestätigt dem Welpen, dass die Situation tatsächlich gefährlich ist.",
+    blocks:[{type:"hw",label:"Wichtiger Hinweis",items:["Angst lässt sich nicht wegstrafen und nicht wegtrainieren. P+ und P− sind hier keine sinnvollen Werkzeuge."]}],
+    steps:["Niemals in die Angstsituation zwingen – der Welpe entscheidet selbst wann er bereit ist.","Abstand zum Angstreiz schaffen bis der Welpe entspannt ist.","Angstreiz + etwas Tolles = neue Verknüpfung.","Abstand schrittweise verringern – nur wenn der Welpe entspannt bleibt.","Ruhig bleiben: der Halter ist das Barometer.","Rückzugsmöglichkeit immer offenlassen – kein Einengen, kein Festhalten.","Fortschritt ist langsam normal. Geduld ist hier keine Option, sie ist die Methode."],
+    theory:[{q:"R+",t:"Angstreiz + positive Erfahrung = Gegenkonditionierung."},{q:"R−",t:"Unter der Reizschwelle bleiben – systematische Desensibilisierung."}],
+    apiTopic:"Angst und Schreckhaftigkeit beim Welpen – Desensibilisierung, Gegenkonditionierung" },
+];
+
+const QC = { "R+":["#dcfce7","#166534"], "R−":["#fef3c7","#92400e"], "P+":["#fee2e2","#991b1b"], "P−":["#dbeafe","#1e40af"] };
+const BS = { mc:["#f9fafb","#d1d5db"], no:["#fff1f2","#fca5a5"], au:["#f0fdf4","#86efac"], hw:["#fffbeb","#f59e0b"], tip:["#f0f9ff","#7dd3fc"] };
+const LS = { fontSize:11, fontWeight:600, color:"#9ca3af", letterSpacing:"0.06em", marginBottom:8, textTransform:"uppercase" };
+
+const QUADRANTS = [
+  { q:"R+", bg:"#dcfce7", text:"#166534", title:"Positive Verstärkung", plain:"Dein Welpe tut etwas Gutes → er bekommt etwas Schönes. Leckerli, Lob, Spiel – das Verhalten wird wahrscheinlicher.", example:"Welpe setzt sich → du lobst und gibst ein Leckerli." },
+  { q:"R−", bg:"#fef3c7", text:"#92400e", title:"Negative Verstärkung", plain:"Etwas Unangenehmes hört auf, sobald dein Welpe das richtige Verhalten zeigt. Nicht Strafe – sondern Erleichterung als Belohnung.", example:"Leinendruck hört auf, sobald der Welpe eine lockere Leine hält." },
+  { q:"P+", bg:"#fee2e2", text:"#991b1b", title:"Positive Strafe", plain:"Auf unerwünschtes Verhalten folgt eine klare, ruhige Konsequenz. Nicht Gewalt – sondern eine faire Grenze.", example:"Welpe springt an → ruhiges Nein + Körpersperre." },
+  { q:"P−", bg:"#dbeafe", text:"#1e40af", title:"Negative Strafe", plain:"Auf unerwünschtes Verhalten folgt der Entzug von etwas Schönem. Das Gute geht weg – das ist die Konsequenz.", example:"Welpe schnappt → Spiel und Aufmerksamkeit enden sofort." },
+];
+
+function Badge({ q, large }) {
+  const c = QC[q]; if (!c) return null;
+  return React.createElement('span', { style:{ background:c[0], color:c[1], fontSize:large?12:10, fontWeight:600, padding:large?"3px 9px":"2px 6px", borderRadius:4, flexShrink:0 }}, q);
+}
+
+function Block({ type, label, items }) {
+  const [bg, bd] = BS[type] || BS.mc;
+  return React.createElement('div', { style:{ background:bg, borderLeft:`2px solid ${bd}`, borderRadius:"0 8px 8px 0", padding:14, marginBottom:14 }},
+    React.createElement('div', { style:LS }, label),
+    items.length === 1
+      ? React.createElement('p', { style:{ fontSize:13, lineHeight:1.65, margin:0, color:"#4b5563" }}, items[0])
+      : React.createElement('ol', { style:{ paddingLeft:"1.2rem", display:"flex", flexDirection:"column", gap:5, margin:0 }},
+          items.map((it,i) => React.createElement('li', { key:i, style:{ fontSize:13, color:"#1f2937", lineHeight:1.5 }}, it))
+        )
+  );
+}
+
+function QuadrantExplainer() {
+  const [open, setOpen] = useState(false);
+  return React.createElement('div', { style:{ marginBottom:16 }},
+    React.createElement('button', {
+      onClick: () => setOpen(v => !v),
+      style:{ width:"100%", textAlign:"left", background:"#f8fafc", border:"0.5px solid #e5e7eb", borderRadius:open?"12px 12px 0 0":12, padding:"12px 16px", cursor:"pointer", fontFamily:"inherit", touchAction:"manipulation" }
+    },
+      React.createElement('div', { style:{ display:"flex", justifyContent:"space-between", alignItems:"center" }},
+        React.createElement('div', null,
+          React.createElement('div', { style:{ fontSize:14, fontWeight:500, color:"#111827" }}, "Was bedeuten R+, R−, P+, P−?"),
+          React.createElement('div', { style:{ fontSize:12, color:"#6b7280", marginTop:2 }}, "Die vier Werkzeuge des Lernens – einfach erklärt")
+        ),
+        React.createElement('span', { style:{ fontSize:16, color:"#6b7280" }}, open ? "▾" : "▸")
+      )
+    ),
+    open && React.createElement('div', { style:{ border:"0.5px solid #e5e7eb", borderTop:"none", borderRadius:"0 0 12px 12px", padding:16, background:"#fff" }},
+      React.createElement('p', { style:{ fontSize:13, color:"#4b5563", lineHeight:1.65, marginBottom:16 }},
+        "Hunde lernen durch Konsequenzen – durch das, was unmittelbar nach einem Verhalten passiert. Die vier Buchstaben stehen für vier verschiedene Arten, wie Konsequenzen wirken können. Alle vier sind wissenschaftlich anerkannt. Alle vier kommen im Leben vor – auch in deinem."
+      ),
+      React.createElement('div', { style:{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(220px, 1fr))", gap:10 }},
+        QUADRANTS.map(q => React.createElement('div', { key:q.q, style:{ background:q.bg, borderRadius:10, padding:14 }},
+          React.createElement('div', { style:{ display:"flex", alignItems:"center", gap:8, marginBottom:8 }},
+            React.createElement('span', { style:{ background:"white", color:q.text, fontSize:13, fontWeight:700, padding:"2px 8px", borderRadius:4 }}, q.q),
+            React.createElement('span', { style:{ fontSize:13, fontWeight:600, color:q.text }}, q.title)
+          ),
+          React.createElement('p', { style:{ fontSize:13, color:q.text, lineHeight:1.6, margin:"0 0 8px" }}, q.plain),
+          React.createElement('p', { style:{ fontSize:12, color:q.text, opacity:0.8, margin:0, fontStyle:"italic" }}, "Beispiel: " + q.example)
+        ))
+      ),
+      React.createElement('p', { style:{ fontSize:12, color:"#6b7280", marginTop:12, lineHeight:1.6 }},
+        "In dieser App findest du bei jedem Thema unter „Lerntheorie" welche dieser Werkzeuge wann und warum sinnvoll sind. Du musst die Begriffe nicht auswendig lernen – die Erklärungen in Alltagssprache sind das Wichtigste."
+      )
+    )
+  );
+}
+
+function QuestionBox({ apiTopic }) {
+  const [text, setText] = useState("");
+  const [response, setResponse] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [count, setCount] = useState(0);
+
+  const ask = async (e) => {
+    e.stopPropagation();
+    if (!text.trim() || loading || count >= 3) return;
+    setLoading(true);
+    setResponse("Einen Moment...");
+    try {
+      const res = await fetch(PROXY, {
+        method:"POST", headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({
+          model:"claude-sonnet-4-20250514", max_tokens:1000,
+          system:`Du bist eine hilfreiche Assistentin von Susanne Zischgl, zertifizierte Hundetrainerin (§11 TierSchG) und Physiotherapeutin mit 35 Jahren Erfahrung. Beantworte Fragen zur Welpenerziehung auf Deutsch, klar und praktisch. Du arbeitest mit allen vier Lernquadranten (R+, R−, P+, P−). Du siehst den Menschen als wichtigen Teil der Lösung. Aktuelles Thema: ${apiTopic}. Antworte in max. 120 Wörtern, konkret und direkt.`,
+          messages:[{ role:"user", content:text.trim() }]
+        })
+      });
+      const data = await res.json();
+      setResponse(data.content[0].text);
+      setCount(c => c + 1);
+      setText("");
+    } catch {
+      setResponse("Es gab einen Fehler. Bitte versuch es nochmal.");
+    }
+    setLoading(false);
+  };
+
+  return React.createElement('div', { style:{ marginTop:20, paddingTop:16, borderTop:"0.5px solid #e5e7eb" }, onClick:e => e.stopPropagation() },
+    React.createElement('div', { style:LS },
+      "Deine Frage ", count < 3 && React.createElement('span', { style:{ fontWeight:400 }}, `(${3-count} verbleibend)`)
+    ),
+    count < 3 && React.createElement(React.Fragment, null,
+      React.createElement('textarea', { value:text, onChange:e => setText(e.target.value), onClick:e => e.stopPropagation(),
+        placeholder:"Was möchtest du wissen?",
+        style:{ width:"100%", border:"0.5px solid #e5e7eb", borderRadius:8, padding:10, fontSize:13, fontFamily:"inherit", resize:"none", height:60, color:"#111827", background:"#fff" }
+      }),
+      React.createElement('button', { onClick:ask, disabled:loading,
+        style:{ marginTop:8, background:loading?"#6b9e8f":"#2C4A3E", color:"#fff", border:"none", borderRadius:8, padding:"9px 18px", fontSize:13, cursor:loading?"default":"pointer", fontFamily:"inherit", touchAction:"manipulation" }
+      }, loading ? "Moment..." : "Frage stellen")
+    ),
+    response && React.createElement('div', { style:{ marginTop:12, padding:12, background:"#f9fafb", borderRadius:8, fontSize:13, lineHeight:1.65, color:"#1f2937", whiteSpace:"pre-wrap" }}, response),
+    count > 0 && count < 3 && React.createElement('div', { style:{ marginTop:10, padding:"10px 14px", background:"#f0f5f3", borderRadius:8, fontSize:12, color:"#2C4A3E", lineHeight:1.7 }},
+      "Das ist die allgemeine Einschätzung. Wenn dein Welpe eine ganz eigene Situation mitbringt – dafür bin ich da.",
+      React.createElement('br'),
+      React.createElement('a', { href:"mailto:tierakademie@web.de", style:{ color:"#2C4A3E", fontWeight:600 }}, "tierakademie@web.de"),
+      " · Susanne Zischgl"
+    ),
+    count >= 3 && React.createElement('div', { style:{ marginTop:12, padding:"12px 14px", background:"#f0f5f3", borderRadius:8, fontSize:13, color:"#2C4A3E", lineHeight:1.65 }},
+      "Drei Fragen – und du hast noch mehr? Dann ist dein Thema persönlicher als eine App beantworten kann. Schreib mir.",
+      React.createElement('br'), React.createElement('br'),
+      React.createElement('a', { href:"mailto:tierakademie@web.de", style:{ color:"#2C4A3E", fontWeight:600 }}, "tierakademie@web.de"),
+      " · Susanne Zischgl"
+    )
+  );
+}
+
+function Card({ t, isOpen, onToggle }) {
+  const [showTheory, setShowTheory] = useState(false);
+  return React.createElement('div', null,
+    React.createElement('div', {
+      onClick: onToggle,
+      style:{ cursor:"pointer", borderRadius:12, padding:14, touchAction:"manipulation", userSelect:"none", WebkitTapHighlightColor:"transparent",
+        border: t.featured ? (isOpen?"1.5px solid #111827":"1.5px solid #2C4A3E") : (isOpen?"1.5px solid #374151":"0.5px solid #e5e7eb"),
+        background: t.featured ? (isOpen?"#e8f0ed":"#f0f5f3") : (isOpen?"#f9fafb":"#fff") }
+    },
+      t.featured
+        ? React.createElement('div', { style:{ display:"flex", alignItems:"center", gap:12, pointerEvents:"none" }},
+            React.createElement('div', { style:{ fontSize:28 }}, t.icon),
+            React.createElement('div', null,
+              React.createElement('div', { style:{ fontWeight:600, fontSize:15, color:"#2C4A3E" }}, t.title),
+              React.createElement('div', { style:{ fontSize:12, color:"#4A6741", marginTop:2 }}, t.sub)
+            )
+          )
+        : React.createElement('div', { style:{ pointerEvents:"none" }},
+            React.createElement('div', { style:{ fontSize:20, marginBottom:8 }}, t.icon),
+            React.createElement('div', { style:{ fontWeight:500, fontSize:14, color:"#111827" }}, t.title),
+            React.createElement('div', { style:{ fontSize:12, color:"#6b7280", marginTop:2 }}, t.sub)
+          )
+    ),
+    isOpen && React.createElement('div', { style:{ marginTop:8, border:"0.5px solid #e5e7eb", borderRadius:12, padding:18, background:"#fff" }, onClick:e => e.stopPropagation() },
+      React.createElement('div', { style:{ fontSize:17, fontWeight:500, color:"#111827", marginBottom:12 }}, t.title),
+      React.createElement('p', { style:{ fontSize:14, color:"#1f2937", lineHeight:1.65, marginBottom:14 }}, t.desc),
+      t.blocks.map((b,i) => React.createElement(Block, { key:i, ...b })),
+      React.createElement('div', { style:{ background:"#f9fafb", borderLeft:"2px solid #d1d5db", borderRadius:"0 8px 8px 0", padding:14, marginBottom:14 }},
+        React.createElement('div', { style:LS }, "Mensch-Check"),
+        React.createElement('p', { style:{ fontSize:13, color:"#4b5563", lineHeight:1.65, margin:0 }}, t.mensch)
+      ),
+      t.steps.length > 0 && React.createElement(React.Fragment, null,
+        React.createElement('div', { style:LS }, "So gehst du vor"),
+        React.createElement('ol', { style:{ paddingLeft:"1.2rem", display:"flex", flexDirection:"column", gap:6, marginBottom:16 }},
+          t.steps.map((s,i) => React.createElement('li', { key:i, style:{ fontSize:13, color:"#1f2937", lineHeight:1.5 }}, s))
+        )
+      ),
+      t.theory.length > 0 && React.createElement(React.Fragment, null,
+        React.createElement('button', {
+          onClick: e => { e.stopPropagation(); setShowTheory(v => !v); },
+          style:{ fontSize:13, fontWeight:500, color:"#6b7280", padding:"6px 12px", border:"0.5px solid #e5e7eb", borderRadius:20, background:showTheory?"#f9fafb":"#fff", cursor:"pointer", fontFamily:"inherit", touchAction:"manipulation", marginBottom:4 }
+        }, (showTheory ? "▾" : "▸") + " Lerntheorie"),
+        showTheory && React.createElement('div', { style:{ marginTop:12, paddingTop:12, borderTop:"0.5px solid #e5e7eb" }},
+          React.createElement('div', { style:LS }, "Lerntheorie"),
+          t.theory.map((th,i) => React.createElement('div', { key:i, style:{ display:"flex", gap:10, alignItems:"flex-start", marginBottom:8 }},
+            React.createElement(Badge, { q:th.q, large:true }),
+            React.createElement('span', { style:{ fontSize:13, color:"#1f2937", lineHeight:1.5 }}, th.t)
+          )),
+          t.id === 12 && React.createElement('p', { style:{ fontSize:12, color:"#6b7280", marginTop:8 }}, "P+ und P− sind bei echter Angst kontraindiziert.")
+        )
+      ),
+      React.createElement(QuestionBox, { apiTopic:t.apiTopic })
+    )
+  );
+}
+
+function App() {
+  const [openIds, setOpenIds] = useState(new Set());
+  const toggle = (id) => setOpenIds(prev => {
+    const next = new Set(prev);
+    next.has(id) ? next.delete(id) : next.add(id);
+    return next;
+  });
+
+  return React.createElement('div', { style:{ fontFamily:"system-ui, -apple-system, sans-serif" }},
+    React.createElement('div', { style:{ display:"flex", justifyContent:"space-between", alignItems:"flex-end", marginBottom:20, paddingBottom:14, borderBottom:"0.5px solid #e5e7eb" }},
+      React.createElement('div', null,
+        React.createElement('div', { style:{ fontSize:22, fontWeight:500, color:"#111827" }}, "Welpenerziehung"),
+        React.createElement('div', { style:{ fontSize:13, color:"#6b7280", marginTop:4 }}, "Tierakademie Zischgl")
+      ),
+      React.createElement('span', { style:{ fontSize:11, color:"#9ca3af" }}, "© Susanne Zischgl")
+    ),
+    React.createElement(QuadrantExplainer),
+    React.createElement('div', { style:{ display:"flex", flexDirection:"column", gap:10 }},
+      TOPICS.map(t => React.createElement(Card, { key:t.id, t, isOpen:openIds.has(t.id), onToggle:() => toggle(t.id) }))
+    )
+  );
+}
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(React.createElement(App));
+</script>
+</body>
+</html>
