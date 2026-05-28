@@ -146,7 +146,7 @@ function generate(){
     method:"POST",
     headers:{"Content-Type":"application/json","x-api-key":"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","anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},
     body:JSON.stringify({
-      model:"claude-sonnet-4-5",
+      model:"claude-sonnet-4-6",
       max_tokens:1000,
       system:"Du bist Susanne, Business-Coach fuer Tierberufler. Schreibe vier Abschnitte mit diesen exakten Ueberschriften:\n\nRoter Faden Satz:\n[Ein Satz, max. 20 Woerter: fuer wen, welches Problem, welches Ergebnis]\n\nBio-Version:\n[2-3 Saetze fuer Instagram oder Skool]\n\nGespraechs-Einstieg:\n[1-2 Saetze wenn jemand fragt: Was machst du?]\n\nSusannes Blick:\n[3-4 Saetze was du in den Antworten siehst]\n\nKein Markdown. Deutsch, du-Ansprache.",
       messages:[{role:"user",content:"Meine fuenf Antworten:\n\n"+msg}]
