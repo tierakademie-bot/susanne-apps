@@ -198,41 +198,9 @@ function generate(){
   showLoading();
   var msg="";
   var labels=["Schwierigste Wartesituationen","Reaktion wenn Hund nicht wartet","Wie lange der Hund warten kann","Eigene Frustrationstoleranz","Wunschbild fuer kuenftige Warteситуationen"];
-  for(var i=0;i<5;i++) msg+=labels[i]+": "+(ANS[i]||"keine Angabe")+"
-";
+  for(var i=0;i<5;i++) msg+=labels[i]+": "+(ANS[i]||"keine Angabe")+"\n";
 
-  var sys="Du bist Susanne, erfahrene Hundetrainerin, Physiotherapeutin und systemische Coach mit ueber 30 Jahren Erfahrung in der Mensch-Hund-Beziehung.
-
-Diese App befasst sich mit Frustrationstoleranz und Warten bei Hund UND Mensch. Kerngedanke: Frustrationstoleranz entsteht nicht durch Strenge, sondern durch konsequente Freundlichkeit. Ein Hund der immer sofort bekommt was er will, lernt dass Draengen funktioniert.
-
-WICHTIG fuer die Sprache: Schreibe so einfach und klar dass auch Menschen ohne Hundekenntnisse alles verstehen. Vermeide Fachbegriffe oder erklaere sie sofort. Zum Beispiel: Statt 'Tuerschwelle' schreibe 'die Tuer – warte bis dein Hund ruhig ist bevor ihr gemeinsam durchgeht'. Jede Uebung muss sofort verstaendlich sein ohne Erklaerung.
-
-Basierend auf den fuenf Antworten schreibst du sechs Abschnitte:
-
-Was du mir zeigst:
-[2-3 Saetze ehrlich und warm]
-
-5 Warteuebungen fuer deinen Hund:
-[Genau 5 Uebungen, klar gestaffelt von einfach bis schwer. Format pro Uebung: Nummer, Name, Schwierigkeitsgrad in Klammern (leicht/mittel/fortgeschritten), dann 2-3 Saetze Beschreibung in einfacher Alltagssprache. Beginne mit sehr einfachen Momenten die der Hund schon fast kann, steigere langsam. Hinweis am Ende: Bleib bei Stufe 1 bis dein Hund sie sicher beherrscht, bevor du weitermachst.]
-
-3 Selbstbeobachtungsaufgaben fuer dich:
-[3 Aufgaben, nummeriert. Fokus auf innere Wahrnehmung.]
-
-Dein 7-Tage-Warte-Plan:
-[Aufbauend, klein, machbar. Tag 1-2: nur die leichteste Uebung. Tag 3-4: etwas mehr. Tag 5-6: naechste Stufe. Tag 7: Rueckblick.]
-
-Der Satz der alles veraendert:
-[1-2 Saetze]
-
-Deine eine Sache heute:
-[1 Satz konkret]
-
-Am Ende nach dem letzten Abschnitt schreibe noch diesen Hinweis:
-
-Wenn du nicht weiterkommst:
-[2-3 Saetze: Wenn du merkst dass du alleine nicht weiterkommst oder dein Hund trotz Ueben nicht ruhiger wird – das ist kein Versagen. Dann ist der richtige Moment fuer professionelle Unterstuetzung. Als erfahrene Hundetrainerin begleite ich dich gerne persoenlich dabei. Susanne Zischgl – www.Tierakademie-Zischgl.de]
-
-Kein Markdown. Deutsch, du-Ansprache.";
+  var sys="Du bist Susanne, erfahrene Hundetrainerin, Physiotherapeutin und systemische Coach mit ueber 30 Jahren Erfahrung in der Mensch-Hund-Beziehung.\n\nDiese App befasst sich mit Frustrationstoleranz und Warten bei Hund UND Mensch. Kerngedanke: Frustrationstoleranz entsteht nicht durch Strenge, sondern durch konsequente Freundlichkeit. Ein Hund der immer sofort bekommt was er will, lernt dass Draengen funktioniert.\n\nWICHTIG fuer die Sprache: Schreibe so einfach und klar dass auch Menschen ohne Hundekenntnisse alles verstehen. Vermeide Fachbegriffe oder erklaere sie sofort. Zum Beispiel: Statt 'Tuerschwelle' schreibe 'die Tuer – warte bis dein Hund ruhig ist bevor ihr gemeinsam durchgeht'. Jede Uebung muss sofort verstaendlich sein ohne Erklaerung.\n\nBasierend auf den fuenf Antworten schreibst du sechs Abschnitte:\n\nWas du mir zeigst:\n[2-3 Saetze ehrlich und warm]\n\n5 Warteuebungen fuer deinen Hund:\n[Genau 5 Uebungen, klar gestaffelt von einfach bis schwer. Format pro Uebung: Nummer, Name, Schwierigkeitsgrad in Klammern (leicht/mittel/fortgeschritten), dann 2-3 Saetze Beschreibung in einfacher Alltagssprache. Beginne mit sehr einfachen Momenten die der Hund schon fast kann, steigere langsam. Hinweis am Ende: Bleib bei Stufe 1 bis dein Hund sie sicher beherrscht, bevor du weitermachst.]\n\n3 Selbstbeobachtungsaufgaben fuer dich:\n[3 Aufgaben, nummeriert. Fokus auf innere Wahrnehmung.]\n\nDein 7-Tage-Warte-Plan:\n[Aufbauend, klein, machbar. Tag 1-2: nur die leichteste Uebung. Tag 3-4: etwas mehr. Tag 5-6: naechste Stufe. Tag 7: Rueckblick.]\n\nDer Satz der alles veraendert:\n[1-2 Saetze]\n\nDeine eine Sache heute:\n[1 Satz konkret]\n\nAm Ende nach dem letzten Abschnitt schreibe noch diesen Hinweis:\n\nWenn du nicht weiterkommst:\n[2-3 Saetze: Wenn du merkst dass du alleine nicht weiterkommst oder dein Hund trotz Ueben nicht ruhiger wird – das ist kein Versagen. Dann ist der richtige Moment fuer professionelle Unterstuetzung. Als erfahrene Hundetrainerin begleite ich dich gerne persoenlich dabei. Susanne Zischgl – www.Tierakademie-Zischgl.de]\n\nKein Markdown. Deutsch, du-Ansprache.";
 
   fetch("https://tierakademie-proxy.tierakademie.workers.dev",{
     method:"POST",
@@ -241,9 +209,7 @@ Kein Markdown. Deutsch, du-Ansprache.";
       model:"claude-sonnet-4-5",
       max_tokens:2000,
       system:sys,
-      messages:[{role:"user",content:"Hier sind die fuenf Antworten:
-
-"+msg}]
+      messages:[{role:"user",content:"Hier sind die fuenf Antworten:\n\n"+msg}]
     })
   })
   .then(function(r){if(!r.ok)throw new Error("Fehler "+r.status);return r.json();})
@@ -268,8 +234,7 @@ function showResult(){
     {key:"wenn du nicht weiterkommst",lbl:"&#128081; Wenn du nicht weiterkommst",col:"#2D4A3E",type:"trainer"}
   ];
   var parsed=[],cur=null;
-  var lines=RES.split("
-");
+  var lines=RES.split("\n");
   for(var i=0;i<lines.length;i++){
     var line=lines[i].trim(),low=line.toLowerCase();
     var found=false;
@@ -280,8 +245,7 @@ function showResult(){
         found=true;break;
       }
     }
-    if(!found&&cur&&line) cur.txt+=(cur.txt?"
-":"")+line;
+    if(!found&&cur&&line) cur.txt+=(cur.txt?"\n":"")+line;
   }
   if(cur)parsed.push(cur);
   if(!parsed.length)parsed=[{lbl:"&#128062; Dein Ergebnis",col:"#1E3A2E",type:"normal",txt:RES}];
@@ -292,8 +256,7 @@ function showResult(){
 
   for(var k=0;k<parsed.length;k++){
     var s=parsed[k];
-    var items=s.txt.split("
-").filter(function(l){return l.trim()!=="";});
+    var items=s.txt.split("\n").filter(function(l){return l.trim()!=="";});
 
     if(s.type==="uebungen"){
       html+='<div class="uebung-box"><div class="ut">'+s.lbl+'</div>';
@@ -332,24 +295,21 @@ function showResult(){
     } else if(s.type==="plan"){
       html+='<div class="rbox" style="border-left:4px solid '+s.col+'">'+
         '<div class="rs-lbl" style="color:'+s.col+'">'+s.lbl+'</div>'+
-        '<div class="rs-txt">'+s.txt.replace(/
-/g,"<br>")+'</div>'+
+        '<div class="rs-txt">'+s.txt.replace(/\n/g,"<br>")+'</div>'+
         '<p class="copy-hint">&#128070; Klick ins Feld &#8594; alles markiert &#8594; Strg+C</p>'+
         '<textarea class="copy-field" readonly rows="6" onclick="this.select()">'+s.txt+'</textarea>'+
         '</div>';
     } else if(s.type==="copy"){
       html+='<div class="rbox" style="border-left:4px solid '+s.col+'">'+
         '<div class="rs-lbl" style="color:'+s.col+'">'+s.lbl+'</div>'+
-        '<div class="rs-txt">'+s.txt.replace(/
-/g,"<br>")+'</div>'+
+        '<div class="rs-txt">'+s.txt.replace(/\n/g,"<br>")+'</div>'+
         '<p class="copy-hint">&#128070; Klick ins Feld &#8594; alles markiert &#8594; Strg+C</p>'+
         '<textarea class="copy-field" readonly rows="3" onclick="this.select()">'+s.txt+'</textarea>'+
         '</div>';
     } else if(s.type==="trainer"){
       html+='<div style="background:linear-gradient(135deg,#2D4A3E,#4A7C6F);border-radius:12px;padding:14px 16px;margin-bottom:14px;color:white">'+
         '<div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#D4A853;margin-bottom:8px;font-family:system-ui">&#128081; Wenn du nicht weiterkommst</div>'+
-        '<div style="font-size:13px;line-height:1.75;color:rgba(255,255,255,.92)">'+s.txt.replace(/
-/g,"<br>")+'</div>'+
+        '<div style="font-size:13px;line-height:1.75;color:rgba(255,255,255,.92)">'+s.txt.replace(/\n/g,"<br>")+'</div>'+
         '<div style="margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,.2)">'+
         '<div style="font-size:13px;font-weight:700;color:#D4A853;margin-bottom:4px">Susanne Zischgl</div>'+
         '<a href="https://www.Tierakademie-Zischgl.de" target="_blank" style="color:white;font-size:13px;font-family:system-ui;text-decoration:underline">www.Tierakademie-Zischgl.de</a>'+
@@ -358,8 +318,7 @@ function showResult(){
     } else {
       html+='<div class="rbox" style="border-left:4px solid '+s.col+'">'+
         '<div class="rs-lbl" style="color:'+s.col+'">'+s.lbl+'</div>'+
-        '<div class="rs-txt">'+s.txt.replace(/
-/g,"<br>")+'</div>'+
+        '<div class="rs-txt">'+s.txt.replace(/\n/g,"<br>")+'</div>'+
         '</div>';
     }
   }

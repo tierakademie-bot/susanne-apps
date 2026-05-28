@@ -141,32 +141,15 @@ function showLoading(){
 function generate(){
   showLoading();
   var msg="";
-  for(var i=0;i<5;i++) msg+=QS[i].lbl+": "+(ANS[i]||"keine Antwort")+"
-";
+  for(var i=0;i<5;i++) msg+=QS[i].lbl+": "+(ANS[i]||"keine Antwort")+"\n";
   fetch("https://api.anthropic.com/v1/messages",{
     method:"POST",
     headers:{"Content-Type":"application/json","x-api-key":"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","anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},
     body:JSON.stringify({
       model:"claude-sonnet-4-5",
       max_tokens:1000,
-      system:"Du bist Susanne, Business-Coach fuer Tierberufler. Schreibe vier Abschnitte mit diesen exakten Ueberschriften:
-
-Roter Faden Satz:
-[Ein Satz, max. 20 Woerter: fuer wen, welches Problem, welches Ergebnis]
-
-Bio-Version:
-[2-3 Saetze fuer Instagram oder Skool]
-
-Gespraechs-Einstieg:
-[1-2 Saetze wenn jemand fragt: Was machst du?]
-
-Susannes Blick:
-[3-4 Saetze was du in den Antworten siehst]
-
-Kein Markdown. Deutsch, du-Ansprache.",
-      messages:[{role:"user",content:"Meine fuenf Antworten:
-
-"+msg}]
+      system:"Du bist Susanne, Business-Coach fuer Tierberufler. Schreibe vier Abschnitte mit diesen exakten Ueberschriften:\n\nRoter Faden Satz:\n[Ein Satz, max. 20 Woerter: fuer wen, welches Problem, welches Ergebnis]\n\nBio-Version:\n[2-3 Saetze fuer Instagram oder Skool]\n\nGespraechs-Einstieg:\n[1-2 Saetze wenn jemand fragt: Was machst du?]\n\nSusannes Blick:\n[3-4 Saetze was du in den Antworten siehst]\n\nKein Markdown. Deutsch, du-Ansprache.",
+      messages:[{role:"user",content:"Meine fuenf Antworten:\n\n"+msg}]
     })
   })
   .then(function(r){if(!r.ok)throw new Error("Fehler "+r.status);return r.json();})
@@ -188,8 +171,7 @@ function showResult(){
     {key:"susannes blick",lbl:"🧭 Susannes Blick",col:"#D4A853",copy:false}
   ];
   var parsed=[], cur=null;
-  var lines=RES.split("
-");
+  var lines=RES.split("\n");
   for(var i=0;i<lines.length;i++){
     var line=lines[i].trim(), low=line.toLowerCase();
     var found=false;
@@ -200,8 +182,7 @@ function showResult(){
         found=true;break;
       }
     }
-    if(!found&&cur&&line) cur.txt+=(cur.txt?"
-":"")+line;
+    if(!found&&cur&&line) cur.txt+=(cur.txt?"\n":"")+line;
   }
   if(cur)parsed.push(cur);
   if(!parsed.length)parsed=[{lbl:"🧵 Ergebnis",col:"#2D4A3E",copy:true,txt:RES}];
@@ -209,11 +190,9 @@ function showResult(){
   var html='<div class="card-body"><p style="font-size:16px;font-weight:700;color:#2D4A3E;margin-bottom:4px">Dein roter Faden &#129525;</p><p style="font-size:13px;color:#6B8A7E;font-family:system-ui;margin-bottom:16px;line-height:1.6">Lies es in Ruhe durch - und nimm dir den Satz, der sich am echtesten anfuehlt.</p>';
   for(var k=0;k<parsed.length;k++){
     var s=parsed[k];
-    var rows=Math.max(2,s.txt.split("
-").length+1);
+    var rows=Math.max(2,s.txt.split("\n").length+1);
     var cp=s.copy?'<p class="copy-hint">&#128070; Klick ins Feld &#8594; alles markiert &#8594; Strg+C</p><textarea class="copy-field" readonly rows="'+rows+'" onclick="this.select()">'+s.txt+'</textarea>':"";
-    html+='<div class="rbox" style="border-left:4px solid '+s.col+'"><div class="rs-lbl" style="color:'+s.col+'">'+s.lbl+'</div><div class="rs-txt">'+s.txt.replace(/
-/g,"<br>")+'</div>'+cp+'</div>';
+    html+='<div class="rbox" style="border-left:4px solid '+s.col+'"><div class="rs-lbl" style="color:'+s.col+'">'+s.lbl+'</div><div class="rs-txt">'+s.txt.replace(/\n/g,"<br>")+'</div>'+cp+'</div>';
   }
   html+='<button class="btn-p" onclick="reset()" style="margin-top:6px">&#8635; Check nochmal machen</button></div>';
   $("card").innerHTML=html;

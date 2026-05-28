@@ -158,32 +158,13 @@ function generate(){
   for(var i=0;i<selectedCats.length;i++) cats.push(CATS[selectedCats[i]]);
   showLoading();
 
-  var sys = "Du bist Susanne, Gastgeberin der Skool-Community 'Tierbusiness Community'. Du planst fertige Community-Posts.
+  var sys = "Du bist Susanne, Gastgeberin der Skool-Community 'Tierbusiness Community'. Du planst fertige Community-Posts.\n\nKategorien: Tierbusiness Austausch, Mindset & Businessblockaden, Sichtbarkeit & Marketing, Positionierung & Angebote, KI fuer Tierberufler.\n\nFuer jeden Post exakt dieses Format:\n\n###POST###\nDATUM: [Wochentag, Datum]\nKATEGORIE: [Kategorie]\nTITEL: [Kurzer Titel]\nTEXT: [Fertiger Post-Text, 3-5 Saetze, kopierfertig]\nTIPP: [Kurzer Tipp fuer Susanne wie sie moderieren kann]\n###ENDE###\n\nWarm, direkt, ohne Floskeln. Deutsch, du-Ansprache.";
 
-Kategorien: Tierbusiness Austausch, Mindset & Businessblockaden, Sichtbarkeit & Marketing, Positionierung & Angebote, KI fuer Tierberufler.
-
-Fuer jeden Post exakt dieses Format:
-
-###POST###
-DATUM: [Wochentag, Datum]
-KATEGORIE: [Kategorie]
-TITEL: [Kurzer Titel]
-TEXT: [Fertiger Post-Text, 3-5 Saetze, kopierfertig]
-TIPP: [Kurzer Tipp fuer Susanne wie sie moderieren kann]
-###ENDE###
-
-Warm, direkt, ohne Floskeln. Deutsch, du-Ansprache.";
-
-  var userMsg = "Erstelle "+postCount+" fertige Posts.
-";
-  userMsg += "Startdatum: "+(startDatum||"naechster Montag")+"
-";
-  userMsg += "Kategorien: "+cats.join(", ")+"
-";
-  if(thema) userMsg += "Schwerpunkt-Thema: "+thema+"
-";
-  userMsg += "
-Abwechslungsreich in Ton und Thema, gut ueber die Wochen verteilt.";
+  var userMsg = "Erstelle "+postCount+" fertige Posts.\n";
+  userMsg += "Startdatum: "+(startDatum||"naechster Montag")+"\n";
+  userMsg += "Kategorien: "+cats.join(", ")+"\n";
+  if(thema) userMsg += "Schwerpunkt-Thema: "+thema+"\n";
+  userMsg += "\nAbwechslungsreich in Ton und Thema, gut ueber die Wochen verteilt.";
 
   fetch("https://tierakademie-proxy.tierakademie.workers.dev",{
     method:"POST",
@@ -212,8 +193,7 @@ function showResult(){
   for(var i=1;i<parts.length;i++){
     var part = parts[i].split("###ENDE###")[0].trim();
     var post = {datum:"",kat:"",titel:"",text:"",tipp:""};
-    var lines = part.split("
-");
+    var lines = part.split("\n");
     for(var j=0;j<lines.length;j++){
       var line = lines[j].trim();
       if(line.indexOf("DATUM:")==0) post.datum=line.substring(6).trim();

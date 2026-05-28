@@ -189,33 +189,9 @@ function generate(){
   showLoading();
   var msg="";
   var labels=["Bisherige Trainingsansaetze und wie sie sich anfuehlten","Beduerfnis nach Struktur oder Freiheit","Tendenz zu Fuehren oder Begleiten","Reaktion des Hundes auf verschiedene Ansaetze","Wie ein stimmiger Weg sich anfuehlen wuerde"];
-  for(var i=0;i<5;i++) msg+=labels[i]+": "+(ANS[i]||"keine Angabe")+"
-";
+  for(var i=0;i<5;i++) msg+=labels[i]+": "+(ANS[i]||"keine Angabe")+"\n";
 
-  var sys="Du bist Susanne, erfahrene Hundetrainerin, Physiotherapeutin und systemische Coach mit ueber 30 Jahren Erfahrung. Du arbeitest mit dem 7-Felder-Modell der Mensch-Hund-Dynamik.
-
-Feld 6 ist die Methodik: Hier geht es nicht um eine bestimmte Trainingsmethode, sondern darum, herauszufinden welcher Ansatz wirklich zum Menschen und zum Hund passt. Der Schluesselgedanke: Methoden wirken nicht an sich – sie wirken nur, wenn sie durch den Menschen klar werden. Eine Methode die sich fremd anfuehlt, wird nie konsequent umgesetzt. Eine Methode die stimmig ist, wird lebendig.
-
-Du schreibst klar, ermutigend, direkt und ohne Floskeln. Kein Lob, keine falschen Versprechen. Du zeigst dem Menschen ehrlich, welcher Weg zu ihm passt – und warum er bisher vielleicht nicht gefunden hat was er gesucht hat.
-
-Basierend auf den fuenf Antworten schreibst du fuenf Abschnitte mit diesen exakten Ueberschriften:
-
-Warum bisherige Ansaetze nicht gepasst haben:
-[2-3 Saetze: Nicht als Kritik – sondern als ehrliche Erklaerung. Was hat nicht gestimmt und warum? Lag es an der Methode oder an der Passung zum Menschen?]
-
-Dein Profil als Hundehalter:
-[3-4 Saetze: Wie ist dieser Mensch? Fuehrt er oder begleitet er? Braucht er Struktur oder Freiheit? Was sind seine Staerken und wo liegt seine Herausforderung im Umgang mit dem Hund?]
-
-Was zu dir und deinem Hund passt:
-[3-4 Saetze: Benenne klar welche Art von Ansatz stimmig waere. Nicht eine spezifische Trainingsmethode beim Namen nennen – sondern beschreiben wie der Ansatz sein soll: z.B. klar und beziehungsbasiert, sanft und strukturiert, konsequent und warm.]
-
-Dein stimmiger Weg:
-[2-3 Saetze als konkreten Leitsatz oder Bild: Wie sieht dieser Weg aus? Was ist der Kern? Formuliere es so dass der Mensch es mitnehmen und festhalten kann.]
-
-Dein naechster Schritt:
-[1-2 Saetze: Eine einzige konkrete Handlung – nicht Theorie, sondern etwas das dieser Mensch morgen tun kann.]
-
-Kein Markdown. Deutsch, du-Ansprache.";
+  var sys="Du bist Susanne, erfahrene Hundetrainerin, Physiotherapeutin und systemische Coach mit ueber 30 Jahren Erfahrung. Du arbeitest mit dem 7-Felder-Modell der Mensch-Hund-Dynamik.\n\nFeld 6 ist die Methodik: Hier geht es nicht um eine bestimmte Trainingsmethode, sondern darum, herauszufinden welcher Ansatz wirklich zum Menschen und zum Hund passt. Der Schluesselgedanke: Methoden wirken nicht an sich – sie wirken nur, wenn sie durch den Menschen klar werden. Eine Methode die sich fremd anfuehlt, wird nie konsequent umgesetzt. Eine Methode die stimmig ist, wird lebendig.\n\nDu schreibst klar, ermutigend, direkt und ohne Floskeln. Kein Lob, keine falschen Versprechen. Du zeigst dem Menschen ehrlich, welcher Weg zu ihm passt – und warum er bisher vielleicht nicht gefunden hat was er gesucht hat.\n\nBasierend auf den fuenf Antworten schreibst du fuenf Abschnitte mit diesen exakten Ueberschriften:\n\nWarum bisherige Ansaetze nicht gepasst haben:\n[2-3 Saetze: Nicht als Kritik – sondern als ehrliche Erklaerung. Was hat nicht gestimmt und warum? Lag es an der Methode oder an der Passung zum Menschen?]\n\nDein Profil als Hundehalter:\n[3-4 Saetze: Wie ist dieser Mensch? Fuehrt er oder begleitet er? Braucht er Struktur oder Freiheit? Was sind seine Staerken und wo liegt seine Herausforderung im Umgang mit dem Hund?]\n\nWas zu dir und deinem Hund passt:\n[3-4 Saetze: Benenne klar welche Art von Ansatz stimmig waere. Nicht eine spezifische Trainingsmethode beim Namen nennen – sondern beschreiben wie der Ansatz sein soll: z.B. klar und beziehungsbasiert, sanft und strukturiert, konsequent und warm.]\n\nDein stimmiger Weg:\n[2-3 Saetze als konkreten Leitsatz oder Bild: Wie sieht dieser Weg aus? Was ist der Kern? Formuliere es so dass der Mensch es mitnehmen und festhalten kann.]\n\nDein naechster Schritt:\n[1-2 Saetze: Eine einzige konkrete Handlung – nicht Theorie, sondern etwas das dieser Mensch morgen tun kann.]\n\nKein Markdown. Deutsch, du-Ansprache.";
 
   fetch("https://tierakademie-proxy.tierakademie.workers.dev",{
     method:"POST",
@@ -224,9 +200,7 @@ Kein Markdown. Deutsch, du-Ansprache.";
       model:"claude-sonnet-4-5",
       max_tokens:1100,
       system:sys,
-      messages:[{role:"user",content:"Hier sind die fuenf Antworten:
-
-"+msg}]
+      messages:[{role:"user",content:"Hier sind die fuenf Antworten:\n\n"+msg}]
     })
   })
   .then(function(r){if(!r.ok)throw new Error("Fehler "+r.status);return r.json();})
@@ -249,8 +223,7 @@ function showResult(){
     {key:"dein naechster schritt",lbl:"&#128336; Dein naechster Schritt",col:"#4A7C6F",copy:true,weg:false}
   ];
   var parsed=[],cur=null;
-  var lines=RES.split("
-");
+  var lines=RES.split("\n");
   for(var i=0;i<lines.length;i++){
     var line=lines[i].trim(),low=line.toLowerCase();
     var found=false;
@@ -261,8 +234,7 @@ function showResult(){
         found=true;break;
       }
     }
-    if(!found&&cur&&line) cur.txt+=(cur.txt?"
-":"")+line;
+    if(!found&&cur&&line) cur.txt+=(cur.txt?"\n":"")+line;
   }
   if(cur)parsed.push(cur);
   if(!parsed.length)parsed=[{lbl:"&#127811; Dein stimmiger Weg",col:"#D4A853",copy:true,weg:true,txt:RES}];
@@ -277,11 +249,9 @@ function showResult(){
     if(s.weg){
       html+='<div class="weg-box">'+
         '<div class="wt">'+s.lbl.replace("&#127811; ","")+'</div>'+
-        '<div class="wt-text">'+s.txt.replace(/
-/g,"<br>")+'</div>'+
+        '<div class="wt-text">'+s.txt.replace(/\n/g,"<br>")+'</div>'+
         '<p class="copy-hint" style="color:rgba(255,255,255,.6)">&#128070; Klick ins Feld &#8594; alles markiert &#8594; Strg+C</p>'+
-        '<textarea class="copy-field" readonly rows="'+Math.max(3,s.txt.split("
-").length+1)+'" onclick="this.select()" style="background:rgba(255,255,255,.12);border-color:rgba(212,168,83,.5);color:white">'+s.txt+'</textarea>'+
+        '<textarea class="copy-field" readonly rows="'+Math.max(3,s.txt.split("\n").length+1)+'" onclick="this.select()" style="background:rgba(255,255,255,.12);border-color:rgba(212,168,83,.5);color:white">'+s.txt+'</textarea>'+
         '</div>';
     } else {
       var cp=s.copy?
@@ -289,8 +259,7 @@ function showResult(){
         '<textarea class="copy-field" readonly rows="3" onclick="this.select()">'+s.txt+'</textarea>':'';
       html+='<div class="rbox" style="border-left:4px solid '+s.col+'">'+
         '<div class="rs-lbl" style="color:'+s.col+'">'+s.lbl+'</div>'+
-        '<div class="rs-txt">'+s.txt.replace(/
-/g,"<br>")+'</div>'+cp+'</div>';
+        '<div class="rs-txt">'+s.txt.replace(/\n/g,"<br>")+'</div>'+cp+'</div>';
     }
   }
 

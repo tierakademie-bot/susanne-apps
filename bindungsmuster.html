@@ -187,33 +187,9 @@ function generate(){
   showLoading();
   var msg="";
   var labels=["Fruehe Erfahrungen mit Naehe und Unterstuetzung","Vertrauen in Beziehungen","Reaktion auf Unverstanden-Fuehlen","Verhaeltnis Naehe und Eigenstaendigkeit","Was der Hund bedeutet"];
-  for(var i=0;i<5;i++) msg+=labels[i]+": "+(ANS[i]||"keine Angabe")+"
-";
+  for(var i=0;i<5;i++) msg+=labels[i]+": "+(ANS[i]||"keine Angabe")+"\n";
 
-  var sys="Du bist Susanne, erfahrene Hundetrainerin, Physiotherapeutin und systemische Coach mit ueber 30 Jahren Erfahrung. Du arbeitest mit dem 6-Felder-Modell der Mensch-Hund-Dynamik.
-
-Feld 4 sind die Bindungsmuster: die tiefste Schicht der Beziehungsgestaltung. Bindungsmuster entstehen frueh und zeigen sich in allen Beziehungen – auch mit dem Hund. Es gibt im Wesentlichen vier Grundmuster: sicher (Vertrauen faellt leicht, Naehe und Eigenstaendigkeit balanciert), aengstlich-ambivalent (starkes Beduerfnis nach Naehe, Angst vor Verlust), vermeidend (Eigenstaendigkeit wird bevorzugt, Naehe kann ueberwaetigend sein), desorganisiert (gemischte und widersprüchliche Muster, oft nach schwierigen fruehen Erfahrungen).
-
-Du schreibst warm, tief, behutsam und ohne Floskeln. Kein Coaching-Sprech, keine Diagnosen. Du benennt was du siehst als Einladung, nicht als Urteil. Du weist darauf hin, dass tiefe Bindungsmuster professionelle Begleitung verdienen – ohne zu dramatisieren.
-
-Basierend auf den fuenf Antworten schreibst du fuenf Abschnitte mit diesen exakten Ueberschriften:
-
-Dein Bindungsmuster:
-[3-4 Saetze: Welches Grundmuster erkennst du? Benenne es klar und behutsam. Erklaere kurz was es bedeutet – nicht als Diagnose, sondern als Orientierung.]
-
-Was du auf deinen Hund uebertragst:
-[2-3 Saetze: Wie zeigt sich dieses Bindungsmuster konkret in der Beziehung zum Hund? Was uebertraegst du unbewusst?]
-
-Was dein Hund davon traegt:
-[2-3 Saetze: Was bedeutet dieses Muster fuer deinen Hund? Was tragt er mit, was eigentlich nicht ihm gehoert?]
-
-Selbstreflexion:
-[2-3 Saetze: Was koennte der Mensch erkennen und annehmen – ohne sich dafuer zu verurteilen? Was waere ein erster behutsamer Blick auf sich selbst?]
-
-Deine eine Veraenderung diese Woche:
-[1-2 Saetze: Eine einzige innere Beobachtungsaufgabe – kein Training, kein Druck. Etwas das man in Ruhe wahrnehmen kann.]
-
-Kein Markdown. Deutsch, du-Ansprache.";
+  var sys="Du bist Susanne, erfahrene Hundetrainerin, Physiotherapeutin und systemische Coach mit ueber 30 Jahren Erfahrung. Du arbeitest mit dem 6-Felder-Modell der Mensch-Hund-Dynamik.\n\nFeld 4 sind die Bindungsmuster: die tiefste Schicht der Beziehungsgestaltung. Bindungsmuster entstehen frueh und zeigen sich in allen Beziehungen – auch mit dem Hund. Es gibt im Wesentlichen vier Grundmuster: sicher (Vertrauen faellt leicht, Naehe und Eigenstaendigkeit balanciert), aengstlich-ambivalent (starkes Beduerfnis nach Naehe, Angst vor Verlust), vermeidend (Eigenstaendigkeit wird bevorzugt, Naehe kann ueberwaetigend sein), desorganisiert (gemischte und widersprüchliche Muster, oft nach schwierigen fruehen Erfahrungen).\n\nDu schreibst warm, tief, behutsam und ohne Floskeln. Kein Coaching-Sprech, keine Diagnosen. Du benennt was du siehst als Einladung, nicht als Urteil. Du weist darauf hin, dass tiefe Bindungsmuster professionelle Begleitung verdienen – ohne zu dramatisieren.\n\nBasierend auf den fuenf Antworten schreibst du fuenf Abschnitte mit diesen exakten Ueberschriften:\n\nDein Bindungsmuster:\n[3-4 Saetze: Welches Grundmuster erkennst du? Benenne es klar und behutsam. Erklaere kurz was es bedeutet – nicht als Diagnose, sondern als Orientierung.]\n\nWas du auf deinen Hund uebertragst:\n[2-3 Saetze: Wie zeigt sich dieses Bindungsmuster konkret in der Beziehung zum Hund? Was uebertraegst du unbewusst?]\n\nWas dein Hund davon traegt:\n[2-3 Saetze: Was bedeutet dieses Muster fuer deinen Hund? Was tragt er mit, was eigentlich nicht ihm gehoert?]\n\nSelbstreflexion:\n[2-3 Saetze: Was koennte der Mensch erkennen und annehmen – ohne sich dafuer zu verurteilen? Was waere ein erster behutsamer Blick auf sich selbst?]\n\nDeine eine Veraenderung diese Woche:\n[1-2 Saetze: Eine einzige innere Beobachtungsaufgabe – kein Training, kein Druck. Etwas das man in Ruhe wahrnehmen kann.]\n\nKein Markdown. Deutsch, du-Ansprache.";
 
   fetch("https://tierakademie-proxy.tierakademie.workers.dev",{
     method:"POST",
@@ -222,9 +198,7 @@ Kein Markdown. Deutsch, du-Ansprache.";
       model:"claude-sonnet-4-5",
       max_tokens:1100,
       system:sys,
-      messages:[{role:"user",content:"Hier sind die fuenf Antworten:
-
-"+msg}]
+      messages:[{role:"user",content:"Hier sind die fuenf Antworten:\n\n"+msg}]
     })
   })
   .then(function(r){if(!r.ok)throw new Error("Fehler "+r.status);return r.json();})
@@ -247,8 +221,7 @@ function showResult(){
     {key:"deine eine veraenderung",lbl:"&#128336; Deine eine Veraenderung diese Woche",col:"#D4A853",copy:true}
   ];
   var parsed=[],cur=null;
-  var lines=RES.split("
-");
+  var lines=RES.split("\n");
   for(var i=0;i<lines.length;i++){
     var line=lines[i].trim(),low=line.toLowerCase();
     var found=false;
@@ -259,8 +232,7 @@ function showResult(){
         found=true;break;
       }
     }
-    if(!found&&cur&&line) cur.txt+=(cur.txt?"
-":"")+line;
+    if(!found&&cur&&line) cur.txt+=(cur.txt?"\n":"")+line;
   }
   if(cur)parsed.push(cur);
   if(!parsed.length)parsed=[{lbl:"&#128247; Dein Bindungsmuster",col:"#0D2B1E",copy:false,txt:RES}];
@@ -277,8 +249,7 @@ function showResult(){
       '<textarea class="copy-field" readonly rows="3" onclick="this.select()">'+s.txt+'</textarea>':'';
     html+='<div class="rbox" style="border-left:4px solid '+s.col+'">'+
       '<div class="rs-lbl" style="color:'+s.col+'">'+s.lbl+'</div>'+
-      '<div class="rs-txt">'+s.txt.replace(/
-/g,"<br>")+'</div>'+cp+'</div>';
+      '<div class="rs-txt">'+s.txt.replace(/\n/g,"<br>")+'</div>'+cp+'</div>';
   }
 
   html+='<div class="hinweis" style="background:linear-gradient(135deg,#F0F5F2,#D8EAE4);border-left:4px solid #0D2B1E">'+

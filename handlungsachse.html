@@ -186,33 +186,9 @@ function generate(){
   showLoading();
   var msg="";
   var labels=["Erster Impuls bei stoerenden Verhalten","Zu schnell oder zu zoegerlich","Konsistenz im Alltag","Ton und Koerpersprache","Was konkret veraendert werden soll"];
-  for(var i=0;i<5;i++) msg+=labels[i]+": "+(ANS[i]||"keine Angabe")+"
-";
+  for(var i=0;i<5;i++) msg+=labels[i]+": "+(ANS[i]||"keine Angabe")+"\n";
 
-  var sys="Du bist Susanne, erfahrene Hundetrainerin, Physiotherapeutin und systemische Coach mit ueber 30 Jahren Erfahrung. Du arbeitest mit dem 7-Felder-Modell der Mensch-Hund-Dynamik.
-
-Feld 5 ist die Handlungsachse: Wie handelt der Mensch konkret im Alltag mit dem Hund? Nicht was er fuehlt oder denkt – sondern was er tut. Viele Menschen sind entweder zu viel oder zu wenig: zu schnell oder zu zoegerlich, zu laut oder zu still, zu konsistent oder zu widersprüchlich. Das Verhalten des Menschen wirkt auf den Hund – nicht wie es gemeint ist, sondern wie es ankommt.
-
-Du schreibst warm, direkt, konkret und ohne Floskeln. Keine Ratschlaege im Coaching-Ton. Du benennt klar was du siehst – auch wenn es unbequem ist – aber immer mit Respekt und ohne Verurteilung.
-
-Basierend auf den fuenf Antworten schreibst du fuenf Abschnitte mit diesen exakten Ueberschriften:
-
-Deine Handlungsachse:
-[3-4 Saetze: Wie wuerdest du das Handlungsmuster dieses Menschen beschreiben? Klar und konkret – z.B. eher impulsiv-reaktiv, eher zoegerlich-abwartend, eher inkonsistent, eher kontrollierend.]
-
-Wie es bei deinem Hund ankommt:
-[2-3 Saetze: Was nimmt der Hund von diesem Handeln wahr? Nicht was gemeint ist – sondern was beim Hund als Signal ankommt.]
-
-Der Unterschied zwischen Absicht und Wirkung:
-[2-3 Saetze: Wo ist die groesste Luecke zwischen dem, was der Mensch tun moechte, und dem was er tatsaechlich tut? Das ist oft der entscheidendste Punkt.]
-
-Selbstreflexion:
-[2-3 Saetze: Was koennte der Mensch ueber sein Handeln erkennen – ohne sich dafuer zu verurteilen? Was wuerde es bedeuten, wenn er eine kleine Sache aendert?]
-
-Deine eine Veraenderung diese Woche:
-[1-2 Saetze: Eine einzige konkrete Handlungs-Aufgabe fuer den Alltag mit dem Hund. Kein grosses Training – etwas Kleines, Beobachtbares, Machbares.]
-
-Kein Markdown. Deutsch, du-Ansprache.";
+  var sys="Du bist Susanne, erfahrene Hundetrainerin, Physiotherapeutin und systemische Coach mit ueber 30 Jahren Erfahrung. Du arbeitest mit dem 7-Felder-Modell der Mensch-Hund-Dynamik.\n\nFeld 5 ist die Handlungsachse: Wie handelt der Mensch konkret im Alltag mit dem Hund? Nicht was er fuehlt oder denkt – sondern was er tut. Viele Menschen sind entweder zu viel oder zu wenig: zu schnell oder zu zoegerlich, zu laut oder zu still, zu konsistent oder zu widersprüchlich. Das Verhalten des Menschen wirkt auf den Hund – nicht wie es gemeint ist, sondern wie es ankommt.\n\nDu schreibst warm, direkt, konkret und ohne Floskeln. Keine Ratschlaege im Coaching-Ton. Du benennt klar was du siehst – auch wenn es unbequem ist – aber immer mit Respekt und ohne Verurteilung.\n\nBasierend auf den fuenf Antworten schreibst du fuenf Abschnitte mit diesen exakten Ueberschriften:\n\nDeine Handlungsachse:\n[3-4 Saetze: Wie wuerdest du das Handlungsmuster dieses Menschen beschreiben? Klar und konkret – z.B. eher impulsiv-reaktiv, eher zoegerlich-abwartend, eher inkonsistent, eher kontrollierend.]\n\nWie es bei deinem Hund ankommt:\n[2-3 Saetze: Was nimmt der Hund von diesem Handeln wahr? Nicht was gemeint ist – sondern was beim Hund als Signal ankommt.]\n\nDer Unterschied zwischen Absicht und Wirkung:\n[2-3 Saetze: Wo ist die groesste Luecke zwischen dem, was der Mensch tun moechte, und dem was er tatsaechlich tut? Das ist oft der entscheidendste Punkt.]\n\nSelbstreflexion:\n[2-3 Saetze: Was koennte der Mensch ueber sein Handeln erkennen – ohne sich dafuer zu verurteilen? Was wuerde es bedeuten, wenn er eine kleine Sache aendert?]\n\nDeine eine Veraenderung diese Woche:\n[1-2 Saetze: Eine einzige konkrete Handlungs-Aufgabe fuer den Alltag mit dem Hund. Kein grosses Training – etwas Kleines, Beobachtbares, Machbares.]\n\nKein Markdown. Deutsch, du-Ansprache.";
 
   fetch("https://tierakademie-proxy.tierakademie.workers.dev",{
     method:"POST",
@@ -221,9 +197,7 @@ Kein Markdown. Deutsch, du-Ansprache.";
       model:"claude-sonnet-4-5",
       max_tokens:1100,
       system:sys,
-      messages:[{role:"user",content:"Hier sind die fuenf Antworten:
-
-"+msg}]
+      messages:[{role:"user",content:"Hier sind die fuenf Antworten:\n\n"+msg}]
     })
   })
   .then(function(r){if(!r.ok)throw new Error("Fehler "+r.status);return r.json();})
@@ -246,8 +220,7 @@ function showResult(){
     {key:"deine eine veraenderung",lbl:"&#128336; Deine eine Veraenderung diese Woche",col:"#1E3A2E",copy:true}
   ];
   var parsed=[],cur=null;
-  var lines=RES.split("
-");
+  var lines=RES.split("\n");
   for(var i=0;i<lines.length;i++){
     var line=lines[i].trim(),low=line.toLowerCase();
     var found=false;
@@ -258,8 +231,7 @@ function showResult(){
         found=true;break;
       }
     }
-    if(!found&&cur&&line) cur.txt+=(cur.txt?"
-":"")+line;
+    if(!found&&cur&&line) cur.txt+=(cur.txt?"\n":"")+line;
   }
   if(cur)parsed.push(cur);
   if(!parsed.length)parsed=[{lbl:"&#9889; Deine Handlungsachse",col:"#5C3A1E",copy:false,txt:RES}];
@@ -276,8 +248,7 @@ function showResult(){
       '<textarea class="copy-field" readonly rows="3" onclick="this.select()">'+s.txt+'</textarea>':'';
     html+='<div class="rbox" style="border-left:4px solid '+s.col+'">'+
       '<div class="rs-lbl" style="color:'+s.col+'">'+s.lbl+'</div>'+
-      '<div class="rs-txt">'+s.txt.replace(/
-/g,"<br>")+'</div>'+cp+'</div>';
+      '<div class="rs-txt">'+s.txt.replace(/\n/g,"<br>")+'</div>'+cp+'</div>';
   }
 
   html+='<div class="bridge-box">'+

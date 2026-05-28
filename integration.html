@@ -201,35 +201,9 @@ function generate(){
   showLoading();
   var msg="";
   var labels=["Groesste Erkenntnis der Reise","Veraenderter Blick auf die Beziehung","Noch offene Fragen","Wunsch fuer eure Beziehung","Naechster Schritt"];
-  for(var i=0;i<5;i++) msg+=labels[i]+": "+(ANS[i]||"keine Angabe")+"
-";
+  for(var i=0;i<5;i++) msg+=labels[i]+": "+(ANS[i]||"keine Angabe")+"\n";
 
-  var sys="Du bist Susanne, erfahrene Hundetrainerin, Physiotherapeutin und systemische Coach mit ueber 30 Jahren Erfahrung. Du arbeitest mit dem 7-Felder-Modell der Mensch-Hund-Dynamik.
-
-Der Mensch hat soeben alle sechs Felder durchlaufen: 1.Stressmuster, 2.Beziehungsmuster, 3.Innerer Hebel, 4.Bindungsmuster, 5.Handlungsachse und 6.Methodik (seinen stimmigen Weg gefunden). Die Integration bringt alle Erkenntnisse zusammen – auch die Erkenntnis aus der Methodik, welcher Ansatz wirklich zu diesem Menschen und diesem Hund passt.
-
-Das ist wichtig: Der Mensch weiss jetzt nicht nur wie er innerlich strukturiert ist – er weiss auch, welcher Weg nach vorne fuer ihn stimmig ist. Das fliesst in den Kompass ein.
-
-Du schreibst warm, tief, wuerdend und ohne Floskeln. Diese App ist der Abschluss einer langen inneren Reise. Kein Coaching-Sprech. Keine Ratschlaege. Du fasst zusammen, benennst und schenkst dem Menschen einen Kompass fuer den weiteren Weg.
-
-Basierend auf den fuenf Antworten schreibst du fuenf Abschnitte mit diesen exakten Ueberschriften:
-
-Was diese Reise gezeigt hat:
-[3-4 Saetze: Eine wuerdende Zusammenfassung aller sechs Felder – was der Mensch erkannt hat, was sich veraendert hat, was die Methodik-Erkenntnis bedeutet.]
-
-Dein persoenlicher Mensch-Hund-Kompass:
-[3-5 Saetze: Das Herzstuck. Ein klarer, persoenlicher Kompass der innere Erkenntnisse UND den stimmigen Weg vereint. Konkret, warm, zum Festhalten.]
-
-Was das fuer euren Alltag bedeutet:
-[2-3 Saetze: Wie zeigt sich dieser Kompass konkret – als innere Haltung UND als Handlungsrichtung?]
-
-Das darf noch offen bleiben:
-[2 Saetze: Was noch ungeloest oder unklar ist – als Einladung, nicht als Problem.]
-
-Dein Weg von hier:
-[2-3 Saetze: Ein einziger konkreter naechster Schritt der sowohl die innere Arbeit als auch den stimmigen Methodenweg einschliesst. Ermutigend, ohne Druck.]
-
-Kein Markdown. Deutsch, du-Ansprache.";
+  var sys="Du bist Susanne, erfahrene Hundetrainerin, Physiotherapeutin und systemische Coach mit ueber 30 Jahren Erfahrung. Du arbeitest mit dem 7-Felder-Modell der Mensch-Hund-Dynamik.\n\nDer Mensch hat soeben alle sechs Felder durchlaufen: 1.Stressmuster, 2.Beziehungsmuster, 3.Innerer Hebel, 4.Bindungsmuster, 5.Handlungsachse und 6.Methodik (seinen stimmigen Weg gefunden). Die Integration bringt alle Erkenntnisse zusammen – auch die Erkenntnis aus der Methodik, welcher Ansatz wirklich zu diesem Menschen und diesem Hund passt.\n\nDas ist wichtig: Der Mensch weiss jetzt nicht nur wie er innerlich strukturiert ist – er weiss auch, welcher Weg nach vorne fuer ihn stimmig ist. Das fliesst in den Kompass ein.\n\nDu schreibst warm, tief, wuerdend und ohne Floskeln. Diese App ist der Abschluss einer langen inneren Reise. Kein Coaching-Sprech. Keine Ratschlaege. Du fasst zusammen, benennst und schenkst dem Menschen einen Kompass fuer den weiteren Weg.\n\nBasierend auf den fuenf Antworten schreibst du fuenf Abschnitte mit diesen exakten Ueberschriften:\n\nWas diese Reise gezeigt hat:\n[3-4 Saetze: Eine wuerdende Zusammenfassung aller sechs Felder – was der Mensch erkannt hat, was sich veraendert hat, was die Methodik-Erkenntnis bedeutet.]\n\nDein persoenlicher Mensch-Hund-Kompass:\n[3-5 Saetze: Das Herzstuck. Ein klarer, persoenlicher Kompass der innere Erkenntnisse UND den stimmigen Weg vereint. Konkret, warm, zum Festhalten.]\n\nWas das fuer euren Alltag bedeutet:\n[2-3 Saetze: Wie zeigt sich dieser Kompass konkret – als innere Haltung UND als Handlungsrichtung?]\n\nDas darf noch offen bleiben:\n[2 Saetze: Was noch ungeloest oder unklar ist – als Einladung, nicht als Problem.]\n\nDein Weg von hier:\n[2-3 Saetze: Ein einziger konkreter naechster Schritt der sowohl die innere Arbeit als auch den stimmigen Methodenweg einschliesst. Ermutigend, ohne Druck.]\n\nKein Markdown. Deutsch, du-Ansprache.";
 
   fetch("https://tierakademie-proxy.tierakademie.workers.dev",{
     method:"POST",
@@ -238,9 +212,7 @@ Kein Markdown. Deutsch, du-Ansprache.";
       model:"claude-sonnet-4-5",
       max_tokens:1200,
       system:sys,
-      messages:[{role:"user",content:"Hier sind die fuenf Antworten:
-
-"+msg}]
+      messages:[{role:"user",content:"Hier sind die fuenf Antworten:\n\n"+msg}]
     })
   })
   .then(function(r){if(!r.ok)throw new Error("Fehler "+r.status);return r.json();})
@@ -263,8 +235,7 @@ function showResult(){
     {key:"dein weg von hier",lbl:"&#128336; Dein Weg von hier",col:"#C4923A",copy:true,kompass:false}
   ];
   var parsed=[],cur=null;
-  var lines=RES.split("
-");
+  var lines=RES.split("\n");
   for(var i=0;i<lines.length;i++){
     var line=lines[i].trim(),low=line.toLowerCase();
     var found=false;
@@ -275,8 +246,7 @@ function showResult(){
         found=true;break;
       }
     }
-    if(!found&&cur&&line) cur.txt+=(cur.txt?"
-":"")+line;
+    if(!found&&cur&&line) cur.txt+=(cur.txt?"\n":"")+line;
   }
   if(cur)parsed.push(cur);
   if(!parsed.length)parsed=[{lbl:"&#129517; Dein Mensch-Hund-Kompass",col:"#D4A853",copy:true,kompass:true,txt:RES}];
@@ -291,11 +261,9 @@ function showResult(){
     if(s.kompass){
       html+='<div class="kompass-box">'+
         '<div class="kt">&#129517; '+s.lbl.replace("&#129517; ","")+'</div>'+
-        '<div class="kt-text">'+s.txt.replace(/
-/g,"<br>")+'</div>'+
+        '<div class="kt-text">'+s.txt.replace(/\n/g,"<br>")+'</div>'+
         '<p class="copy-hint" style="color:rgba(255,255,255,.6)">&#128070; Klick ins Feld &#8594; alles markiert &#8594; Strg+C</p>'+
-        '<textarea class="copy-field" readonly rows="'+Math.max(3,s.txt.split("
-").length+1)+'" onclick="this.select()" style="background:rgba(255,255,255,.1);border-color:rgba(212,168,83,.5);color:white">'+s.txt+'</textarea>'+
+        '<textarea class="copy-field" readonly rows="'+Math.max(3,s.txt.split("\n").length+1)+'" onclick="this.select()" style="background:rgba(255,255,255,.1);border-color:rgba(212,168,83,.5);color:white">'+s.txt+'</textarea>'+
         '</div>';
     } else {
       var cp=s.copy?
@@ -303,8 +271,7 @@ function showResult(){
         '<textarea class="copy-field" readonly rows="3" onclick="this.select()">'+s.txt+'</textarea>':'';
       html+='<div class="rbox" style="border-left:4px solid '+s.col+'">'+
         '<div class="rs-lbl" style="color:'+s.col+'">'+s.lbl+'</div>'+
-        '<div class="rs-txt">'+s.txt.replace(/
-/g,"<br>")+'</div>'+cp+'</div>';
+        '<div class="rs-txt">'+s.txt.replace(/\n/g,"<br>")+'</div>'+cp+'</div>';
     }
   }
 

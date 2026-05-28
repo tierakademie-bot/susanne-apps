@@ -176,33 +176,9 @@ function generate(){
   showLoading();
   var msg="";
   var labels=["Was du gibst","Was der Hund zeigt","Deine Theorie ueber seine Beduerfnisse","Dein innerer Zustand","Dein Wunsch fuer eure Beziehung"];
-  for(var i=0;i<5;i++) msg+=labels[i]+": "+(ANS[i]||"keine Angabe")+"
-";
+  for(var i=0;i<5;i++) msg+=labels[i]+": "+(ANS[i]||"keine Angabe")+"\n";
 
-  var sys="Du bist Susanne, erfahrene Hundetrainerin, Physiotherapeutin und systemische Coach mit ueber 30 Jahren Erfahrung in der Mensch-Hund-Beziehung. Du arbeitest mit dem 7-Felder-Modell der Mensch-Hund-Dynamik.
-
-Feld 3 ist der Innere Hebel: Was braucht der Hund wirklich vom Menschen – nicht Technik oder Training, sondern einen bestimmten inneren Zustand. Der Hund spiegelt oft genau das, was der Mensch innerlich noch nicht gefunden hat: Klarheit, Sicherheit, Ruhe, Praesenz, Vertrauen.
-
-Du schreibst warm, tief, direkt und ohne Floskeln. Keine Ratschlaege im Coaching-Ton. Du sprichst wie eine erfahrene Begleiterin, die wirklich hinschaut und benennt was sie sieht.
-
-Basierend auf den fuenf Antworten schreibst du fuenf Abschnitte mit diesen exakten Ueberschriften:
-
-Was du gibst – und was ankommt:
-[2-3 Saetze: Was gibst du wirklich – und was davon kommt beim Hund als Signal an? Manchmal ist Liebe als Energie nicht das, was der Hund braucht um sich zu orientieren.]
-
-Was dein Hund wirklich braucht:
-[2-3 Saetze: Benenne konkret was der Hund in dieser Beziehung vermisst oder sucht. Nicht als Kritik, sondern als ehrliche Einschaetzung.]
-
-Dein innerer Hebel:
-[2-3 Saetze: Welcher innere Zustand wuerde sich sofort auf den Hund uebertragen? Das ist der Punkt, an dem sich alles dreht – nicht mehr Training, sondern innere Haltung.]
-
-Selbstreflexion:
-[2-3 Saetze: Was koennte der Mensch ueber sich erkennen, wenn er das Verhalten des Hundes als Spiegel betrachtet? Einladend, nicht konfrontativ.]
-
-Deine eine Veraenderung diese Woche:
-[1-2 Saetze: Eine einzige konkrete innere Handlung – kein Training. Etwas das man in sich beobachten, ausprobieren oder bewusst einueben kann.]
-
-Kein Markdown. Deutsch, du-Ansprache.";
+  var sys="Du bist Susanne, erfahrene Hundetrainerin, Physiotherapeutin und systemische Coach mit ueber 30 Jahren Erfahrung in der Mensch-Hund-Beziehung. Du arbeitest mit dem 7-Felder-Modell der Mensch-Hund-Dynamik.\n\nFeld 3 ist der Innere Hebel: Was braucht der Hund wirklich vom Menschen – nicht Technik oder Training, sondern einen bestimmten inneren Zustand. Der Hund spiegelt oft genau das, was der Mensch innerlich noch nicht gefunden hat: Klarheit, Sicherheit, Ruhe, Praesenz, Vertrauen.\n\nDu schreibst warm, tief, direkt und ohne Floskeln. Keine Ratschlaege im Coaching-Ton. Du sprichst wie eine erfahrene Begleiterin, die wirklich hinschaut und benennt was sie sieht.\n\nBasierend auf den fuenf Antworten schreibst du fuenf Abschnitte mit diesen exakten Ueberschriften:\n\nWas du gibst – und was ankommt:\n[2-3 Saetze: Was gibst du wirklich – und was davon kommt beim Hund als Signal an? Manchmal ist Liebe als Energie nicht das, was der Hund braucht um sich zu orientieren.]\n\nWas dein Hund wirklich braucht:\n[2-3 Saetze: Benenne konkret was der Hund in dieser Beziehung vermisst oder sucht. Nicht als Kritik, sondern als ehrliche Einschaetzung.]\n\nDein innerer Hebel:\n[2-3 Saetze: Welcher innere Zustand wuerde sich sofort auf den Hund uebertragen? Das ist der Punkt, an dem sich alles dreht – nicht mehr Training, sondern innere Haltung.]\n\nSelbstreflexion:\n[2-3 Saetze: Was koennte der Mensch ueber sich erkennen, wenn er das Verhalten des Hundes als Spiegel betrachtet? Einladend, nicht konfrontativ.]\n\nDeine eine Veraenderung diese Woche:\n[1-2 Saetze: Eine einzige konkrete innere Handlung – kein Training. Etwas das man in sich beobachten, ausprobieren oder bewusst einueben kann.]\n\nKein Markdown. Deutsch, du-Ansprache.";
 
   fetch("https://tierakademie-proxy.tierakademie.workers.dev",{
     method:"POST",
@@ -211,9 +187,7 @@ Kein Markdown. Deutsch, du-Ansprache.";
       model:"claude-sonnet-4-5",
       max_tokens:1100,
       system:sys,
-      messages:[{role:"user",content:"Hier sind die fuenf Antworten:
-
-"+msg}]
+      messages:[{role:"user",content:"Hier sind die fuenf Antworten:\n\n"+msg}]
     })
   })
   .then(function(r){if(!r.ok)throw new Error("Fehler "+r.status);return r.json();})
@@ -236,8 +210,7 @@ function showResult(){
     {key:"deine eine veraenderung",lbl:"&#128336; Deine eine Veraenderung diese Woche",col:"#4A3728",copy:true}
   ];
   var parsed=[],cur=null;
-  var lines=RES.split("
-");
+  var lines=RES.split("\n");
   for(var i=0;i<lines.length;i++){
     var line=lines[i].trim(),low=line.toLowerCase();
     var found=false;
@@ -248,8 +221,7 @@ function showResult(){
         found=true;break;
       }
     }
-    if(!found&&cur&&line) cur.txt+=(cur.txt?"
-":"")+line;
+    if(!found&&cur&&line) cur.txt+=(cur.txt?"\n":"")+line;
   }
   if(cur)parsed.push(cur);
   if(!parsed.length)parsed=[{lbl:"&#9881;&#65039; Dein innerer Hebel",col:"#C4923A",copy:false,txt:RES}];
@@ -266,8 +238,7 @@ function showResult(){
       '<textarea class="copy-field" readonly rows="3" onclick="this.select()">'+s.txt+'</textarea>':'';
     html+='<div class="rbox" style="border-left:4px solid '+s.col+'">'+
       '<div class="rs-lbl" style="color:'+s.col+'">'+s.lbl+'</div>'+
-      '<div class="rs-txt">'+s.txt.replace(/
-/g,"<br>")+'</div>'+cp+'</div>';
+      '<div class="rs-txt">'+s.txt.replace(/\n/g,"<br>")+'</div>'+cp+'</div>';
   }
 
   html+='<div class="bridge-box">'+

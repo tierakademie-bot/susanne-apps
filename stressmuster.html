@@ -189,28 +189,9 @@ function generate(){
   showLoading();
   var msg="";
   var labels=["Reaktion in schwierigen Momenten","Koerper unter Stress","Wiederkehrende Muster","Innere Ueberzeugungen","Ausgestrahlte Energie"];
-  for(var i=0;i<5;i++) msg+=labels[i]+": "+(ANS[i]||"keine Angabe")+"
-";
+  for(var i=0;i<5;i++) msg+=labels[i]+": "+(ANS[i]||"keine Angabe")+"\n";
 
-  var sys="Du bist Susanne, erfahrene Hundetrainerin, Physiotherapeutin und systemische Coach mit ueber 30 Jahren Erfahrung in der Mensch-Hund-Beziehung. Du arbeitest mit dem 7-Felder-Modell der Mensch-Hund-Dynamik. Feld 1 ist das Stressmuster – wie der Mensch unter Stress reagiert und was er dadurch unbewusst in die Beziehung mit dem Hund einbringt.
-
-Du schreibst warm, tief, ehrlich und ohne Floskeln. Keine Ratschlaege, kein Coaching-Sprech. Du sprichst wie eine erfahrene Freundin, die wirklich hinschaut.
-
-Basierend auf den fuenf Antworten schreibst du vier Abschnitte mit diesen exakten Ueberschriften:
-
-Dein Stressmuster:
-[Beschreibe in 3-4 Saetzen, welches Stressmuster du in den Antworten siehst. Konkret, warm, ohne Bewertung. Nenne das Muster beim Namen – z.B. Kontrollmuster, Rueckzugsmuster, Ueberanpassung.]
-
-Was dein Hund sieht:
-[2-3 Saetze: Was nimmt der Hund wahr, wenn dieses Muster aktiv wird? Nicht was er denkt – sondern was er koerperlich und energetisch wahrnimmt.]
-
-Der Spiegel:
-[2-3 Saetze: Was koennte das Verhalten des Hundes ueber dieses Muster spiegeln? Vorsichtig und einladend formuliert – nicht als Diagnose, sondern als Einladung zum Nachdenken.]
-
-Dein naechster Schritt:
-[1-2 Saetze: Eine einzige, konkrete innere Handlung – kein Training, keine Technik. Etwas das man in sich beobachten oder ausprobieren kann.]
-
-Kein Markdown. Deutsch, du-Ansprache.";
+  var sys="Du bist Susanne, erfahrene Hundetrainerin, Physiotherapeutin und systemische Coach mit ueber 30 Jahren Erfahrung in der Mensch-Hund-Beziehung. Du arbeitest mit dem 7-Felder-Modell der Mensch-Hund-Dynamik. Feld 1 ist das Stressmuster – wie der Mensch unter Stress reagiert und was er dadurch unbewusst in die Beziehung mit dem Hund einbringt.\n\nDu schreibst warm, tief, ehrlich und ohne Floskeln. Keine Ratschlaege, kein Coaching-Sprech. Du sprichst wie eine erfahrene Freundin, die wirklich hinschaut.\n\nBasierend auf den fuenf Antworten schreibst du vier Abschnitte mit diesen exakten Ueberschriften:\n\nDein Stressmuster:\n[Beschreibe in 3-4 Saetzen, welches Stressmuster du in den Antworten siehst. Konkret, warm, ohne Bewertung. Nenne das Muster beim Namen – z.B. Kontrollmuster, Rueckzugsmuster, Ueberanpassung.]\n\nWas dein Hund sieht:\n[2-3 Saetze: Was nimmt der Hund wahr, wenn dieses Muster aktiv wird? Nicht was er denkt – sondern was er koerperlich und energetisch wahrnimmt.]\n\nDer Spiegel:\n[2-3 Saetze: Was koennte das Verhalten des Hundes ueber dieses Muster spiegeln? Vorsichtig und einladend formuliert – nicht als Diagnose, sondern als Einladung zum Nachdenken.]\n\nDein naechster Schritt:\n[1-2 Saetze: Eine einzige, konkrete innere Handlung – kein Training, keine Technik. Etwas das man in sich beobachten oder ausprobieren kann.]\n\nKein Markdown. Deutsch, du-Ansprache.";
 
   fetch("https://tierakademie-proxy.tierakademie.workers.dev",{
     method:"POST",
@@ -219,9 +200,7 @@ Kein Markdown. Deutsch, du-Ansprache.";
       model:"claude-sonnet-4-5",
       max_tokens:1000,
       system:sys,
-      messages:[{role:"user",content:"Hier sind die fuenf Antworten:
-
-"+msg}]
+      messages:[{role:"user",content:"Hier sind die fuenf Antworten:\n\n"+msg}]
     })
   })
   .then(function(r){if(!r.ok)throw new Error("Fehler "+r.status);return r.json();})
@@ -243,8 +222,7 @@ function showResult(){
     {key:"dein naechster schritt",lbl:"&#128336; Dein naechster Schritt",col:"#D4A853",copy:true}
   ];
   var parsed=[],cur=null;
-  var lines=RES.split("
-");
+  var lines=RES.split("\n");
   for(var i=0;i<lines.length;i++){
     var line=lines[i].trim(),low=line.toLowerCase();
     var found=false;
@@ -255,8 +233,7 @@ function showResult(){
         found=true;break;
       }
     }
-    if(!found&&cur&&line) cur.txt+=(cur.txt?"
-":"")+line;
+    if(!found&&cur&&line) cur.txt+=(cur.txt?"\n":"")+line;
   }
   if(cur)parsed.push(cur);
   if(!parsed.length)parsed=[{lbl:"&#129704; Dein Stressmuster",col:"#4A3728",copy:false,txt:RES}];
@@ -273,8 +250,7 @@ function showResult(){
       '<textarea class="copy-field" readonly rows="3" onclick="this.select()">'+s.txt+'</textarea>':'';
     html+='<div class="rbox" style="border-left:4px solid '+s.col+'">'+
       '<div class="rs-lbl" style="color:'+s.col+'">'+s.lbl+'</div>'+
-      '<div class="rs-txt">'+s.txt.replace(/
-/g,"<br>")+'</div>'+cp+'</div>';
+      '<div class="rs-txt">'+s.txt.replace(/\n/g,"<br>")+'</div>'+cp+'</div>';
   }
 
   html+='<div style="background:#F5EFE6;border-radius:12px;padding:14px 16px;margin-bottom:14px;font-size:13px;color:#7D6352;line-height:1.7;font-family:system-ui">'+
