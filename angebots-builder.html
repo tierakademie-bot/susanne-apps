@@ -176,18 +176,37 @@ function generate(){
   showLoading();
   var msg="";
   var labels=["Zielgruppe","Problem","Leistung","Ergebnis","Angebotsstruktur","Unterschied"];
-  for(var i=0;i<6;i++) msg+=labels[i]+": "+(ANS[i]||"keine Angabe")+"\n";
+  for(var i=0;i<6;i++) msg+=labels[i]+": "+(ANS[i]||"keine Angabe")+"
+";
 
-  var sys="Du bist Susanne, erfahrene Hundetrainerin und Business-Coach fuer Tierberufler mit ueber 30 Jahren Erfahrung. Du hilfst Tierberuflern, ihr Angebot klar und buchbar zu formulieren.\n\nBasierend auf den sechs Antworten formulierst du vier Abschnitte mit diesen exakten Ueberschriften:\n\nAngebotstext:\n[Ein klarer, buchbarer Angebotstext in 4-6 Saetzen: Fuer wen, welches Problem, was du tust, welches Ergebnis, wie das Angebot aufgebaut ist.]\n\nKurzversion:\n[1-2 Saetze fuer das Erstgespraech oder wenn jemand fragt: Was machst du?]\n\nSocial-Media-Version:\n[3-4 Saetze fuer einen Post oder Bio. Spricht den Wunschkunden direkt an. Warm, ohne Floskeln.]\n\nSusannes Blick:\n[3-4 Saetze: Was du in diesem Angebot siehst, was stark ist, und was noch geschaerft werden koennte. Ehrlich, konstruktiv, warm.]\n\nKein Markdown. Deutsch, du-Ansprache.";
+  var sys="Du bist Susanne, erfahrene Hundetrainerin und Business-Coach fuer Tierberufler mit ueber 30 Jahren Erfahrung. Du hilfst Tierberuflern, ihr Angebot klar und buchbar zu formulieren.
+
+Basierend auf den sechs Antworten formulierst du vier Abschnitte mit diesen exakten Ueberschriften:
+
+Angebotstext:
+[Ein klarer, buchbarer Angebotstext in 4-6 Saetzen: Fuer wen, welches Problem, was du tust, welches Ergebnis, wie das Angebot aufgebaut ist.]
+
+Kurzversion:
+[1-2 Saetze fuer das Erstgespraech oder wenn jemand fragt: Was machst du?]
+
+Social-Media-Version:
+[3-4 Saetze fuer einen Post oder Bio. Spricht den Wunschkunden direkt an. Warm, ohne Floskeln.]
+
+Susannes Blick:
+[3-4 Saetze: Was du in diesem Angebot siehst, was stark ist, und was noch geschaerft werden koennte. Ehrlich, konstruktiv, warm.]
+
+Kein Markdown. Deutsch, du-Ansprache.";
 
   fetch("https://api.anthropic.com/v1/messages",{
     method:"POST",
     headers:{"Content-Type":"application/json","x-api-key":"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","anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},
     body:JSON.stringify({
-      model:"claude-sonnet-4-20250514",
+      model:"claude-sonnet-4-5",
       max_tokens:1200,
       system:sys,
-      messages:[{role:"user",content:"Hier sind die Angaben zum Angebot:\n\n"+msg}]
+      messages:[{role:"user",content:"Hier sind die Angaben zum Angebot:
+
+"+msg}]
     })
   })
   .then(function(r){if(!r.ok)throw new Error("Fehler "+r.status);return r.json();})
@@ -209,7 +228,8 @@ function showResult(){
     {key:"susannes blick",lbl:"&#129517; Susannes Blick",col:"#D4A853",copy:false}
   ];
   var parsed=[],cur=null;
-  var lines=RES.split("\n");
+  var lines=RES.split("
+");
   for(var i=0;i<lines.length;i++){
     var line=lines[i].trim(),low=line.toLowerCase();
     var found=false;
@@ -220,7 +240,8 @@ function showResult(){
         found=true;break;
       }
     }
-    if(!found&&cur&&line) cur.txt+=(cur.txt?"\n":"")+line;
+    if(!found&&cur&&line) cur.txt+=(cur.txt?"
+":"")+line;
   }
   if(cur)parsed.push(cur);
   if(!parsed.length)parsed=[{lbl:"&#128203; Dein Angebot",col:"#2D4A3E",copy:true,txt:RES}];
@@ -231,13 +252,15 @@ function showResult(){
 
   for(var k=0;k<parsed.length;k++){
     var s=parsed[k];
-    var rows=Math.max(3,s.txt.split("\n").length+2);
+    var rows=Math.max(3,s.txt.split("
+").length+2);
     var cp=s.copy?
       '<p class="copy-hint">&#128070; Klick ins Feld &#8594; alles markiert &#8594; Strg+C</p>'+
       '<textarea class="copy-field" readonly rows="'+rows+'" onclick="this.select()">'+s.txt+'</textarea>':'';
     html+='<div class="rbox" style="border-left-color:'+s.col+'">'+
       '<div class="rs-lbl" style="color:'+s.col+'">'+s.lbl+'</div>'+
-      '<div class="rs-txt">'+s.txt.replace(/\n/g,"<br>")+'</div>'+cp+'</div>';
+      '<div class="rs-txt">'+s.txt.replace(/
+/g,"<br>")+'</div>'+cp+'</div>';
   }
   html+='<button class="btn-p" onclick="reset()" style="margin-top:6px">&#8635; Neues Angebot aufbauen</button></div>';
   $("card").innerHTML=html;

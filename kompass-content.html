@@ -97,7 +97,7 @@ function callAI(sys,user,history,cb,errcb){
   var msgs=history?history.concat([{role:"user",content:user}]):[{role:"user",content:user}];
   fetch("https://tierakademie-proxy.tierakademie.workers.dev",{
     method:"POST",headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:800,system:sys,messages:msgs})
+    body:JSON.stringify({model:"claude-sonnet-4-5",max_tokens:800,system:sys,messages:msgs})
   }).then(function(r){if(!r.ok)throw new Error("Fehler "+r.status);return r.json();})
   .then(function(d){if(d.error)throw new Error(d.error.message);cb(d.content&&d.content[0]?d.content[0].text:"");})
   .catch(function(e){errcb(e.message||"Verbindungsfehler");});
@@ -159,13 +159,22 @@ function saveAndStartDiag(){
   var qa=$("qa");if(qa)dAnswers[dCurQ]=qa.value;
   dStep=1;dDiag="";dTask="";renderMain();
   var summary="";
-  for(var i=0;i<QUESTIONS.length;i++){summary+=QUESTIONS[i]+"\nAntwort: "+(dAnswers[i]||"keine Angabe")+"\n\n";}
-  callAI(SYS+"\n\nAnalysiere die 7 Antworten. Nenne den wahrscheinlichsten Kompass-Bereich als eigentliche Ursache, erklaere in 3-4 Saetzen warum. Maximal 120 Woerter.",
+  for(var i=0;i<QUESTIONS.length;i++){summary+=QUESTIONS[i]+"
+Antwort: "+(dAnswers[i]||"keine Angabe")+"
+
+";}
+  callAI(SYS+"
+
+Analysiere die 7 Antworten. Nenne den wahrscheinlichsten Kompass-Bereich als eigentliche Ursache, erklaere in 3-4 Saetzen warum. Maximal 120 Woerter.",
     summary,null,
     function(d){
       dDiag=d;
-      callAI(SYS+"\n\nBenenne eine einzige konkrete Aufgabe (max. 3 Saetze) die der Person diese Woche hilft. Sofort umsetzbar.",
-        "Antworten:\n"+summary+"\nDiagnose: "+dDiag,null,
+      callAI(SYS+"
+
+Benenne eine einzige konkrete Aufgabe (max. 3 Saetze) die der Person diese Woche hilft. Sofort umsetzbar.",
+        "Antworten:
+"+summary+"
+Diagnose: "+dDiag,null,
         function(t){dTask=t;renderMain();},
         function(e){dTask="Fehler: "+e;renderMain();});
     },
@@ -212,7 +221,8 @@ function renderContArea(){
   if(!dCont)html+='<div class="spin-w"><div class="spin"></div></div>';
   else html+='<div class="rbox"><div class="rl">&#9997;&#65039; Fertiger Community-Post</div>'+dCont+
     '<p class="copy-hint">&#128070; Klick ins Feld &#8594; alles markiert &#8594; Strg+C</p>'+
-    '<textarea class="copy-field" readonly rows="'+(Math.max(3,dCont.split("\n").length+1))+'" onclick="this.select()">'+dCont+'</textarea></div>';
+    '<textarea class="copy-field" readonly rows="'+(Math.max(3,dCont.split("
+").length+1))+'" onclick="this.select()">'+dCont+'</textarea></div>';
   html+='<button class="btn-o" onclick="dStep=2;renderMain()" style="margin-top:10px;width:100%">&#8592; Zurück zum Gespräch</button>';
   return html;
 }
@@ -232,18 +242,28 @@ function sendChat(){
   var b=$("csend");if(b)b.disabled=true;
   var cw=$("cw");
   if(cw){cw.innerHTML+='<div style="display:flex"><div class="bm a"><div style="display:flex;gap:4px"><div style="width:6px;height:6px;border-radius:50%;background:#8FAF9F;animation:bounce 1s ease 0s infinite"></div><div style="width:6px;height:6px;border-radius:50%;background:#8FAF9F;animation:bounce 1s ease .2s infinite"></div><div style="width:6px;height:6px;border-radius:50%;background:#8FAF9F;animation:bounce 1s ease .4s infinite"></div></div></div></div>';cw.scrollTop=cw.scrollHeight;}
-  var summary="";for(var i=0;i<QUESTIONS.length;i++){summary+=QUESTIONS[i]+"\nAntwort: "+(dAnswers[i]||"keine Angabe")+"\n\n";}
-  var hist=[{role:"user",content:summary},{role:"assistant",content:dDiag+"\n\n"+dTask}];
+  var summary="";for(var i=0;i<QUESTIONS.length;i++){summary+=QUESTIONS[i]+"
+Antwort: "+(dAnswers[i]||"keine Angabe")+"
+
+";}
+  var hist=[{role:"user",content:summary},{role:"assistant",content:dDiag+"
+
+"+dTask}];
   for(var i=0;i<dChat.length-1;i++)hist.push({role:dChat[i].r==="u"?"user":"assistant",content:dChat[i].c});
-  callAI(SYS+"\n\nCoaching-Gespräch. Antworte kurz, klar, mit Rückfrage oder konkretem Hinweis. Max. 120 Wörter.",msg,hist,
+  callAI(SYS+"
+
+Coaching-Gespräch. Antworte kurz, klar, mit Rückfrage oder konkretem Hinweis. Max. 120 Wörter.",msg,hist,
     function(rep){dChat.push({r:"a",c:rep});renderMain();setTimeout(function(){var cw=$("cw");if(cw)cw.scrollTop=cw.scrollHeight;},50);},
     function(e){dChat.push({r:"a",c:"Fehler: "+e});renderMain();});
 }
 
 function genCont(){
   dStep=3;dCont="";renderMain();
-  callAI(SYS+"\n\nErstelle einen einzigen fertigen Community-Post der das Diagnosethema aufgreift. Kein Hashtag. Max. 80 Woerter.",
-    "Diagnose: "+dDiag+"\nAufgabe: "+dTask,null,
+  callAI(SYS+"
+
+Erstelle einen einzigen fertigen Community-Post der das Diagnosethema aufgreift. Kein Hashtag. Max. 80 Woerter.",
+    "Diagnose: "+dDiag+"
+Aufgabe: "+dTask,null,
     function(c){dCont=c;renderMain();},
     function(e){dCont="Fehler: "+e;renderMain();});
 }
@@ -252,7 +272,8 @@ function genContent(){
   var btn=$("cgenbtn");if(btn)btn.disabled=true;
   cResult="";renderMain();
   callAI("Du bist Susanne, Community-Gastgeberin der Tierbusiness Community. Erstelle 3 fertige Post-Ideen fuer die angegebene Kategorie. Jede: kopierfertiger Post-Einstieg + Anmerkung in Klammern warum er funktioniert. Authentisch, warm, kein Marketing-Sprech. Deutsch, du-Ansprache.",
-    "Kategorie: "+cCat+(cTopic?"\nFokus: "+cTopic:""),null,
+    "Kategorie: "+cCat+(cTopic?"
+Fokus: "+cTopic:""),null,
     function(r){cResult=r;renderMain();},
     function(e){cResult="Fehler: "+e;renderMain();});
 }
