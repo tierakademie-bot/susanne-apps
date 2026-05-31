@@ -104,7 +104,7 @@ textarea:focus { border-color:var(--forest); }
 .avg-num { font-family:'Playfair Display',serif; font-size:26px; color:var(--forest); font-weight:700; }
 .avg-sub { font-size:10px; letter-spacing:1.5px; text-transform:uppercase; color:var(--soft); }
 .avg-status { font-size:12px; color:var(--soft); margin-top:2px; font-style:italic; }
-</style>
+.pw-box{background:#fff;border-radius:16px;padding:32px;max-width:420px;margin:0 auto;text-align:center;box-shadow:0 4px 24px rgba(0,0,0,0.15)}.pw-box h2{font-family:Georgia,serif;color:#2C4A3E;font-size:1.3rem;margin-bottom:8px}.pw-box p{color:#7D6352;font-size:0.9rem;margin-bottom:20px}.pw-inp{width:100%;padding:12px 16px;border:2px solid #D4A853;border-radius:8px;font-size:1rem;text-align:center;outline:none;box-sizing:border-box;color:#2C4A3E}.pw-inp:focus{border-color:#2C4A3E}.pw-btn{width:100%;margin-top:12px;padding:12px;background:#B8860B;color:#fff;border:none;border-radius:8px;font-size:1rem;cursor:pointer}.pw-btn:hover{background:#2C4A3E}.pw-err{color:#c0392b;font-size:0.85rem;margin-top:8px;display:none}</style>
 </head>
 <body>
 <div class="app">
@@ -201,13 +201,10 @@ function init() {
 function buildQuestions() {
   document.getElementById('q-container').innerHTML = QS.map(q => `
     <div class="q-block">
-      <div class="q-label">${q.lbl}</div>
-      <div class="q-hint">${q.hint}</div>
+      <div class="q-label">${q.lbl}</div>\n      <div class="q-hint">${q.hint}</div>
       <div class="dots">
-        ${[1,2,3,4,5].map(n=>`<button class="dot" onclick="pick('${q.id}',${n})" data-q="${q.id}" data-v="${n}">${n}</button>`).join('')}
-      </div>
-      <div class="q-ends"><span class="q-end">${q.lo}</span><span class="q-end">${q.hi}</span></div>
-    </div>
+        ${[1,2,3,4,5].map(n=>`<button class="dot" onclick="pick('${q.id}',${n})" data-q="${q.id}" data-v="${n}">${n}</button>`).join('')}\n      </div>
+      <div class="q-ends"><span class="q-end">${q.lo}</span><span class="q-end">${q.hi}</span></div>\n    </div>
   `).join('');
 }
 
@@ -227,22 +224,13 @@ async function doSubmit() {
 
   document.getElementById('result-wrap').innerHTML = `
     <div class="score-box">
-      <div class="score-lbl">Dein heutiger Wert</div>
-      <div class="score-num">${total}<span class="score-max">/30</span></div>
-      <div class="score-txt">${getStatus(total)}</div>
-    </div>
+      <div class="score-lbl">Dein heutiger Wert</div>\n      <div class="score-num">${total}<span class="score-max">/30</span></div>
+      <div class="score-txt">${getStatus(total)}</div>\n    </div>
     <div class="ai-box">
-      <div class="ai-lbl">Deine Einschätzung für heute</div>
-      <div class="ai-text" id="ai-out">
-        <div class="dl-wrap"><div class="dl"></div><div class="dl"></div><div class="dl"></div></div>
-      </div>
-    </div>
-    <div class="card" style="padding:16px;">
-      <div style="font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--soft);margin-bottom:8px;font-weight:700;">Meine Beobachtung heute</div>
-      <textarea id="notes" rows="3" placeholder="Wie hat mein Hund auf mich reagiert?" onblur="autoSave(${total})"></textarea>
-    </div>
-    <div class="saved-note" id="saved-note" style="display:none;">✓ Automatisch gespeichert</div>
-    <button class="btn outline" onclick="go('home', document.querySelector('.nav button:nth-child(1)'))">Zurück zur Übersicht</button>
+      <div class="ai-lbl">Deine Einschätzung für heute</div>\n      <div class="ai-text" id="ai-out">\n        <div class="dl-wrap"><div class="dl"></div><div class="dl"></div><div class="dl"></div></div>\n      </div>
+    </div>\n    <div class="card" style="padding:16px;">\n      <div style="font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--soft);margin-bottom:8px;font-weight:700;">Meine Beobachtung heute</div>
+      <textarea id="notes" rows="3" placeholder="Wie hat mein Hund auf mich reagiert?" onblur="autoSave(${total})"></textarea>\n    </div>
+    <div class="saved-note" id="saved-note" style="display:none;">✓ Automatisch gespeichert</div>\n    <button class="btn outline" onclick="go('home', document.querySelector('.nav button:nth-child(1)'))">Zurück zur Übersicht</button>
   `;
 
   const txt = await getAI(total);
@@ -266,66 +254,9 @@ function autoSave(total) {
 }
 
 async function getAI(total) {
-  const scores = QS.map(q=>`${q.lbl}: ${answers[q.id]}/5`).join(', ');
-  try {
-    const r = await fetch(API_URL, {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({
-        model:'claude-sonnet-4-20250514',
-        max_tokens: 250,
-        system:`Du bist Susanne Zischgl von der Tierakademie Zischgl, erfahrene Hundetrainerin. Gib eine kurze, warme, direkte Einschätzung (max. 3 kurze Absätze) für die heutige Interaktion mit dem Hund. Du-Form. Keine Listen. Konkret und ehrlich.`,
-        messages:[{role:'user', content:`Selbst-Check: ${scores}. Gesamt: ${total}/30. Kurze Einschätzung für heute.`}]
-      })
-    });
-    const d = await r.json();
-    return d.content?.[0]?.text || fallback(total);
-  } catch(e) { return fallback(total); }
-}
-
-function fallback(t) {
-  if (t<=12) return "Dein Körper sagt heute: langsamer. Dein Hund weiß das bereits. Halte Einheiten kurz, vermeide Neues. Einfach zusammen sein – das ist heute genug.\n\nRuhepausen sind kein Verzicht. Sie sind das Sinnvollste, was du heute tun kannst.";
-  if (t<=20) return "Du bist präsent, aber nicht auf Hochtouren. Gut für ruhige, klare Interaktion. Drei tiefe Atemzüge bevor ihr rausgeht – das verändert mehr als du denkst.\n\nKein Druck. Heute ist ein guter Tag zum Beobachten.";
-  return "Du bist heute gut in dir – das spürt dein Hund. Ein guter Tag für Herausforderungen, neue Umgebungen, vertiefendes Üben.\n\nGenieß die Verbindung heute. Sie trägt euch beide.";
-}
-
-function checkTodayDone() {
-  try {
-    const entries = JSON.parse(localStorage.getItem('mf-entries')||'[]');
-    const today = entries.find(e=>e.date===todayKey);
-    const card = document.getElementById('home-card');
-    if (today && card) {
-      card.className='card accent';
-      card.innerHTML=`
-        <div class="card-title">Check erledigt ✓</div>
-        <div class="card-text">Heute: <strong style="color:var(--forest)">${today.total}/30</strong> · ${today.status}</div>
-        <button class="btn" onclick='openEntry(${JSON.stringify(today).replace(/'/g,"&#39;")})'>Auswertung ansehen</button>
-        <button class="btn outline" onclick="go('journal',document.querySelector('.nav button:nth-child(3)'))">Tagebuch öffnen</button>
-      `;
-    }
-  } catch(e){}
-}
-
-function renderJournal() {
-  const w = document.getElementById('journal-wrap');
-  try {
-    const entries = JSON.parse(localStorage.getItem('mf-entries')||'[]');
-    if (!entries.length) {
-      w.innerHTML=`<div class="empty"><div style="font-size:36px;margin-bottom:10px;">🌿</div><p style="font-family:'Playfair Display',serif;font-size:17px;color:var(--forest);margin-bottom:6px;">Noch keine Einträge</p><p style="font-size:13px;">Starte deinen ersten Check.</p></div>`;
-      return;
-    }
-    const avg = Math.round(entries.reduce((a,e)=>a+e.total,0)/entries.length);
-    w.innerHTML = `
-      <div class="avg-card">
-        <div><div class="avg-num">${avg}<span style="font-size:13px;opacity:0.4;">/30</span></div></div>
-        <div><div class="avg-sub">Ø von ${entries.length} Checks</div><div class="avg-status">${getStatus(avg)}</div></div>
-      </div>
-      ${entries.map(e=>`
-        <div class="j-entry" onclick='openEntry(${JSON.stringify(e).replace(/'/g,"&#39;")})'>
-          <div class="j-date">${new Date(e.date).toLocaleDateString('de-DE',{weekday:'short',day:'numeric',month:'long'})}${e.date===todayKey?' &nbsp;·&nbsp; <span style="color:var(--ochre);font-weight:700;">Heute</span>':''}</div>
+  const scores = QS.map(q=>`${q.lbl}: ${answers[q.id]}/5`).join(', ');\n  try {\n    const r = await fetch(API_URL, {\n      method:'POST',\n      headers:{'Content-Type':'application/json'},\n      body: JSON.stringify({\n        model:'claude-haiku-4-5-20251001',\n        max_tokens: 250,\n        system:`Du bist Susanne Zischgl von der Tierakademie Zischgl, erfahrene Hundetrainerin. Gib eine kurze, warme, direkte Einschätzung (max. 3 kurze Absätze) für die heutige Interaktion mit dem Hund. Du-Form. Keine Listen. Konkret und ehrlich.`,\n        messages:[{role:'user', content:`Selbst-Check: ${scores}. Gesamt: ${total}/30. Kurze Einschätzung für heute.`}]\n      })\n    });\n    const d = await r.json();\n    return d.content?.[0]?.text || fallback(total);\n  } catch(e) { return fallback(total); }\n}\n\nfunction fallback(t) {\n  if (t<=12) return "Dein Körper sagt heute: langsamer. Dein Hund weiß das bereits. Halte Einheiten kurz, vermeide Neues. Einfach zusammen sein – das ist heute genug.\n\nRuhepausen sind kein Verzicht. Sie sind das Sinnvollste, was du heute tun kannst.";\n  if (t<=20) return "Du bist präsent, aber nicht auf Hochtouren. Gut für ruhige, klare Interaktion. Drei tiefe Atemzüge bevor ihr rausgeht – das verändert mehr als du denkst.\n\nKein Druck. Heute ist ein guter Tag zum Beobachten.";\n  return "Du bist heute gut in dir – das spürt dein Hund. Ein guter Tag für Herausforderungen, neue Umgebungen, vertiefendes Üben.\n\nGenieß die Verbindung heute. Sie trägt euch beide.";\n}\n\nfunction checkTodayDone() {\n  try {\n    const entries = JSON.parse(localStorage.getItem('mf-entries')||'[]');\n    const today = entries.find(e=>e.date===todayKey);\n    const card = document.getElementById('home-card');\n    if (today && card) {\n      card.className='card accent';\n      card.innerHTML=`\n        <div class="card-title">Check erledigt ✓</div>\n        <div class="card-text">Heute: <strong style="color:var(--forest)">${today.total}/30</strong> · ${today.status}</div>\n        <button class="btn" onclick='openEntry(${JSON.stringify(today).replace(/'/g,"&#39;")})'>Auswertung ansehen</button>\n        <button class="btn outline" onclick="go('journal',document.querySelector('.nav button:nth-child(3)'))">Tagebuch öffnen</button>\n      `;\n    }\n  } catch(e){}\n}\n\nfunction renderJournal() {\n  const w = document.getElementById('journal-wrap');\n  try {\n    const entries = JSON.parse(localStorage.getItem('mf-entries')||'[]');\n    if (!entries.length) {\n      w.innerHTML=`<div class="empty"><div style="font-size:36px;margin-bottom:10px;">🌿</div><p style="font-family:'Playfair Display',serif;font-size:17px;color:var(--forest);margin-bottom:6px;">Noch keine Einträge</p><p style="font-size:13px;">Starte deinen ersten Check.</p></div>`;\n      return;\n    }\n    const avg = Math.round(entries.reduce((a,e)=>a+e.total,0)/entries.length);\n    w.innerHTML = `\n      <div class="avg-card">\n        <div><div class="avg-num">${avg}<span style="font-size:13px;opacity:0.4;">/30</span></div></div>\n        <div><div class="avg-sub">Ø von ${entries.length} Checks</div><div class="avg-status">${getStatus(avg)}</div></div>\n      </div>\n      ${entries.map(e=>`\n        <div class="j-entry" onclick='openEntry(${JSON.stringify(e).replace(/'/g,"&#39;")})'>\n          <div class="j-date">${new Date(e.date).toLocaleDateString('de-DE',{weekday:'short',day:'numeric',month:'long'})}${e.date===todayKey?' &nbsp;·&nbsp; <span style="color:var(--ochre);font-weight:700;">Heute</span>':''}</div>
           <div class="j-row"><div class="j-score">${e.total}/30</div><div class="j-status">${e.status}</div></div>
-          <div class="j-preview">${e.notes || (e.ai?.substring(0,90)+'...')}</div>
-        </div>
+          <div class="j-preview">${e.notes || (e.ai?.substring(0,90)+'...')}</div>\n        </div>
       `).join('')}
     `;
   } catch(err) { w.innerHTML='<p style="color:var(--soft);padding:20px;">Konnte nicht geladen werden.</p>'; }
@@ -334,32 +265,10 @@ function renderJournal() {
 function openEntry(e) {
   if (typeof e==='string') { try{e=JSON.parse(e)}catch(err){return} }
   document.getElementById('modal').innerHTML=`
-    <div class="m-handle"></div>
-    <div class="m-date">${new Date(e.date).toLocaleDateString('de-DE',{weekday:'long',day:'numeric',month:'long',year:'numeric'})}</div>
+    <div class="m-handle"></div>\n    <div class="m-date">${new Date(e.date).toLocaleDateString('de-DE',{weekday:'long',day:'numeric',month:'long',year:'numeric'})}</div>
     <div class="m-score">${e.total}/30 · ${e.status}</div>
-    <div class="m-lbl">Einschätzung</div>
-    <div class="m-ai">${e.ai}</div>
+    <div class="m-lbl">Einschätzung</div>\n    <div class="m-ai">${e.ai}</div>
     ${e.notes?`<div class="m-lbl" style="margin-top:12px;">Meine Beobachtung</div><div class="m-notes">${e.notes}</div>`:''}
-    <button class="btn" style="margin-top:16px;" onclick="closeModal()">Schließen</button>
-  `;
-  document.getElementById('overlay').classList.add('on');
-}
-
-function closeModal(ev) {
-  if (!ev || ev.target===document.getElementById('overlay'))
-    document.getElementById('overlay').classList.remove('on');
-}
-
-function go(name, btn, skipJournal) {
-  ['home','check','result','journal'].forEach(s=>{
-    document.getElementById('s-'+s).classList.toggle('on', s===name);
-  });
-  document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('on'));
-  if (btn) btn.classList.add('on');
-  if (name==='journal' && !skipJournal) renderJournal();
-}
-
-init();
-</script>
+    <button class="btn" style="margin-top:16px;" onclick="closeModal()">Schließen</button>\n  `;\n  document.getElementById('overlay').classList.add('on');\n}\n\nfunction closeModal(ev) {\n  if (!ev || ev.target===document.getElementById('overlay'))\n    document.getElementById('overlay').classList.remove('on');\n}\n\nfunction go(name, btn, skipJournal) {\n  ['home','check','result','journal'].forEach(s=>{\n    document.getElementById('s-'+s).classList.toggle('on', s===name);\n  });\n  document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('on'));\n  if (btn) btn.classList.add('on');\n  if (name==='journal' && !skipJournal) renderJournal();\n}\n\nfunction _startApp(){init();}\n\nvar ACCESS="Klarheit";\nfunction showGate(){\n  var h='<div class="pw-box">';\n  h+='<h2>Zugangswort eingeben</h2>';\n  h+='<p>Diese App ist nur mit Zugangswort verfügbar.</p>';\n  h+='<input class="pw-inp" id="pwi" type="text" placeholder="Zugangswort...">';\n  h+='<button class="pw-btn" onclick="checkPW()">Weiter</button>';\n  h+='<div class="pw-err" id="pwe">Das Zugangswort ist nicht korrekt.</div>';\n  h+="</div>";\n  var card=document.getElementById("card")||document.getElementById("app")||document.body;\n  card.innerHTML=h;\n  document.getElementById("pwi").addEventListener("keydown",function(e){if(e.key==="Enter")checkPW();});\n  document.getElementById("pwi").focus();\n}\nfunction checkPW(){\n  var v=document.getElementById("pwi").value.trim();\n  if(v===ACCESS){_startApp();}\n  else{document.getElementById("pwe").style.display="block";document.getElementById("pwi").value="";document.getElementById("pwi").focus();}\n}\n\nshowGate();\n</script>
 </body>
 </html>
