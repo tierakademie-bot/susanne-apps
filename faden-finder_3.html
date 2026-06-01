@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dein unsichtbarer Faden &#8211; Tierakademie Zischgl</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg:  #F5F0E8;
+  --bg2: #EDE7D9;
+  --fo:  #2C4A3E;
+  --fo2: #1a2e26;
+  --oc:  #C8922A;
+  --go:  #C8922A;
+  --gl:  #d9a53a;
+  --tx:  #2C4A3E;
+  --mu:  #7a6e5f;
+  --brd: rgba(44,74,62,0.15);
+}
+html, body { min-height:100vh; background:var(--bg); color:var(--fo2); font-family:'Lato',sans-serif; font-weight:400; line-height:1.75; }
+#app { min-height:100vh; display:flex; align-items:center; justify-content:center; padding:2rem 1rem; }
+.screen { display:none; max-width:620px; width:100%; }
+.screen.active { display:block; animation:fi .5s ease forwards; }
+@keyframes fi { from{opacity:0;transform:translateY(14px);} to{opacity:1;transform:translateY(0);} }
+
+/* WELCOME */
+.ey { font-size:.7rem; letter-spacing:.22em; text-transform:uppercase; color:var(--oc); margin-bottom:1.5rem; }
+.wt { font-family:'Playfair Display',serif; font-size:clamp(2rem,5vw,3rem); font-weight:400; line-height:1.2; color:var(--fo2); margin-bottom:.5rem; }
+.wt em { font-style:italic; color:var(--oc); }
+.ws { font-family:'Playfair Display',serif; font-style:italic; font-size:1.05rem; color:var(--mu); margin-bottom:2.5rem; }
+.div { width:44px; height:1px; background:var(--oc); opacity:.4; margin:1.75rem 0; }
+.wb { font-size:1rem; color:var(--fo2); margin-bottom:2.5rem; }
+.wb p+p { margin-top:.9rem; }
+button { cursor:pointer; font-family:'Lato',sans-serif; }
+.bg { background:var(--fo); color:#F5F0E8; border:none; font-weight:700; font-size:.82rem; letter-spacing:.1em; text-transform:uppercase; padding:1rem 2.5rem; transition:background .2s; }
+.bg:hover { background:var(--fo2); }
+.sig { font-family:'Playfair Display',serif; font-style:italic; font-size:.8rem; color:var(--mu); opacity:.55; margin-top:3rem; }
+
+/* QUIZ */
+.pt { width:100%; height:2px; background:var(--brd); margin-bottom:3rem; }
+.pf { height:100%; background:var(--oc); transition:width .35s ease; }
+.qc { font-size:.7rem; letter-spacing:.18em; text-transform:uppercase; color:var(--oc); margin-bottom:1.25rem; }
+.qt { font-family:'Playfair Display',serif; font-size:clamp(1.2rem,3vw,1.5rem); font-weight:400; color:var(--fo2); line-height:1.4; margin-bottom:1.75rem; }
+.opts { display:flex; flex-direction:column; gap:.7rem; margin-bottom:2rem; }
+.opt { background:#fff; border:1px solid var(--brd); padding:.9rem 1.2rem; font-size:.93rem; color:var(--fo2); text-align:left; font-weight:400; line-height:1.5; transition:all .18s; }
+.opt:hover { background:var(--bg2); border-color:rgba(200,146,42,.4); opacity:1; }
+.opt.sel { background:#fff; border-color:var(--oc); border-width:2px; opacity:1; color:var(--fo2); }
+.bn { background:transparent; color:var(--fo); border:1px solid var(--brd); font-weight:700; font-size:.8rem; letter-spacing:.1em; text-transform:uppercase; padding:.8rem 2rem; opacity:.35; pointer-events:none; transition:all .2s; }
+.bn.on { opacity:1; pointer-events:all; border-color:var(--fo); }
+.bn.on:hover { background:var(--fo); color:#F5F0E8; }
+
+/* LOADING */
+.lw { text-align:center; padding:5rem 0; }
+.lg { display:block; font-size:3rem; color:var(--oc); margin-bottom:2rem; animation:gw 1.4s ease-in-out infinite; }
+@keyframes gw { 0%,100%{opacity:.2;transform:scale(.95);} 50%{opacity:.7;transform:scale(1.05);} }
+.lt { font-family:'Playfair Display',serif; font-style:italic; color:var(--mu); }
+
+/* RESULT */
+.rf { font-size:.7rem; letter-spacing:.18em; text-transform:uppercase; color:var(--oc); margin-bottom:.75rem; }
+.rti { font-family:'Playfair Display',serif; font-size:clamp(1.5rem,4vw,2.1rem); font-weight:400; color:var(--fo2); line-height:1.25; margin-bottom:1.75rem; }
+.rti em { font-style:italic; color:var(--oc); }
+.rb { font-size:1rem; color:var(--fo2); line-height:1.85; }
+.rb p+p { margin-top:1.1rem; }
+.rb strong { color:var(--fo2); opacity:1; font-weight:400; font-style:italic; font-family:'Playfair Display',serif; }
+.rh { border-left:2px solid var(--oc); padding:1rem 1.5rem; margin:2rem 0; font-family:'Playfair Display',serif; font-style:italic; font-size:1.02rem; color:var(--fo2); background:rgba(200,146,42,.06); }
+.cw { border-top:1px solid var(--brd); padding-top:1.75rem; margin-top:.5rem; }
+.cl { font-size:.85rem; color:var(--mu); margin-bottom:.4rem; }
+.re { display:inline-block; margin-top:1.25rem; font-size:.78rem; color:var(--mu); cursor:pointer; text-decoration:underline; opacity:.6; background:none; border:none; padding:0; }
+.re:hover { opacity:1; }
+
+#pw-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(44,74,62,0.97);z-index:99999;display:flex;align-items:center;justify-content:center;}
+.pw-box{background:#fff;border-radius:16px;padding:32px;max-width:420px;width:90%;text-align:center;box-shadow:0 4px 24px rgba(0,0,0,0.3)}
+.pw-box h2{font-family:Georgia,serif;color:#2C4A3E;font-size:1.3rem;margin-bottom:8px}
+.pw-box p{color:#7D6352;font-size:0.9rem;margin-bottom:20px}
+.pw-inp{width:100%;padding:12px 16px;border:2px solid #D4A853;border-radius:8px;font-size:1rem;text-align:center;outline:none;box-sizing:border-box;color:#2C4A3E}
+.pw-btn{width:100%;margin-top:12px;padding:12px;background:#B8860B;color:#fff;border:none;border-radius:8px;font-size:1rem;cursor:pointer}
+.pw-btn:hover{background:#2C4A3E}
+.pw-err{color:#c0392b;font-size:0.85rem;margin-top:8px;display:none}
+</style>
+</head>
+<body><div id="pw-overlay"><div class="pw-box"><h2>Zugangswort eingeben</h2><p>Diese App ist nur mit Zugangswort verfügbar.</p><input class="pw-inp" id="pwi" type="text" placeholder="Zugangswort..."><button class="pw-btn" onclick="checkPW()">Weiter</button><div class="pw-err" id="pwe">Das Zugangswort ist nicht korrekt.</div></div></div>
+<div id="app">
+
+  <div class="screen active" id="sw">
+    <p class="ey">Tierakademie Zischgl</p>
+    <h1 class="wt">Dein <em>unsichtbarer</em> Faden</h1>
+    <p class="ws">Was wirklich zwischen dir und deinem Hund passiert</p>
+    <div class="div"></div>
+    <div class="wb">
+      <p>Du liebst deinen Hund. Du gibst viel. Und trotzdem gibt es Momente, in denen etwas nicht stimmt &#8211; ohne dass du wei&#223;t, was.</p>
+      <p>Dieser Test findet den einen Faden, der gerade am st&#228;rksten zieht. Nicht was du falsch machst. Sondern was zwischen euch noch unsichtbar ist.</p>
+      <p>7 Fragen. Keine richtigen Antworten. Nur ehrliche.</p>
+    </div>
+    <button type="button" class="bg" id="sbtn">Meinen Faden finden</button>
+    <p class="sig">Susanne Zischgl &middot; Tierakademie Zischgl</p>
+  </div>
+
+  <div class="screen" id="sq">
+    <div class="pt"><div class="pf" id="pf" style="width:0%"></div></div>
+    <p class="qc" id="qnum">Frage 1 von 7</p>
+    <h2 class="qt" id="qtext"></h2>
+    <div class="opts" id="opts"></div>
+    <button type="button" class="bn" id="bnext">Weiter &#8594;</button>
+  </div>
+
+  <div class="screen" id="sl">
+    <div class="lw">
+      <span class="lg">&#10022;</span>
+      <p class="lt">Dein Faden wird sichtbar &#8230;</p>
+    </div>
+  </div>
+
+  <div class="screen" id="sr">
+    <p class="ey">Dein Ergebnis</p>
+    <p class="rf" id="rfield"></p>
+    <h2 class="rti" id="rtitle"></h2>
+    <div class="rb" id="rbody"></div>
+    <div class="rh" id="rhook"></div>
+    <div class="cw">
+      <p class="cl" id="rcta"></p>
+      
+    </div>
+  </div>
+
+</div>
+<script>
+(function() {
+  var QS = [
+    { t: "Was besch\u00e4ftigt dich am meisten, wenn du ehrlich an euch beide denkst?", o: [
+      { t: "Ich wei\u00df eigentlich nicht, was ich mir von uns beiden wirklich w\u00fcnsche.", f: "ziel" },
+      { t: "Wir kommen manchmal nicht so nah ran, wie ich mir das vorstelle.", f: "bind" },
+      { t: "Ich reagiere oft ganz anders als ich es eigentlich m\u00f6chte.", f: "bez" },
+      { t: "Ich wei\u00df nicht, was bei ihm wirklich ankommt.", f: "met" }
+    ]},
+    { t: "Wenn Spannungen entstehen \u2013 wie reagierst du meistens als erstes?", o: [
+      { t: "Ich versuche sofort zu l\u00f6sen, zu erkl\u00e4ren, zu korrigieren.", f: "hand" },
+      { t: "Ich ziehe mich innerlich ein St\u00fcck zur\u00fcck.", f: "bind" },
+      { t: "Ich werde ungeduldig \u2013 und merke es erst danach.", f: "str" },
+      { t: "Ich frage mich, ob ich grunds\u00e4tzlich falsch liege.", f: "heb" }
+    ]},
+    { t: "Wenn wieder mal etwas nicht klappt \u2013 was denkst du dann als erstes?", o: [
+      { t: "\u201eIch brauche eine andere Methode.\u201c", f: "met" },
+      { t: "\u201eIch wei\u00df gar nicht, wohin das alles f\u00fchren soll.\u201c", f: "ziel" },
+      { t: "\u201eIrgendwas an mir selbst l\u00f6st das aus.\u201c", f: "heb" },
+      { t: "\u201eIch bin gerade einfach zu angespannt.\u201c", f: "str" }
+    ]},
+    { t: "Was verschweigst du, wenn jemand fragt, wie es mit deinem Hund l\u00e4uft?", o: [
+      { t: "Dass ich manchmal genervt bin \u2013 obwohl ich ihn so sehr liebe.", f: "str" },
+      { t: "Dass ich wei\u00df, was ich \u00e4ndern m\u00fcsste \u2013 aber es trotzdem nicht tue.", f: "hand" },
+      { t: "Dass ich mir nicht sicher bin, ob wir wirklich verbunden sind.", f: "bind" },
+      { t: "Dass er mich manchmal einfach nicht zu verstehen scheint.", f: "bez" }
+    ]},
+    { t: "Wenn du jemandem nah sein willst \u2013 wie ist das bei dir?", o: [
+      { t: "Ich gebe viel \u2013 manchmal deutlich zu viel.", f: "bez" },
+      { t: "Ich halte eine gewisse Kontrolle, auch wenn es nicht so aussieht.", f: "bind" },
+      { t: "Ich wei\u00df oft selbst nicht genau, was ich eigentlich brauche.", f: "heb" },
+      { t: "Ich mache es meistens \u201erichtig\u201c \u2013 aber ob es wirklich stimmt, wei\u00df ich nicht.", f: "hand" }
+    ]},
+    { t: "Was hat dir am meisten geholfen, wenn etwas nicht funktioniert hat?", o: [
+      { t: "Ein klares Ziel. Eine Richtung. Zu wissen, wohin.", f: "ziel" },
+      { t: "Jemand, der mir konkret zeigt, WIE ich es anders mache.", f: "met" },
+      { t: "Zu verstehen, WARUM ich so reagiere wie ich reagiere.", f: "heb" },
+      { t: "Wenn ich ruhiger wurde \u2013 und er sich daraufhin ver\u00e4ndert hat.", f: "str" }
+    ]},
+    { t: "Welcher Satz trifft dich am meisten?", o: [
+      { t: "\u201eIch wei\u00df nicht wirklich, wer ich in dieser Beziehung bin.\u201c", f: "bez" },
+      { t: "\u201eIch tue so viel \u2013 aber irgendwas fehlt trotzdem immer.\u201c", f: "hand" },
+      { t: "\u201eIch liebe ihn \u2013 aber manchmal f\u00fchlt sich alles so schwer an.\u201c", f: "bind" },
+      { t: "\u201eIch brauche endlich etwas, das wirklich zu mir passt.\u201c", f: "met" }
+    ]}
+  ];
+
+  var RS = {
+    ziel: {
+      name: "Feld 1 \u00b7 Zielausrichtung",
+      title: "Du gibst. Aber du wei\u00dft nicht, <em>wohin</em>.",
+      body: "<p>Du trainierst. Du korrigierst. Du liebst. Und trotzdem kreist alles irgendwie um sich selbst, ohne wirklich irgendwo anzukommen.</p><p>Das liegt nicht daran, dass du zu wenig tust. Es liegt daran, dass du nie wirklich gefragt wurdest: <strong>Was willst du eigentlich? Was soll diese Beziehung zwischen euch sein?</strong></p><p>Nicht \u201eer soll gehorchen\u201c. Nicht \u201ewir wollen keine Probleme mehr\u201c. Sondern: Was ist das Bild, auf das ihr zugeht? Wer bist du in dieser Beziehung \u2013 und wer darf er sein?</p><p>Ohne Richtung f\u00fchrt jede Methode ins Nichts. Nicht weil sie falsch ist. Sondern weil sie nirgendwo hinf\u00fchrt, das dir wirklich geh\u00f6rt.</p>",
+      hook: "Die Richtung fehlt nicht im Training. Sie fehlt in dir. Und das ist keine Schw\u00e4che \u2013 es ist ein Anfang.",
+      cta: "In der Community arbeitest du an genau dieser Frage. Was ihr wirklich wollt \u2013 und warum das alles ver\u00e4ndert."
+    },
+    bez: {
+      name: "Feld 2 \u00b7 Beziehungsmuster",
+      title: "Dein Hund zeigt, <em>wie du wirklich N\u00e4he lebst</em>.",
+      body: "<p>Ein Spiegel zeigt die Oberfl\u00e4che. Dein Hund zeigt mehr.</p><p>Er zeigt, ob du dich anpasst, ohne es zu merken. Ob du viel gibst und wenig forderst. Ob du N\u00e4he willst \u2013 und sie gleichzeitig ein bisschen absicherst.</p><p>Du machst wahrscheinlich vieles richtig. Und trotzdem stimmt etwas nicht ganz. <strong>Das liegt nicht an deinem Hund. Es liegt daran, dass deine Beziehungsmuster \u00e4lter sind als er.</strong> Sie haben sich gebildet, lange bevor er in dein Leben kam.</p><p>Und er \u2013 er kennt diese Muster besser als jeder Mensch in deinem Umfeld. Weil er keine R\u00fccksicht nimmt. Keine H\u00f6flichkeit. Keine Schonzeit.</p>",
+      hook: "Das ist unbequem. Und das ist genau der Grund, warum er so ein unvergleichlicher Lehrmeister ist.",
+      cta: "In der Community schaust du dir an, was dein Hund \u00fcber dich verr\u00e4t \u2013 und was du damit anfangen kannst."
+    },
+    heb: {
+      name: "Feld 3 \u00b7 Innerer Hebel",
+      title: "Du wei\u00dft es. Aber zwischen Wissen und Tun <em>liegt etwas Unbenanntes</em>.",
+      body: "<p>Du wei\u00dft, dass etwas anders werden muss. Vielleicht sogar ungef\u00e4hr was. Aber dann passiert \u2013 nichts. Oder nicht das Richtige. Oder das Richtige, aber zu sp\u00e4t, zu kurz, mit zu wenig \u00dcberzeugung.</p><p>Das ist kein Versagen. Das ist ein Signal.</p><p><strong>Manche geben viel Liebe \u2013 aber ihr Hund braucht Klarheit.</strong> Manche korrigieren viel \u2013 aber ihr Hund braucht Sicherheit. Manche wollen ver\u00e4ndern \u2013 aber wissen nicht, wo der Hebel bei ihnen pers\u00f6nlich liegt.</p><p>Der Hebel ist nicht die Methode. Er ist der Punkt in dir, an dem eine kleine, ehrliche Verschiebung alles in Bewegung bringt. Er ist in dir. Er wartet darauf, dass du ihn findest.</p>",
+      hook: "Nicht mehr tun. Nicht anders trainieren. Sondern verstehen, wo bei dir pers\u00f6nlich der Punkt ist \u2013 von dem aus alles leichter wird.",
+      cta: ""
+    },
+    bind: {
+      name: "Feld 4 \u00b7 Bindungsmuster",
+      title: "Das hier geht tiefer als dein Hund. <em>Viel tiefer.</em>",
+      body: "<p>Es geht darum, wie du gelernt hast, nah zu sein. Ob N\u00e4he sich f\u00fcr dich nach Sicherheit anf\u00fchlt. Oder nach etwas, das du dir verdienen musst. Oder nach etwas, das jederzeit weggehen kann.</p><p>Dein Hund reagiert nicht auf deine Stimme allein. Er reagiert auf das, was in dir passiert, wenn ihr zusammen seid. Auf die stille Frage, die du dir vielleicht nie laut gestellt hast: <strong>Bin ich hier sicher? Darf ich hier wirklich ankommen?</strong></p><p>Diese Muster haben sich sehr fr\u00fch gebildet \u2013 in einer Zeit, in der du keine Wahl hattest. Das ist nicht deine Schuld.</p><p>Aber dein Hund sp\u00fcrt sie. T\u00e4glich. Er antwortet auf das, was du noch nicht aufgel\u00f6st hast. Nicht weil er es will. Sondern weil er nicht anders kann.</p>",
+      hook: "Das ist keine Pathologie. Das ist das Ehrlichste, was man \u00fcber Bindung sagen kann \u2013 und der Anfang echter Ver\u00e4nderung.",
+      cta: "In der Community gehen wir gemeinsam in diese Tiefe. Nicht um Wunden aufzurei\u00dfen \u2013 sondern um zu verstehen, was wirklich tr\u00e4gt."
+    },
+    hand: {
+      name: "Feld 5 \u00b7 Handlungsachse",
+      title: "Du meinst es gut. <em>Aber dein Hund h\u00f6rt nicht, was du meinst.</em>",
+      body: "<p>Er liest, was du tust.</p><p>Du willst ruhig bleiben und wirst laut. Du willst konsequent sein und gibst nach. Du willst klar sein \u2013 und sendest gleichzeitig drei verschiedene Signale. Nicht weil du unzuverl\u00e4ssig bist. Sondern weil zwischen deiner Absicht und deiner Handlung eine L\u00fccke klafft, die du selbst vielleicht kaum siehst.</p><p><strong>Diese L\u00fccke ist dein Thema.</strong> Nicht als Fehler \u2013 sondern als der Ort, an dem die eigentliche Arbeit stattfindet.</p><p>Denn dein Hund lernt nicht von deinen Vors\u00e4tzen. Er lernt von dem, was du tats\u00e4chlich tust. In dem Moment, in dem es darauf ankommt. Wenn du m\u00fcde bist. Wenn du gestresst bist. Genau dort.</p>",
+      hook: "Deine Absichten z\u00e4hlen im Training nicht. Deine Handlungen z\u00e4hlen. Und das ist die beste Nachricht \u2013 weil Handlungen sich ver\u00e4ndern lassen.",
+      cta: "In der Community verstehst du, warum diese L\u00fccke entsteht \u2013 und lernst, sie Schritt f\u00fcr Schritt zu schlie\u00dfen."
+    },
+    met: {
+      name: "Feld 6 \u00b7 Methodik",
+      title: "Du suchst nicht nach einer besseren Methode. <em>Du suchst nach deiner.</em>",
+      body: "<p>Du hast Dinge probiert. Vielleicht viele. B\u00fccher gelesen. Videos geschaut. Kurse gemacht. Empfehlungen befolgt.</p><p>Und du suchst noch. Nicht weil du zu wenig wei\u00dft. Sondern weil keine Methode bisher wirklich zu dir gepasst hat. Weil alle irgendwie f\u00fcr jemand anderen gemacht zu sein scheinen \u2013 nicht f\u00fcr dich.</p><p><strong>Die unbequeme Wahrheit: Die richtige Methode gibt es nicht.</strong> Es gibt nur die Methode, die zu dir passt. Zu deiner Energie, deinem Tempo, deiner Art, Beziehung zu leben.</p><p>Du wirst sie nicht in einem weiteren Kurs finden. Du findest sie, wenn jemand zuerst fragt, wer du bist \u2013 und dann erst, was du tust.</p>",
+      hook: "Niemand hat dich je gefragt, welche Methode zu dir als Mensch passt. Das ist der Fehler. Nicht deine Suche.",
+      cta: "In der Community beginnt genau diese Frage. Wer bist du \u2013 und welche Methode passt dazu?"
+    },
+    str: {
+      name: "Feld 7 \u00b7 Stressmuster",
+      title: "Dein Hund l\u00fcgt nicht. <em>Er spiegelt, was wirklich da ist.</em>",
+      body: "<p>Nicht die Oberfl\u00e4che. Nicht deine freundliche Stimme, wenn der Rest von dir angespannt ist. Nicht das L\u00e4cheln, hinter dem sich ein langer, ersch\u00f6pfter Tag versteckt.</p><p>Wenn etwas nicht l\u00e4uft, ist der erste Gedanke oft: \u201eMein Hund hat ein Problem.\u201c Aber meistens ist es anders. <strong>Dein Hund hat kein Problem. Er antwortet auf einen Zustand.</strong></p><p>Deinen Zustand.</p><p>Das ist keine Anklage. Etwas in dir sucht nach Aufmerksamkeit. Eine Ersch\u00f6pfung. Eine Anspannung. Ein Muster, das schon so lange da ist, dass du es kaum noch wahrnimmst. Dein Hund tut es. Jeden Tag. Ohne Ausnahme.</p>",
+      hook: "Er ist nicht dein Problem. Er ist dein Seismograph. Und das ver\u00e4ndert alles \u2013 wenn du anf\u00e4ngst zuzuh\u00f6ren.",
+      cta: "In der Community lernst du, was dein Hund wirklich liest \u2013 und was du damit anfangen kannst."
+    }
+  };
+
+  var cq = 0, sc = {}, sel = null;
+
+  function resetSc() { sc = {ziel:0,bez:0,heb:0,bind:0,hand:0,met:0,str:0}; }
+
+  function show(id) {
+    var all = document.querySelectorAll('.screen');
+    for (var i=0;i<all.length;i++) all[i].classList.remove('active');
+    document.getElementById(id).classList.add('active');
+  }
+
+  function loadQ() {
+    var q = QS[cq];
+    document.getElementById('qnum').textContent = 'Frage '+(cq+1)+' von '+QS.length;
+    document.getElementById('qtext').textContent = q.t;
+    document.getElementById('pf').style.width = (cq/QS.length*100)+'%';
+    sel = null;
+    document.getElementById('bnext').className = 'bn';
+    document.getElementById('bnext').textContent = cq < QS.length-1 ? 'Weiter \u2192' : 'Mein Ergebnis \u2192';
+    var con = document.getElementById('opts');
+    con.innerHTML = '';
+    for (var i=0;i<q.o.length;i++) {
+      (function(opt){
+        var b = document.createElement('button');
+        b.type='button'; b.className='opt'; b.textContent=opt.t;
+        b.onclick = function(){
+          var bs=document.querySelectorAll('.opt');
+          for(var j=0;j<bs.length;j++) bs[j].classList.remove('sel');
+          b.classList.add('sel'); sel=opt.f;
+          document.getElementById('bnext').className='bn on';
+        };
+        con.appendChild(b);
+      })(q.o[i]);
+    }
+  }
+
+  function nextQ() {
+    if (!sel) return;
+    if (sc[sel]!==undefined) sc[sel]++;
+    if (cq < QS.length-1) { cq++; loadQ(); }
+    else {
+      show('sl');
+      setTimeout(function(){
+        var best=null,bv=-1,keys=Object.keys(sc);
+        for(var i=0;i<keys.length;i++) if(sc[keys[i]]>bv){bv=sc[keys[i]];best=keys[i];}
+        var r=RS[best];
+        document.getElementById('rfield').textContent=r.name;
+        document.getElementById('rtitle').innerHTML=r.title;
+        document.getElementById('rbody').innerHTML=r.body;
+        document.getElementById('rhook').textContent=r.hook;
+        document.getElementById('rcta').textContent=r.cta;
+        show('sr');
+      }, 2000);
+    }
+  }
+
+  function start() { cq=0; resetSc(); sel=null; loadQ(); show('sq'); }
+
+  document.getElementById('sbtn').onclick = start;
+  document.getElementById('bnext').onclick = nextQ;
+  
+})();
+</script>
+<script>
+var ACCESS="Klarheit";
+function checkPW(){
+  var v=document.getElementById("pwi").value.trim();
+  if(v===ACCESS){document.getElementById("pw-overlay").style.display="none";}
+  else{document.getElementById("pwe").style.display="block";document.getElementById("pwi").value="";document.getElementById("pwi").focus();}
+}
+document.addEventListener("DOMContentLoaded",function(){
+  var inp=document.getElementById("pwi");
+  if(inp){inp.focus();inp.addEventListener("keydown",function(e){if(e.key==="Enter")checkPW();});}
+});
+</script></body>
+</html>
