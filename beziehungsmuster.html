@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Beziehungsmuster · Die unsichtbaren Fäden</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: Georgia, serif; background: linear-gradient(160deg, #1E3A2E 0%, #122318 40%, #0a160f 100%); min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 28px 16px 48px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+::-webkit-scrollbar{width:5px} ::-webkit-scrollbar-thumb{background:#4A7C6F;border-radius:3px}
+.hdr{text-align:center;margin-bottom:26px}
+.ey{font-size:11px;color:#D4A853;letter-spacing:3px;text-transform:uppercase;margin-bottom:8px;font-family:system-ui}
+.hdr h1{font-size:24px;font-weight:700;color:white;margin-bottom:4px;line-height:1.2}
+.hdr .sub{font-size:13px;color:#8FAF9F;font-family:system-ui}
+.card{width:100%;max-width:580px;background:white;border-radius:20px;overflow:hidden;box-shadow:0 20px 70px rgba(0,0,0,.4)}
+.card-hdr{background:linear-gradient(135deg,#1E3A2E,#4A7C6F);padding:22px 24px 18px;color:white}
+.card-hdr .e{font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:#D4A853;margin-bottom:6px;font-family:system-ui}
+.card-hdr h2{font-size:19px;font-weight:700;margin-bottom:8px;line-height:1.3}
+.card-hdr p{font-size:13px;color:rgba(255,255,255,.85);line-height:1.7;font-family:system-ui}
+.body{padding:20px 24px 26px}
+.feat{display:flex;align-items:flex-start;gap:12px;margin-bottom:14px}
+.feat-icon{width:36px;height:36px;border-radius:10px;background:#F0F5F2;border:1px solid #D8EAE4;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;margin-top:1px}
+.feat-text{font-size:13px;color:#1E2E28;font-family:system-ui;line-height:1.6}
+.feat-text strong{color:#1E3A2E}
+.tip{background:linear-gradient(135deg,#FFF8EC,#FFF0D4);border-left:4px solid #C4923A;border-radius:10px;padding:13px 15px;font-size:13px;color:#1E2E28;line-height:1.7;font-family:system-ui;margin:14px 0}
+.btn-p{background:linear-gradient(135deg,#1E3A2E,#4A7C6F);color:white;border:none;border-radius:10px;padding:13px 18px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;width:100%}
+.btn-p:disabled{background:#8FAF9F;cursor:not-allowed}
+.btn-g{background:linear-gradient(135deg,#C4923A,#D4A853);color:white;border:none;border-radius:10px;padding:13px 18px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;width:100%}
+.btn-o{background:transparent;border:1.5px solid #1E3A2E;color:#1E3A2E;border-radius:10px;padding:12px 18px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit}
+.btn-lnk{background:none;border:none;color:#6B8A7E;font-size:12px;cursor:pointer;text-decoration:underline;font-family:inherit;padding:8px 0 0;display:block}
+.btn-row{display:flex;gap:10px;margin-top:14px}
+.btn-row .btn-p,.btn-row .btn-g{flex:1}
+.prog-meta{display:flex;justify-content:space-between;font-size:11px;color:#6B8A7E;font-family:system-ui;margin-bottom:6px}
+.prog-track{background:#D8EAE4;border-radius:999px;height:6px;overflow:hidden;margin-bottom:8px}
+.prog-fill{height:100%;background:linear-gradient(90deg,#1E3A2E,#4A7C6F);border-radius:999px}
+.dots{display:flex;gap:6px;margin-bottom:20px}
+.dot{flex:1;height:4px;border-radius:999px}
+.q-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:#4A7C6F;font-family:system-ui;margin-bottom:4px}
+.q-title{font-size:18px;font-weight:700;color:#1E3A2E;margin-bottom:8px;line-height:1.35}
+.q-hint{font-size:13px;color:#6B8A7E;font-style:italic;font-family:system-ui;line-height:1.6}
+.idk{font-size:12px;color:#6B8A7E;font-family:system-ui;line-height:1.6;margin:6px 0 12px;font-style:italic}
+textarea{width:100%;font-family:Georgia,serif;font-size:14px;color:#1E2E28;background:#F0F5F2;border:1.5px solid #8FAF9F;border-radius:10px;padding:11px 13px;outline:none;resize:vertical;line-height:1.65;margin:12px 0 0;display:block}
+textarea:focus{border-color:#4A7C6F}
+.rbox{background:linear-gradient(135deg,#F0F5F2,#D8EAE4);border-radius:12px;padding:14px 16px;margin-bottom:14px}
+.rs-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px}
+.rs-txt{font-size:14px;color:#1E2E28;line-height:1.8}
+.copy-hint{font-size:11px;color:#6B8A7E;font-family:system-ui;margin:10px 0 4px}
+.copy-field{width:100%;background:white;border:1.5px solid #4A7C6F;border-radius:8px;padding:9px 11px;font-size:13px;color:#1E2E28;font-family:inherit;line-height:1.7;resize:none;outline:none;cursor:text;display:block}
+.spin-wrap{display:flex;flex-direction:column;align-items:center;gap:16px;padding:40px 0}
+.spin{width:36px;height:36px;border:3px solid #D8EAE4;border-top-color:#4A7C6F;border-radius:50%;animation:spin .8s linear infinite}
+.err{background:#fff0f0;border-left:4px solid #cc4444;border-radius:10px;padding:14px 16px;font-size:13px;color:#7a2222;font-family:system-ui}
+.badge-5f{display:inline-block;background:#1E3A2E;color:#D4A853;font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;font-family:system-ui;letter-spacing:1px;text-transform:uppercase;margin-bottom:12px}
+.bridge-box{background:#F0F5F2;border-radius:12px;padding:14px 16px;margin-bottom:14px;font-size:13px;color:#6B8A7E;line-height:1.7;font-family:system-ui;border-left:4px solid #D4A853}
+.footer{margin-top:18px;font-size:11px;color:rgba(143,175,159,.5);font-family:system-ui}
+.pw-box{background:#fff;border-radius:16px;padding:32px;max-width:420px;margin:0 auto;text-align:center;box-shadow:0 4px 24px rgba(0,0,0,0.15)}.pw-box h2{font-family:Georgia,serif;color:#2C4A3E;font-size:1.3rem;margin-bottom:8px}.pw-box p{color:#7D6352;font-size:0.9rem;margin-bottom:20px}.pw-inp{width:100%;padding:12px 16px;border:2px solid #D4A853;border-radius:8px;font-size:1rem;text-align:center;outline:none;box-sizing:border-box;color:#2C4A3E}.pw-inp:focus{border-color:#2C4A3E}.pw-btn{width:100%;margin-top:12px;padding:12px;background:#B8860B;color:#fff;border:none;border-radius:8px;font-size:1rem;cursor:pointer;font-family:Georgia,serif}.pw-btn:hover{background:#2C4A3E}.pw-err{color:#c0392b;font-size:0.85rem;margin-top:8px;display:none}</style>
+</head>
+<body>
+<div class="hdr">
+  <div class="ey">Die unsichtbaren Fäden</div>
+  <h1>Wie gestaltest du<br>Beziehung wirklich?</h1>
+  <div class="sub">7-Felder-Modell · Feld 2 · Beziehungsmuster</div>
+</div>
+<div class="card" id="card"></div>
+<div class="footer">🐾 Susanne Zischgl · Die unsichtbaren Fäden zwischen Mensch und Hund</div>
+
+<script>
+var QS = [
+  {
+    lbl: "Dein Beziehungsstil",
+    q: "Wie wuerdest du dich in Beziehungen generell beschreiben?",
+    hint: "Nicht nur mit deinem Hund – sondern generell. Passt du dich schnell an? Brauchst du Kontrolle? Suchst du Naehe, meidest sie manchmal? Bist du eher fuehrend oder folgend?",
+    ph: "z. B. Ich passe mich oft an andere an und stelle meine eigenen Beduerfnisse hinten an..."
+  },
+  {
+    lbl: "Wiederkehrende Muster",
+    q: "Gibt es Muster in deinen Beziehungen, die sich immer wieder zeigen – auch mit deinem Hund?",
+    hint: "Dinge, die du kennst. Situationen die sich wiederholen, obwohl du es nicht willst. Das koennen auch positive Muster sein.",
+    ph: "z. B. Ich merke, dass ich bei Konflikten schnell nachgebe – auch mit meinem Hund gebe ich oft nach..."
+  },
+  {
+    lbl: "Naehe und Abstand",
+    q: "Wie ist das Thema Naehe und Abstand bei euch? Wer sucht wen – und wie viel?",
+    hint: "Dein Hund, du, oder beide gleichzeitig? Wer weicht aus, wer dringt vor? Ohne Wertung – nur beobachten.",
+    ph: "z. B. Mein Hund sucht staendig Koerperkontakt, ich geniesse das meistens, aber manchmal ist es mir zu viel..."
+  },
+  {
+    lbl: "Wenn es Konflikt gibt",
+    q: "Was passiert zwischen euch, wenn es zu Reibung oder Konflikt kommt?",
+    hint: "Wie reagierst du, wie reagiert er? Wer weicht aus, wer bleibt, wer loest auf? Auch das ist ein Beziehungsmuster.",
+    ph: "z. B. Ich werde laut, er zieht sich zurueck. Danach bin ich schlechter Laune und er wirkt angespannt..."
+  },
+  {
+    lbl: "Selbstreflexion",
+    q: "Was erkennst du, wenn du ehrlich auf eure Beziehung schaust?",
+    hint: "Was siehst du, das du vielleicht noch nicht laut ausgesprochen hast? Was wuerdest du gerne veraendern – an dir, nicht an ihm?",
+    ph: "z. B. Ich glaube ich erwarte von ihm manchmal Dinge, die ich selbst nicht gebe. Mehr Geduld zum Beispiel..."
+  }
+];
+
+var ANS = ["","","","",""];
+var STEP = 0;
+var RES = "";
+
+function $(id){return document.getElementById(id);}
+
+
+var ACCESS="Klarheit";
+function showGate(){
+  var h='<div class="pw-box">';
+  h+='<h2>Zugangswort eingeben</h2>';
+  h+='<p>Diese App ist nur mit Zugangswort verfügbar.</p>';
+  h+='<input class="pw-inp" id="pwi" type="text" placeholder="Zugangswort...">';
+  h+='<button class="pw-btn" onclick="checkPW()">Weiter</button>';
+  h+='<div class="pw-err" id="pwe">Das Zugangswort ist nicht korrekt.</div>';
+  h+='</div>';
+  $("card").innerHTML=h;
+  document.getElementById("pwi").addEventListener("keydown",function(e){if(e.key==="Enter")checkPW();});
+  document.getElementById("pwi").focus();
+}
+function checkPW(){
+  var v=document.getElementById("pwi").value.trim();
+  if(v===ACCESS){showWelcome();}
+  else{document.getElementById("pwe").style.display="block";document.getElementById("pwi").value="";document.getElementById("pwi").focus();}
+}
+function showWelcome(){
+  $("card").innerHTML =
+    '<div class="card-hdr">'+
+    '<div class="e">Feld 2 · Beziehungsmuster</div>'+
+    '<h2>Dein Hund ist kein Trainingsprojekt.<br>Er ist Teil deiner Beziehungsmuster.</h2>'+
+    '<p>Jetzt wird es ehrlich. Diese App schaut, wie du Beziehungen wirklich lebst – nicht nur mit deinem Hund. Vielleicht bist du jemand, der sich schnell anpasst. Oder viel kontrolliert. Oder Naehe will, sie aber manchmal meidet. Genau das zeigt sich im Zusammenleben mit deinem Hund.</p>'+
+    '</div>'+
+    '<div class="body">'+
+    '<div class="badge-5f">7-Felder-Modell · Feld 2</div>'+
+    '<div class="feat"><div class="feat-icon">&#129309;</div><div class="feat-text"><strong>Wie du Beziehung lebst</strong> – nicht nur mit deinem Hund, sondern generell. Das praegt alles.</div></div>'+
+    '<div class="feat"><div class="feat-icon">&#128260;</div><div class="feat-text"><strong>Warum sich Muster wiederholen</strong> – und was sie dir ueber dich erzaehlen, nicht ueber deinen Hund.</div></div>'+
+    '<div class="feat"><div class="feat-icon">&#129309;</div><div class="feat-text"><strong>Selbstreflexion & Veraenderung</strong> – was du erkennst und was du konkret anders machen kannst.</div></div>'+
+    '<div class="tip">Das hier kann ein kleiner Aha-Schock sein. Das ist gut so. Erkenntnisse die etwas bewegen, fuehlen sich manchmal so an.<br><br><strong style="color:#C4923A">Tipp:</strong> Antworte so ehrlich wie moeglich – und schreib <strong>Ich weiss es nicht</strong> wenn du unsicher bist.</div>'+
+    '<button class="btn-p" onclick="showQ(1)">&#129309; Mein Beziehungsmuster erkennen</button>'+
+    '</div>';
+}
+
+function showQ(n){
+  STEP = n;
+  var q = QS[n-1];
+  var pct = Math.round((n/5)*100);
+  var dots = "";
+  for(var i=0;i<5;i++){
+    var c = i<n-1?"#4A7C6F":i===n-1?"#1E3A2E":"#D8EAE4";
+    dots += '<div class="dot" style="background:'+c+'"></div>';
+  }
+  var back = '';
+  var nextCls = n===5?"btn-g":"btn-p";
+  var nextLbl = n===5?"&#129309; Mein Muster zeigen":"Weiter &#8594;";
+  $("card").innerHTML =
+    '<div class="body">'+
+    '<div class="prog-meta"><span>Frage '+n+' von 5</span><span>'+pct+'%</span></div>'+
+    '<div class="prog-track"><div class="prog-fill" style="width:'+pct+'%"></div></div>'+
+    '<div class="dots">'+dots+'</div>'+
+    '<div class="q-label">'+q.lbl+'</div>'+
+    '<div class="q-title">'+q.q+'</div>'+
+    '<div class="q-hint">'+q.hint+'</div>'+
+    '<textarea id="ta" rows="4" placeholder="'+q.ph+'" oninput="chk()">'+(ANS[n-1]||'')+'</textarea>'+
+    '<p class="idk">&#128161; Du kannst auch schreiben: <strong>Ich weiss es nicht</strong> – das ist eine vollwertige Antwort.</p>'+
+    '<div class="btn-row">'+back+'<button class="'+nextCls+'" id="nbtn" onclick="goNext()">'+nextLbl+'</button></div>'+
+    ''+
+    '</div>';
+  chk();
+}
+
+function chk(){
+  var ta=$("ta"), btn=$("nbtn");
+  if(ta&&btn) btn.disabled = !ta.value.trim();
+}
+
+function goNext(){
+  var ta=$("ta");
+  if(!ta||!ta.value.trim()) return;
+  ANS[STEP-1]=ta.value.trim();
+  if(STEP<5){showQ(STEP+1);}
+  else{generate();}
+}
+
+function goBack(){
+  var ta=$("ta");
+  if(ta) ANS[STEP-1]=ta.value.trim();
+  showQ(STEP-1);
+}
+
+function showLoading(){
+  $("card").innerHTML='<div class="body"><div class="spin-wrap"><div class="spin"></div><p style="font-size:14px;color:#6B8A7E;font-family:system-ui;font-style:italic">Susanne schaut auf eure Beziehungsmuster...</p></div></div>';
+}
+
+function generate(){
+  showLoading();
+  var msg="";
+  var labels=["Beziehungsstil generell","Wiederkehrende Muster","Naehe und Abstand","Verhalten bei Konflikt","Selbstreflexion"];
+  for(var i=0;i<5;i++) msg+=labels[i]+": "+(ANS[i]||"keine Angabe")+"\n";
+
+  var sys="Du bist Susanne, erfahrene Hundetrainerin, Physiotherapeutin und systemische Coach mit ueber 30 Jahren Erfahrung. Du arbeitest mit dem 7-Felder-Modell der Mensch-Hund-Dynamik.\n\nFeld 2 sind die Beziehungsmuster: Wie gestaltet der Mensch Beziehungen generell – und wie zeigt sich das in der Beziehung zum Hund? Der Hund ist kein Trainingsobjekt, sondern Teil der Beziehungswelt des Menschen. Muster aus anderen Beziehungen – Anpassung, Kontrolle, Naehe-Distanz, Konfliktvermeidung – zeigen sich auch im Zusammenleben mit dem Hund.\n\nDu schreibst tief, warm, ehrlich, ohne Floskeln und ohne Coaching-Sprech. Keine Ratschlaege, keine Bewertungen. Du benennst was du siehst, laedt ein zum Nachdenken, und zeigst einen konkreten naechsten Schritt.\n\nBasierend auf den fuenf Antworten schreibst du fuenf Abschnitte mit diesen exakten Ueberschriften:\n\nDein Beziehungsmuster:\n[3-4 Saetze: Welches Grundmuster erkennst du? Benenne es klar und warm – z.B. Anpassungsmuster, Kontrollmuster, Naehe-Distanz-Dynamik, Konfliktvermeidung.]\n\nWie es sich mit dem Hund zeigt:\n[2-3 Saetze: Wie uebertraegt sich dieses Muster konkret auf die Mensch-Hund-Beziehung? Was wiederholt sich dort?]\n\nDer Spiegel des Hundes:\n[2-3 Saetze: Was koennte das Verhalten des Hundes ueber dieses Beziehungsmuster spiegeln? Als Einladung formuliert, nicht als Diagnose.]\n\nSelbstreflexion:\n[2-3 Saetze: Was koennte der Mensch ueber sich erkennen, wenn er dieses Muster bewusst betrachtet? Was moechte er vielleicht veraendern – an sich, nicht am Hund.]\n\nDeine eine Veraenderung diese Woche:\n[1-2 Saetze: Eine einzige konkrete innere Handlung oder Beobachtungsaufgabe fuer die naechste Woche. Kein Training – etwas Inneres.]\n\nKein Markdown. Deutsch, du-Ansprache.";
+
+  fetch("https://tierakademie-proxy.tierakademie.workers.dev",{
+    method:"POST",
+    headers:{"Content-Type":"application/json","x-api-key":"-JaHUV0FIbq2D_h1svugZRYxfo3Tljwqm6fyFeJwIeUblhfb2Jz5_C1hrVtC9btTqpoq33mRQPd5Th58unijLqA-LpymLwAA","anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},
+    body:JSON.stringify({
+      model:"claude-haiku-4-5-20251001",
+      max_tokens:1100,
+      system:sys,
+      messages:[{role:"user",content:"Hier sind die fuenf Antworten:\n\n"+msg}]
+    })
+  })
+  .then(function(r){if(!r.ok)throw new Error("Fehler "+r.status);return r.json();})
+  .then(function(d){
+    if(d.error)throw new Error(d.error.message);
+    RES=d.content&&d.content[0]?d.content[0].text:"";
+    showResult();
+  })
+  .catch(function(e){
+    $("card").innerHTML='<div class="body"><div class="err">&#9888; '+e.message+'<br><button class="btn-p" style="margin-top:12px;width:auto;padding:9px 16px" onclick="generate()">&#8635; Nochmal versuchen</button></div></div>';
+  });
+}
+
+function showResult(){
+  var secs=[
+    {key:"dein beziehungsmuster",lbl:"&#129309; Dein Beziehungsmuster",col:"#1E3A2E",copy:false},
+    {key:"wie es sich mit dem hund",lbl:"&#128062; Wie es sich mit dem Hund zeigt",col:"#4A7C6F",copy:false},
+    {key:"der spiegel des hundes",lbl:"&#129781; Der Spiegel des Hundes",col:"#8B5E3C",copy:false},
+    {key:"selbstreflexion",lbl:"&#128270; Selbstreflexion",col:"#C4923A",copy:false},
+    {key:"deine eine veraenderung",lbl:"&#128336; Deine eine Veraenderung diese Woche",col:"#D4A853",copy:true}
+  ];
+  var parsed=[],cur=null;
+  var lines=RES.split("\n");
+  for(var i=0;i<lines.length;i++){
+    var line=lines[i].trim(),low=line.toLowerCase();
+    var found=false;
+    for(var j=0;j<secs.length;j++){
+      if(low.indexOf(secs[j].key)!==-1){
+        if(cur)parsed.push(cur);
+        cur={lbl:secs[j].lbl,col:secs[j].col,copy:secs[j].copy,txt:""};
+        found=true;break;
+      }
+    }
+    if(!found&&cur&&line) cur.txt+=(cur.txt?"\n":"")+line;
+  }
+  if(cur)parsed.push(cur);
+  if(!parsed.length)parsed=[{lbl:"&#129309; Dein Beziehungsmuster",col:"#1E3A2E",copy:false,txt:RES}];
+
+  var html='<div class="body">'+
+    '<div class="badge-5f">7-Felder-Modell · Feld 2</div>'+
+    '<p style="font-size:16px;font-weight:700;color:#1E3A2E;margin-bottom:4px">Dein Beziehungsmuster &#129309;</p>'+
+    '<p style="font-size:13px;color:#6B8A7E;font-family:system-ui;margin-bottom:16px;line-height:1.65">Lies es langsam. Manchmal brauchen Erkenntnisse einen Moment um anzukommen.</p>';
+
+  for(var k=0;k<parsed.length;k++){
+    var s=parsed[k];
+    var cp=s.copy?
+      '<p class="copy-hint">&#128070; Klick ins Feld &#8594; alles markiert &#8594; Strg+C</p>'+
+      '<textarea class="copy-field" readonly rows="3" onclick="this.select()">'+s.txt+'</textarea>':'';
+    html+='<div class="rbox" style="border-left:4px solid '+s.col+'">'+
+      '<div class="rs-lbl" style="color:'+s.col+'">'+s.lbl+'</div>'+
+      '<div class="rs-txt">'+s.txt.replace(/\n/g,"<br>")+'</div>'+cp+'</div>';
+  }
+
+  html+='</div>';
+  $("card").innerHTML=html;
+}
+
+function reset(){ANS=["","","","",""];STEP=0;RES="";showWelcome();}
+
+showGate();
+</script>
+</body>
+</html>
