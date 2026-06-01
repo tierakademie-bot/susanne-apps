@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anlage-Kompass PRO – Tierakademie Zischgl</title>
+<meta name="description" content="Professionelles Analyse-Tool für Hundetrainer: Triebprofil des Kundenhundes erkennen und passgenaue Auslastung empfehlen.">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --forest: #2D4A3E;
+    --forest-dark: #1e3329;
+    --ochre: #C4872A;
+    --ochre-dark: #8B6914;
+    --cream: #F5F0E8;
+    --moss: #6B7C5C;
+    --moss-dark: #5a6a4c;
+    --sand: #E8DFC5;
+    --gold: #D4A847;
+    --text: #1a1a1a;
+    --text-muted: #5a5a5a;
+    --text-light: #888;
+    --border: rgba(0,0,0,0.09);
+    --border-mid: rgba(0,0,0,0.16);
+    --bg-card: #ffffff;
+    --bg-soft: #f8f5f0;
+    --bg-pro: #f0ede6;
+    --radius: 12px;
+    --radius-sm: 8px;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--cream);
+    color: var(--text);
+    font-family: 'Georgia', 'Times New Roman', serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  header {
+    width: 100%;
+    background: var(--forest-dark);
+    padding: 1.5rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .brand {
+    font-family: 'Georgia', serif;
+    font-size: 14px;
+    color: rgba(245,240,232,0.8);
+  }
+
+  .brand strong { color: #F5F0E8; font-weight: normal; }
+
+  .pro-badge {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    background: var(--ochre);
+    color: #fff;
+    border-radius: 4px;
+  }
+
+  main {
+    width: 100%;
+    max-width: 640px;
+    padding: 2.5rem 1.5rem 4rem;
+    flex: 1;
+  }
+
+  /* Progress */
+  .prog-wrap { margin-bottom: 2.25rem; }
+
+  .prog-meta {
+    display: flex;
+    justify-content: space-between;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 12px;
+    color: var(--text-light);
+    margin-bottom: 0.5rem;
+  }
+
+  .prog-bg { height: 3px; background: var(--border); border-radius: 2px; overflow: hidden; }
+  .prog-fill { height: 100%; background: var(--ochre); border-radius: 2px; transition: width 0.45s ease; }
+
+  /* Card */
+  .card {
+    background: var(--bg-card);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 2rem 2.25rem;
+    box-shadow: 0 2px 20px rgba(45,74,62,0.07);
+  }
+
+  .hidden { display: none !important; }
+
+  /* Welcome */
+  .pro-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ochre-dark);
+    margin-bottom: 1.25rem;
+  }
+
+  .welcome-title {
+    font-size: 24px;
+    font-weight: normal;
+    color: var(--forest);
+    line-height: 1.3;
+    margin-bottom: 1.25rem;
+  }
+
+  .welcome-text {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.75;
+    margin-bottom: 1.5rem;
+  }
+
+  .info-box {
+    background: var(--bg-soft);
+    border-left: 3px solid var(--moss);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    padding: 0.875rem 1.125rem;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.65;
+    margin-bottom: 1.75rem;
+  }
+
+  .start-btn {
+    padding: 0.8rem 2.25rem;
+    background: var(--forest);
+    border: none;
+    border-radius: var(--radius-sm);
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 14px;
+    color: #F5F0E8;
+    cursor: pointer;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    transition: background 0.15s;
+  }
+
+  .start-btn:hover { background: var(--forest-dark); }
+
+  /* Question */
+  .q-num {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 11px;
+    color: var(--text-light);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 0.75rem;
+  }
+
+  .q-text {
+    font-size: 18px;
+    font-weight: normal;
+    color: var(--forest);
+    line-height: 1.5;
+    margin-bottom: 1.5rem;
+  }
+
+  .q-hint {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 12px;
+    color: var(--text-light);
+    font-style: italic;
+    margin-bottom: 1.25rem;
+    margin-top: -0.75rem;
+  }
+
+  .opt {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: 0.9rem 1.125rem;
+    margin-bottom: 0.6rem;
+    background: var(--bg-soft);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 14px;
+    color: var(--text);
+    line-height: 1.5;
+    transition: background 0.15s, border-color 0.15s;
+  }
+
+  .opt:hover { background: var(--sand); border-color: var(--border-mid); }
+  .opt:active { transform: scale(0.995); }
+
+  /* Results */
+  .res-eyebrow {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 11px;
+    color: var(--ochre-dark);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 0.4rem;
+  }
+
+  .res-title {
+    font-size: 20px;
+    font-weight: normal;
+    color: var(--forest);
+    line-height: 1.4;
+    margin-bottom: 1.75rem;
+  }
+
+  .drive-row { margin-bottom: 1.1rem; }
+  .drive-hd { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.35rem; }
+  .drive-name { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 13px; font-weight: 500; color: var(--text); }
+  .drive-name.top { color: var(--ochre-dark); }
+  .drive-pct { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 12px; color: var(--text-light); }
+  .bar-bg { height: 5px; background: var(--border); border-radius: 3px; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 3px; transition: width 1s cubic-bezier(0.16,1,0.3,1); }
+
+  .divider { border: none; border-top: 0.5px solid var(--border); margin: 1.75rem 0; }
+
+  /* Pro result blocks */
+  .result-block {
+    margin-bottom: 1.5rem;
+    padding: 1.125rem 1.25rem;
+    border-radius: var(--radius-sm);
+    border: 0.5px solid var(--border);
+  }
+
+  .result-block.training { background: #f0f5f2; border-left: 3px solid var(--moss); }
+  .result-block.challenges { background: #fdf6ed; border-left: 3px solid var(--ochre); }
+  .result-block.activities { background: #f5f0e8; border-left: 3px solid var(--gold); }
+  .result-block.owner { background: #f0f4f8; border-left: 3px solid #6b8caa; }
+
+  .block-lbl {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+
+  .block-lbl.training { color: var(--moss-dark); }
+  .block-lbl.challenges { color: var(--ochre-dark); }
+  .block-lbl.activities { color: #7a5200; }
+  .block-lbl.owner { color: #3a5a7a; }
+
+  .block-drive {
+    font-size: 15px;
+    font-weight: normal;
+    color: var(--forest);
+    margin-bottom: 0.6rem;
+  }
+
+  .block-text {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.7;
+  }
+
+  .tags { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 0.6rem; }
+
+  .tag {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 12px;
+    padding: 4px 10px;
+    border-radius: var(--radius-sm);
+    border: 0.5px solid var(--border-mid);
+    color: var(--text-muted);
+    background: var(--bg-card);
+  }
+
+  .note {
+    margin-top: 1.5rem;
+    padding: 1rem 1.25rem;
+    background: var(--bg-soft);
+    border-radius: var(--radius-sm);
+    border-left: 3px solid var(--forest);
+    font-family: 'Georgia', serif;
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.7;
+    font-style: italic;
+  }
+
+  .reset-btn {
+    margin-top: 1.5rem;
+    padding: 0.55rem 1.25rem;
+    background: transparent;
+    border: 0.5px solid var(--border-mid);
+    border-radius: var(--radius-sm);
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 13px;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+
+  .reset-btn:hover { background: var(--bg-soft); }
+
+  footer {
+    width: 100%;
+    background: var(--forest-dark);
+    padding: 1.25rem 2rem;
+    text-align: center;
+  }
+
+  footer p {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 12px;
+    color: rgba(245,240,232,0.5);
+  }
+
+  footer a { color: rgba(245,240,232,0.7); text-decoration: none; }
+  footer a:hover { color: #F5F0E8; }
+
+  @media (max-width: 600px) {
+    main { padding: 1.75rem 1rem 3rem; }
+    .card { padding: 1.5rem 1.25rem; }
+    .welcome-title, .res-title { font-size: 20px; }
+    .q-text { font-size: 16px; }
+    header { padding: 1rem 1.25rem; }
+  }
+
+  @media (max-width: 380px) {
+    .card { padding: 1.25rem 1rem; }
+    .q-text { font-size: 15px; }
+    .opt { padding: 0.875rem 1rem; font-size: 13px; }
+    .start-btn { width: 100%; }
+  }
+
+  @media (hover: none) {
+    .opt { min-height: 52px; display: flex; align-items: center; }
+    .start-btn { min-height: 48px; }
+    .reset-btn { min-height: 44px; }
+  }
+
+#pw-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(44,74,62,0.97);z-index:99999;display:flex;align-items:center;justify-content:center;}
+.pw-box{background:#fff;border-radius:16px;padding:32px;max-width:420px;width:90%;text-align:center;box-shadow:0 4px 24px rgba(0,0,0,0.3)}
+.pw-box h2{font-family:Georgia,serif;color:#2C4A3E;font-size:1.3rem;margin-bottom:8px}
+.pw-box p{color:#7D6352;font-size:0.9rem;margin-bottom:20px}
+.pw-inp{width:100%;padding:12px 16px;border:2px solid #D4A853;border-radius:8px;font-size:1rem;text-align:center;outline:none;box-sizing:border-box;color:#2C4A3E}
+.pw-btn{width:100%;margin-top:12px;padding:12px;background:#B8860B;color:#fff;border:none;border-radius:8px;font-size:1rem;cursor:pointer}
+.pw-btn:hover{background:#2C4A3E}
+.pw-err{color:#c0392b;font-size:0.85rem;margin-top:8px;display:none}
+#pw-overlay{position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(44,74,62,0.98);z-index:2147483647;display:flex!important;align-items:center;justify-content:center;}#pw-overlay.hidden{display:none!important;}.pw-box{background:#fff;border-radius:16px;padding:32px;max-width:420px;width:90%;text-align:center;}.pw-box h2{font-family:Georgia,serif;color:#2C4A3E;font-size:1.3rem;margin:0 0 8px}.pw-box p{color:#7D6352;font-size:0.9rem;margin-bottom:20px}.pw-form input{width:100%;padding:12px;border:2px solid #D4A853;border-radius:8px;font-size:1rem;text-align:center;outline:none;box-sizing:border-box;}.pw-form button{width:100%;margin-top:12px;padding:12px;background:#B8860B;color:#fff;border:none;border-radius:8px;font-size:1rem;cursor:pointer;}.pw-err{color:#c0392b;font-size:0.85rem;margin-top:8px;display:none}
+</style>
+</head>
+<body><div id="pw-overlay">
+<div class="pw-box">
+<h2>Zugangswort eingeben</h2>
+<p>Diese App ist nur mit Zugangswort verfügbar.</p>
+<form class="pw-form" onsubmit="try{var v=document.getElementById('pwi2').value.trim();if(v==='Klarheit'){document.getElementById('pw-overlay').className='hidden';}else{document.getElementById('pwe2').style.display='block';document.getElementById('pwi2').value='';document.getElementById('pwi2').focus();}}catch(e){}return false;">
+<input id="pwi2" name="pw" type="text" placeholder="Zugangswort..." autocomplete="off">
+<button type="submit">Weiter</button>
+</form>
+<div class="pw-err" id="pwe2">Zugangswort nicht korrekt.</div>
+</div>
+</div>
+<div id="pw-overlay">
+  <div class="pw-box">
+    <h2>Zugangswort eingeben</h2>
+    <p>Diese App ist nur mit Zugangswort verfügbar.</p>
+    <input class="pw-inp" id="pwi" type="text" placeholder="Zugangswort...">
+    <button class="pw-btn" onclick="checkPW()">Weiter</button>
+    <div class="pw-err" id="pwe">Das Zugangswort ist nicht korrekt.</div>
+  </div>
+</div>
+
+
+<header>
+  <div class="brand"><strong>Tierakademie Zischgl</strong> &nbsp;·&nbsp; Susanne Zischgl</div>
+  <div class="pro-badge">Trainer-Version</div>
+</header>
+
+<main>
+  <div class="prog-wrap">
+    <div class="prog-meta">
+      <span id="prog-text">Anlage-Kompass PRO</span>
+      <span id="prog-steps"></span>
+    </div>
+    <div class="prog-bg"><div class="prog-fill" id="prog" style="width:0%"></div></div>
+  </div>
+
+  <!-- Welcome -->
+  <div id="screen-welcome" class="card">
+    <div class="pro-label">Professionelles Analyse-Tool</div>
+    <div class="welcome-title">Weißt du, was der Kundenhund wirklich braucht?</div>
+    <div class="welcome-text">
+      Hinter jedem Verhaltensproblem steckt oft eine unerfüllte Anlage. Dieses Tool hilft dir,
+      das Triebprofil des Kundenhundes gezielt zu analysieren – und dem Besitzer konkrete,
+      passende Auslastung zu empfehlen.
+    </div>
+    <div class="info-box">
+      10 beobachtungsbasierte Fragen · Triebprofil mit 7 Dimensionen · Trainingshinweise,
+      Herausforderungen und Empfehlungen für Besitzer – alles auf einen Blick.
+    </div>
+    <button class="start-btn" id="btn-start">Analyse starten</button>
+  </div>
+
+  <!-- Quiz -->
+  <div id="screen-quiz" class="card hidden">
+    <div class="q-num" id="q-num"></div>
+    <div class="q-text" id="q-text"></div>
+    <div class="q-hint" id="q-hint"></div>
+    <div id="q-opts"></div>
+  </div>
+
+  <!-- Result -->
+  <div id="screen-result" class="card hidden">
+    <div class="res-eyebrow">Triebprofil · Analyse</div>
+    <div class="res-title" id="res-title">Das Triebprofil dieses Hundes:</div>
+    <div id="bars"></div>
+    <hr class="divider">
+    <div id="result-blocks"></div>
+    <div class="note">
+      Anlagen erklären Verhalten – sie entschuldigen es nicht und sie fixieren es nicht.
+      Was du hier siehst, ist ein Ausgangspunkt. Der individuelle Hund muss immer selbst
+      gelesen werden.
+    </div>
+    <button class="reset-btn" id="btn-reset">Neuen Hund analysieren</button>
+  </div>
+</main>
+
+<footer>
+  <p>&copy; 2025 Susanne Zischgl &nbsp;·&nbsp; <a href="https://www.tierakademie-zischgl.de" target="_blank">tierakademie-zischgl.de</a> &nbsp;·&nbsp; Alle Rechte vorbehalten</p>
+</footer>
+
+<script>
+var DRIVES = [
+  { id: 'jagd',     label: 'Jagd & Spür',        color: '#C4872A' },
+  { id: 'hüte',    label: 'Hüte & Treib',        color: '#6B7C5C' },
+  { id: 'schutz',  label: 'Schutz & Wacht',      color: '#4A6741' },
+  { id: 'sozial',  label: 'Sozial & Bindung',    color: '#8B6914' },
+  { id: 'bewegung',label: 'Bewegung & Spiel',    color: '#A0522D' },
+  { id: 'selbst',  label: 'Selbstständigkeit',   color: '#8B7355' },
+  { id: 'molosser',label: 'Ruhe & Substanz',     color: '#556B2F' }
+];
+
+var TRAINING = {
+  jagd:     'Beutemotivation als Verstärker nutzen – sie ist bei diesem Hund hochwertig. Nasenarbeit vor der Trainingseinheit senkt das Cortisolniveau und verbessert die Lernbereitschaft. Abrufbarkeit bei bewegten Reizen erst trainieren, wenn das Grundverhalten im ruhigen Kontext sitzt.',
+  'hüte':   'Präzises Timing und klares Feedback sind entscheidend. Verhaltensketten und komplexe Aufgabensequenzen liegen diesem Hund. Unterfordert zeigt er Eigenlösungen – oft unerwünschte. Trainingsplan mit steigendem Schwierigkeitsgrad und regelmäßigen Erfolgserlebnissen aufbauen.',
+  schutz:   'Struktur und Vorhersehbarkeit sind die Grundlage. Kein Flooding. Zuerst Vertrauen aufbauen, dann Anforderungen steigern. Klare Signale für erlaubte Wachfunktionen helfen dem Hund, sich zu regulieren. Übungsumgebung kontrolliert und aufbauend gestalten.',
+  sozial:   'Die Beziehung zum Menschen ist der stärkste Verstärker. Lob, Blickkontakt und Nähe funktionieren oft besser als Futter. Trainingseinheiten kurz und intensiv – die gemeinsame Aufmerksamkeit ist der Kern. Konsequenz in der Reaktion des Besitzers besonders wichtig.',
+  bewegung: 'Vor dem Training regulieren – durch Schnüffeln, nicht durch Rennen. Kurze, intensive Trainingsblöcke mit klaren Pausen. Impulskontrolle systematisch aufbauen. Erregungslevel des Hundes vor dem Start beobachten – zu hoch bedeutet kein Lernen, nur Routine.',
+  selbst:   'Wahlfreiheit wo möglich einbauen. Keine erzwungene Nähe oder Dauerpräsenz des Trainers. Kurze Einheiten mit echten Pausen. Motivation über Konsequenz-Erfahrung aufbauen: Hund merkt, dass sein Verhalten etwas bewirkt.',
+  molosser: 'Ruhig und geduldig arbeiten. Kurze Einheiten, klare Signale, keine Überreizung. Motivationsaufbau braucht Zeit – nicht drücken. Körperliche Belastbarkeit und Gelenkgesundheit berücksichtigen. Tagesstruktur ist für diesen Hund wichtiger als Trainingsintensität.'
+};
+
+var CHALLENGES = {
+  jagd:     'Abrufbarkeit bei Wildgeruch, Jogger und bewegten Objekten. Fixation kann Lernzustand kurzfristig blockieren. Besitzer unterschätzen oft, wie tief die Konzentration im Jagdmodus ist.',
+  'hüte':   'Eigenmächtiges Hüten von Kindern, Fahrrädern oder anderen Haustieren. Übersteuerung wenn keine klare Aufgabe vorhanden. Besitzer erleben den Hund als „kontrollierend" ohne zu verstehen warum.',
+  schutz:   'Reaktivität gegenüber Fremden oder in neuen Umgebungen. Schwierige Tierarztbesuche. Fehlinterpretation durch Besitzer als „Dominanz" – in Wirklichkeit oft Unsicherheit.',
+  sozial:   'Trennungsangst, wenn Bindung zu eng und ohne Struktur. Übersprungsverhalten wenn der Bezugsmensch fehlt. Hund nutzt Besitzer als emotionalen Anker – auch bei Aufregung.',
+  bewegung: 'Impulskontrolle ist die größte Baustelle. Überreizung nach langen Sporteinheiten – Besitzer denken mehr Auslastung hilft, konditionieren aber nur mehr Bedarf. Eskalationsspirale beachten.',
+  selbst:   'Recall bei hoher Eigenmotivation. Geringe Frustrationstoleranz bei Aufgaben, die keine sofortigen Konsequenzen zeigen. Besitzer fühlen sich oft ignoriert – es ist kein Trotz, es ist Struktur.',
+  molosser: 'Motivation im Training aufrechterhalten. Körperliche Beschwerden (Gelenke, Rücken) verändern Verhalten – Schmerzausschluss immer zuerst. Besitzer denken oft, der Hund sei „faul".'
+};
+
+var ACTS = {
+  jagd:     ['Nasenarbeit', 'Mantrailing', 'Dummytraining', 'Fährtenarbeit', 'Schnüffelmatten'],
+  'hüte':   ['Treibball', 'Agility', 'Tricks & Verhaltensketten', 'Rally Obedience', 'Heelwork to Music'],
+  schutz:   ['Nasenarbeit mit Suchanzeige', 'Obedience mit Ablenkung', 'Klare Alltagsstruktur', 'Definierte Wachfunktion'],
+  sozial:   ['Kurze Trainingssequenzen täglich', 'Rally Obedience', 'Besuchshundearbeit', 'Gemeinsame Aktivitäten mit Kontakt'],
+  bewegung: ['Canicross / Bikejöring', 'Flyball', 'Frisbee / Disc Dog', 'Schwimmen', 'Nasenarbeit zur Regulierung'],
+  selbst:   ['Freiläufe in gesichertem Gelände', 'Schnüffelspaziergänge im eigenen Tempo', 'Sportarten ohne Gehorsamkeitsdruck'],
+  molosser: ['Kurze Spaziergänge mit Schnüffelpausen', 'Klare Tagesstruktur', 'Ruhige Interaktionen', 'Wenig, aber tief statt viel und flach']
+};
+
+var OWNER_MSG = {
+  jagd:     'Erklär dem Besitzer: Nasenarbeit vor dem Spaziergang – nicht danach. Der Hund kommt entspannter in den Alltag und ist besser ansprechbar. Nicht mehr Auslastung, sondern die richtige.',
+  'hüte':   'Dem Besitzer klarmachen: Dieser Hund braucht Aufgaben, nicht nur Bewegung. Treibball oder Tricks geben dem Kontrollbedürfnis eine sinnvolle Richtung. Ohne Aufgabe sucht er sich eine.',
+  schutz:   'Dem Besitzer zeigen: Einmal melden – dann ablösen. Der Hund darf wachen, aber der Mensch übernimmt. Klare Routine an der Tür gibt Sicherheit und reduziert Dauerspannung.',
+  sozial:   'Dem Besitzer erklären: 20 Minuten echte Aufmerksamkeit sind wertvoller als 8 Stunden Nebeneinander. Qualität vor Quantität. Und: kurze, vorhersehbare Trennungen üben – täglich.',
+  bewegung: 'Dem Besitzer klar kommunizieren: Mehr rennen trainiert mehr Ausdauer, nicht mehr Ruhe. Wer einen Athleten aufzieht, braucht irgendwann 3 Stunden statt 2. Mentale Arbeit erzeugt die tiefere Müdigkeit.',
+  selbst:   'Dem Besitzer mitgeben: Dieser Hund ist kein Beziehungsverweigerer. Er braucht Raum. Schnüffelspaziergänge im eigenen Tempo, Wahlmöglichkeiten im Alltag und kein Drängen auf Nähe.',
+  molosser: 'Dem Besitzer erklären: Weniger ist mehr. Kurze, klare Einheiten. Vorhersehbarer Alltag mit Ruhephasen ist für diesen Hund die beste Wohlfahrtsmaßnahme überhaupt.'
+};
+
+var Qs = [
+  {
+    t: 'Wie verhält sich der Hund beim Erstkontakt mit dir als Trainerin?',
+    hint: 'Erste Begegnung, neutrale Umgebung',
+    opts: [
+      { t: 'Sucht sofort Kontakt – freudig und offen gegenüber Fremden.', d: { sozial: 3 } },
+      { t: 'Beobachtet erst gründlich, nähert sich dann vorsichtig.', d: { schutz: 2, selbst: 1 } },
+      { t: 'Ignoriert mich weitgehend – die Umgebung ist interessanter.', d: { jagd: 2, selbst: 1 } },
+      { t: 'Zeigt Körperspannung, bleibt eng beim Besitzer.', d: { schutz: 2, sozial: 1 } }
+    ]
+  },
+  {
+    t: 'Wie reagiert der Hund auf Futterbelohnung in der Trainingsumgebung?',
+    hint: 'Mittlere Ablenkungsstufe',
+    opts: [
+      { t: 'Hochmotiviert, fokussiert – alles für ein Leckerli.', d: { sozial: 2, jagd: 1 } },
+      { t: 'Nimmt Futter, lässt sich aber leicht ablenken.', d: { jagd: 2, selbst: 1 } },
+      { t: 'Interessiert sich kaum für Futter – die Umgebung gewinnt immer.', d: { jagd: 3 } },
+      { t: 'Nimmt Futter sehr vorsichtig oder zögernd.', d: { schutz: 2, molosser: 1 } }
+    ]
+  },
+  {
+    t: 'Wie ist das Erregungsniveau des Hundes in einer neuen Umgebung?',
+    hint: 'Ersten 5 Minuten beobachten',
+    opts: [
+      { t: 'Sofort übererregt – kaum regulierbar, hört nicht.', d: { bewegung: 3 } },
+      { t: 'Erhöht, aber nach kurzer Zeit regulierbar.', d: { hüte: 2, jagd: 1 } },
+      { t: 'Ruhig und besonnen – braucht keine Eingewöhnungszeit.', d: { molosser: 3 } },
+      { t: 'Angespannt und schreckhaft – braucht viel Zeit.', d: { schutz: 3 } }
+    ]
+  },
+  {
+    t: 'Was passiert, wenn ein anderer Hund in Sichtweite kommt?',
+    hint: 'Reaktion auf Artgenossen aus der Distanz',
+    opts: [
+      { t: 'Fixiert sich stark, zieht, will unbedingt hin oder hinterher.', d: { jagd: 2, bewegung: 1 } },
+      { t: 'Versucht, den anderen Hund zu lenken oder einzukreisen.', d: { hüte: 3 } },
+      { t: 'Reagiert mit Alarm – bellt, stellt sich vor.', d: { schutz: 3 } },
+      { t: 'Schaut kurz, bleibt aber entspannt.', d: { molosser: 2, selbst: 1 } }
+    ]
+  },
+  {
+    t: 'Wie gut kann der Hund nach einer Aufregung herunterregulieren?',
+    hint: 'Z.B. nach Begegnung oder Reiz',
+    opts: [
+      { t: 'Schnell – in 2 bis 3 Minuten ist er wieder ruhig.', d: { molosser: 2, selbst: 1 } },
+      { t: 'Mittel – braucht ca. 10 bis 15 Minuten und Ruhe.', d: { hüte: 1, sozial: 1 } },
+      { t: 'Schlecht – bleibt lange aktiviert, sucht den nächsten Reiz.', d: { bewegung: 2, jagd: 1 } },
+      { t: 'Sehr schlecht – braucht viel Distanz und Zeit.', d: { schutz: 2, bewegung: 1 } }
+    ]
+  },
+  {
+    t: 'Wie reagiert der Hund auf Spielzeug und Beutemotivation?',
+    hint: 'Zerrspiel, Werfen, Tug',
+    opts: [
+      { t: 'Extrem hoch – kaum vom Spielzeug zu lösen, starke Fixation.', d: { jagd: 3 } },
+      { t: 'Gut vorhanden und gut nutzbar im Training.', d: { jagd: 1, bewegung: 1 } },
+      { t: 'Mäßig – nur in ruhiger Umgebung, situationsabhängig.', d: { hüte: 1, molosser: 1 } },
+      { t: 'Kaum vorhanden – Spielzeug ist nicht interessant.', d: { molosser: 2, selbst: 1 } }
+    ]
+  },
+  {
+    t: 'Wie verhält sich der Hund bei Frustration oder Fehlern im Training?',
+    hint: 'Wenn das Richtige nicht kommt',
+    opts: [
+      { t: 'Gibt schnell auf, zeigt deutliches Abbruchverhalten.', d: { molosser: 2, selbst: 1 } },
+      { t: 'Bleibt dran, wird aber zunehmend angespannt und schnell.', d: { hüte: 2, schutz: 1 } },
+      { t: 'Eskaliert – wird lauter, hektischer, schubst oder bellt.', d: { bewegung: 2, jagd: 1 } },
+      { t: 'Sucht selbstständig ein Alternativverhalten.', d: { selbst: 2, jagd: 1 } }
+    ]
+  },
+  {
+    t: 'Wie ist die Lerngeschwindigkeit und Konzentrationsdauer?',
+    hint: 'Über mehrere Trainingsminuten beobachtet',
+    opts: [
+      { t: 'Extrem schnell – braucht ständig neue Aufgaben, sonst Langeweile.', d: { hüte: 3 } },
+      { t: 'Gut, mit angemessenen Pausen zwischen den Sequenzen.', d: { sozial: 2, molosser: 1 } },
+      { t: 'Kurze Aufmerksamkeitsspanne, häufige Ablenkung nach außen.', d: { jagd: 2, bewegung: 1 } },
+      { t: 'Eher langsam, aber dann verlässlich und stabil.', d: { molosser: 2, selbst: 1 } }
+    ]
+  },
+  {
+    t: 'Wie reagiert der Hund auf Lob und soziale Zuwendung als Verstärker?',
+    hint: 'Loben, Streicheln, Blickkontakt',
+    opts: [
+      { t: 'Sehr stark – Lob und Nähe motivieren ihn mehr als Futter.', d: { sozial: 3 } },
+      { t: 'Gut, aber kein primärer Motivator allein.', d: { sozial: 1, hüte: 1 } },
+      { t: 'Dreht durch bei Zuwendung – schwer danach wieder runterzubekommen.', d: { bewegung: 2, sozial: 1 } },
+      { t: 'Weicht Zuwendung eher aus oder reagiert kaum.', d: { selbst: 3 } }
+    ]
+  },
+  {
+    t: 'Was schildert der Besitzer als größte Herausforderung im Alltag?',
+    hint: 'Hauptproblem aus Besitzersicht',
+    opts: [
+      { t: 'Hund dreht auf, wenn er etwas sieht – Reh, Jogger, Katze.', d: { jagd: 3 } },
+      { t: 'Hund lässt keine Ruh\' – kontrolliert alles und alle.', d: { hüte: 3 } },
+      { t: 'Hund reagiert scharf auf Fremde oder andere Hunde.', d: { schutz: 3 } },
+      { t: 'Hund kann nicht allein bleiben oder klebt am Besitzer.', d: { sozial: 3 } }
+    ]
+  }
+];
+
+var step = 0;
+var scores = { jagd: 0, 'hüte': 0, schutz: 0, sozial: 0, bewegung: 0, selbst: 0, molosser: 0 };
+
+function show(id) {
+  ['screen-welcome', 'screen-quiz', 'screen-result'].forEach(function(s) {
+    document.getElementById(s).classList.add('hidden');
+  });
+  document.getElementById(id).classList.remove('hidden');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function renderQ() {
+  var q = Qs[step];
+  var pct = Math.round((step / Qs.length) * 100);
+  document.getElementById('prog').style.width = pct + '%';
+  document.getElementById('prog-steps').textContent = (step + 1) + ' / ' + Qs.length;
+  document.getElementById('q-num').textContent = 'Beobachtung ' + (step + 1) + ' von ' + Qs.length;
+  document.getElementById('q-text').textContent = q.t;
+  var hint = document.getElementById('q-hint');
+  hint.textContent = q.hint ? q.hint : '';
+  hint.style.display = q.hint ? 'block' : 'none';
+  var opts = document.getElementById('q-opts');
+  opts.innerHTML = '';
+  q.opts.forEach(function(o, i) {
+    var btn = document.createElement('button');
+    btn.className = 'opt';
+    btn.textContent = o.t;
+    btn.addEventListener('click', function() { pick(i); });
+    opts.appendChild(btn);
+  });
+  show('screen-quiz');
+}
+
+function pick(i) {
+  var drives = Qs[step].opts[i].d;
+  for (var k in drives) scores[k] = (scores[k] || 0) + drives[k];
+  step++;
+  if (step < Qs.length) { renderQ(); } else { showResult(); }
+}
+
+function showResult() {
+  document.getElementById('prog').style.width = '100%';
+  document.getElementById('prog-steps').textContent = '';
+  document.getElementById('prog-text').textContent = 'Auswertung';
+
+  var total = 0;
+  for (var k in scores) total += scores[k];
+  if (total === 0) total = 1;
+
+  var sorted = DRIVES.map(function(d) {
+    return { id: d.id, label: d.label, color: d.color, pct: Math.round((scores[d.id] / total) * 100) };
+  }).sort(function(a, b) { return b.pct - a.pct; });
+
+  var top2 = sorted.slice(0, 2);
+
+  // Bars
+  var barsEl = document.getElementById('bars');
+  barsEl.innerHTML = '';
+  sorted.forEach(function(d) {
+    var isTop = top2.some(function(x) { return x.id === d.id; });
+    var row = document.createElement('div');
+    row.className = 'drive-row';
+    row.innerHTML =
+      '<div class="drive-hd">' +
+        '<span class="drive-name' + (isTop ? ' top' : '') + '">' + d.label + '</span>' +
+        '<span class="drive-pct">' + d.pct + ' %</span>' +
+      '</div>' +
+      '<div class="bar-bg"><div class="bar-fill" id="bar-' + d.id + '" style="background:' + d.color + ';width:0%"></div></div>';
+    barsEl.appendChild(row);
+  });
+
+  // Result blocks
+  var blocksEl = document.getElementById('result-blocks');
+  blocksEl.innerHTML = '';
+
+  top2.forEach(function(d) {
+    // Training approach
+    var t1 = document.createElement('div');
+    t1.className = 'result-block training';
+    t1.innerHTML =
+      '<div class="block-lbl training">Trainingsansatz · ' + d.label + '</div>' +
+      '<div class="block-text">' + TRAINING[d.id] + '</div>';
+    blocksEl.appendChild(t1);
+
+    // Challenges
+    var t2 = document.createElement('div');
+    t2.className = 'result-block challenges';
+    t2.innerHTML =
+      '<div class="block-lbl challenges">Typische Herausforderungen</div>' +
+      '<div class="block-text">' + CHALLENGES[d.id] + '</div>';
+    blocksEl.appendChild(t2);
+
+    // Activities
+    var t3 = document.createElement('div');
+    t3.className = 'result-block activities';
+    t3.innerHTML =
+      '<div class="block-lbl activities">Passende Auslastung empfehlen</div>' +
+      '<div class="tags">' + ACTS[d.id].map(function(a) { return '<span class="tag">' + a + '</span>'; }).join('') + '</div>';
+    blocksEl.appendChild(t3);
+
+    // Owner message
+    var t4 = document.createElement('div');
+    t4.className = 'result-block owner';
+    t4.innerHTML =
+      '<div class="block-lbl owner">Was du dem Besitzer mitgibst</div>' +
+      '<div class="block-text">' + OWNER_MSG[d.id] + '</div>';
+    blocksEl.appendChild(t4);
+
+    // Spacer between top2
+    var spacer = document.createElement('hr');
+    spacer.className = 'divider';
+    blocksEl.appendChild(spacer);
+  });
+
+  show('screen-result');
+
+  setTimeout(function() {
+    sorted.forEach(function(d) {
+      var el = document.getElementById('bar-' + d.id);
+      if (el) el.style.width = d.pct + '%';
+    });
+  }, 120);
+}
+
+function reset() {
+  step = 0;
+  scores = { jagd: 0, 'hüte': 0, schutz: 0, sozial: 0, bewegung: 0, selbst: 0, molosser: 0 };
+  document.getElementById('prog').style.width = '0%';
+  document.getElementById('prog-steps').textContent = '';
+  document.getElementById('prog-text').textContent = 'Anlage-Kompass PRO';
+  show('screen-welcome');
+}
+
+document.getElementById('btn-start').addEventListener('click', function() { renderQ(); });
+document.getElementById('btn-reset').addEventListener('click', function() { reset(); });
+</script>
+
+<script>
+var ACCESS="Klarheit";
+function checkPW(){
+  var v=document.getElementById("pwi").value.trim();
+  if(v===ACCESS){
+    document.getElementById("pw-overlay").style.display="none";
+  } else {
+    document.getElementById("pwe").style.display="block";
+    document.getElementById("pwi").value="";
+    document.getElementById("pwi").focus();
+  }
+}
+document.addEventListener("DOMContentLoaded",function(){
+  var inp=document.getElementById("pwi");
+  if(inp){inp.focus();inp.addEventListener("keydown",function(e){if(e.key==="Enter")checkPW();});}
+});
+</script>
+</body>
+</html>
