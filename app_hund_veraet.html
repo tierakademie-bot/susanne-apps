@@ -52,17 +52,9 @@ body { font-family: Georgia, serif; background: linear-gradient(160deg, #2C3E2D 
 .btn-restart { background: none; border: none; color: #8FAF9F; font-size: 12px; cursor: pointer; font-family: inherit; text-decoration: underline; margin-top: 14px; display: block; text-align: center; }
 .footer { margin-top: 18px; font-size: 11px; color: rgba(143,175,159,.5); font-family: system-ui; text-align: center; }
 
-#pw-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(44,74,62,0.97);z-index:99999;display:flex;align-items:center;justify-content:center;}
-.pw-box{background:#fff;border-radius:16px;padding:32px;max-width:420px;width:90%;text-align:center;box-shadow:0 4px 24px rgba(0,0,0,0.3)}
-.pw-box h2{font-family:Georgia,serif;color:#2C4A3E;font-size:1.3rem;margin-bottom:8px}
-.pw-box p{color:#7D6352;font-size:0.9rem;margin-bottom:20px}
-.pw-inp{width:100%;padding:12px 16px;border:2px solid #D4A853;border-radius:8px;font-size:1rem;text-align:center;outline:none;box-sizing:border-box;color:#2C4A3E}
-.pw-btn{width:100%;margin-top:12px;padding:12px;background:#B8860B;color:#fff;border:none;border-radius:8px;font-size:1rem;cursor:pointer}
-.pw-btn:hover{background:#2C4A3E}
-.pw-err{color:#c0392b;font-size:0.85rem;margin-top:8px;display:none}
 </style>
 </head>
-<body><div id="pw-overlay"><div class="pw-box"><h2>Zugangswort eingeben</h2><p>Diese App ist nur mit Zugangswort verfügbar.</p><input class="pw-inp" id="pwi" type="text" placeholder="Zugangswort..."><button class="pw-btn" onclick="checkPW()">Weiter</button><div class="pw-err" id="pwe">Das Zugangswort ist nicht korrekt.</div></div></div>
+<body>
 
 <div class="hdr">
   <div class="ey">Tierakademie Zischgl · Susanne Zischgl</div>
@@ -282,18 +274,7 @@ function copyResult() {
 
 renderWelcome();
 </script>
-<script>
-var ACCESS="Klarheit";
-function checkPW(){
-  var v=document.getElementById("pwi").value.trim();
-  if(v===ACCESS){document.getElementById("pw-overlay").style.display="none";}
-  else{document.getElementById("pwe").style.display="block";document.getElementById("pwi").value="";document.getElementById("pwi").focus();}
-}
-document.addEventListener("DOMContentLoaded",function(){
-  var inp=document.getElementById("pwi");
-  if(inp){inp.focus();inp.addEventListener("keydown",function(e){if(e.key==="Enter")checkPW();});}
-});
-</script><footer style="text-align:center; padding: 20px; font-size: 0.85em; color: #6B7C47; margin-top: 40px; border-top: 1px solid #C8B89A;">
+<footer style="text-align:center; padding: 20px; font-size: 0.85em; color: #6B7C47; margin-top: 40px; border-top: 1px solid #C8B89A;">
   <a href="https://www.tierakademie-zischgl.de/impressum-dse/" target="_blank" style="color: #6B7C47;">Impressum &amp; Datenschutzerklärung</a> &middot; 
   &copy; Susanne Zischgl &middot; Tierakademie Zischgl
 </footer>

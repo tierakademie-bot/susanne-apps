@@ -50,25 +50,9 @@ textarea:focus,input[type=text]:focus{border-color:#C4923A}
 .spin{width:36px;height:36px;border:3px solid #E8DCC8;border-top-color:#C4923A;border-radius:50%;animation:spin .8s linear infinite}
 .err{background:#fff0f0;border-left:4px solid #cc4444;border-radius:10px;padding:14px 16px;font-size:13px;color:#7a2222;font-family:system-ui;margin-top:10px}
 .footer{margin-top:18px;font-size:11px;color:rgba(143,175,159,.5);font-family:system-ui}
-.pw-box{background:#fff;border-radius:16px;padding:32px;max-width:420px;margin:0 auto;text-align:center;box-shadow:0 4px 24px rgba(0,0,0,0.15)}.pw-box h2{font-family:Georgia,serif;color:#2C4A3E;font-size:1.3rem;margin-bottom:8px}.pw-box p{color:#7D6352;font-size:0.9rem;margin-bottom:20px}.pw-inp{width:100%;padding:12px 16px;border:2px solid #D4A853;border-radius:8px;font-size:1rem;text-align:center;outline:none;box-sizing:border-box;color:#2C4A3E}.pw-inp:focus{border-color:#2C4A3E}.pw-btn{width:100%;margin-top:12px;padding:12px;background:#B8860B;color:#fff;border:none;border-radius:8px;font-size:1rem;cursor:pointer;font-family:Georgia,serif}.pw-btn:hover{background:#2C4A3E}.pw-err{color:#c0392b;font-size:0.85rem;margin-top:8px;display:none}
-
-.pw-box h2{font-family:Georgia,serif;color:#2C4A3E;font-size:1.3rem;margin-bottom:8px;margin-top:0}.pw-box p{color:#7D6352;font-size:0.9rem;margin-bottom:20px}.pw-inp{width:100%;padding:12px 16px;border:2px solid #D4A853;border-radius:8px;font-size:1rem;text-align:center;outline:none;box-sizing:border-box;color:#2C4A3E}.pw-btn{width:100%;margin-top:12px;padding:12px;background:#B8860B;color:#fff;border:none;border-radius:8px;font-size:1rem;cursor:pointer}.pw-btn:hover{background:#2C4A3E}.pw-err{color:#c0392b;font-size:0.85rem;margin-top:8px;display:none}
-
-
-#pw-overlay{position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(44,74,62,0.98);z-index:2147483647;display:flex!important;align-items:center;justify-content:center;}#pw-overlay.hidden{display:none!important;}.pw-box{background:#fff;border-radius:16px;padding:32px;max-width:420px;width:90%;text-align:center;}.pw-box h2{font-family:Georgia,serif;color:#2C4A3E;font-size:1.3rem;margin:0 0 8px}.pw-box p{color:#7D6352;font-size:0.9rem;margin-bottom:20px}.pw-form input{width:100%;padding:12px;border:2px solid #D4A853;border-radius:8px;font-size:1rem;text-align:center;outline:none;box-sizing:border-box;}.pw-form button{width:100%;margin-top:12px;padding:12px;background:#B8860B;color:#fff;border:none;border-radius:8px;font-size:1rem;cursor:pointer;}.pw-err{color:#c0392b;font-size:0.85rem;margin-top:8px;display:none}
 </style>
 </head>
-<body><div id="pw-overlay">
-<div class="pw-box">
-<h2>Zugangswort eingeben</h2>
-<p>Diese App ist nur mit Zugangswort verfügbar.</p>
-<form class="pw-form" onsubmit="var v=document.getElementById('pwi2').value.trim();if(v==='Sommer'){document.getElementById('pw-overlay').className='hidden';showWelcome();};return false;">
-<input id="pwi2" type="text" placeholder="Zugangswort..." autocomplete="off">
-<button type="submit">Weiter</button>
-</form>
-<div class="pw-err" id="pwe2">Zugangswort nicht korrekt.</div>
-</div>
-</div>
+<body>
 <div class="hdr">
   <div class="ey">Tierbusiness Community</div>
   <h1>Angebots-Builder</h1>
