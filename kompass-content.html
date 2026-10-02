@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kompass & Content · Tierbusiness Community</title>
+<title>Marketing-Kompass · Tierbusiness Community</title>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: Georgia, serif; background: linear-gradient(160deg, #2D4A3E 0%, #1a3329 40%, #0f1e18 100%); min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 28px 16px 48px; }
@@ -75,26 +75,29 @@ textarea:focus,input:focus,select:focus{border-color:#C4923A}
 <body>
 <div class="hdr">
   <div class="ey">Tierbusiness Community</div>
-  <h1>Kompass & Content</h1>
-  <div class="sub">Diagnose · Aufgabe · Gespräch · Post</div>
+  <h1>Marketing-Kompass</h1>
+  <div class="sub">Diagnose · Kanalwahl · Wochenplan · Umsetzung</div>
 </div>
 <div class="card" id="card"></div>
 <div class="footer">🐾 Susanne Zischgl · Tierberufler-Kompass-System</div>
 
 <script>
-var CATS=["Tierbusiness Austausch","Mindset & Businessblockaden","Sichtbarkeit & Marketing","Positionierung & Angebote","KI fuer Tierberufler"];
+var CATS=["Automatisch passenden Kanal wählen","Instagram","Facebook","Google-Unternehmensprofil","Flyer / Plakat","Kooperationen","E-Mail / Newsletter","Skool / Fachcommunity"];
 var PROFESSIONS=["Hundetraining","Katzenberatung","Tierphysiotherapie","Tierheilpraxis","Tierernährungsberatung","Tierpflege / Grooming","Tierbetreuung / Tiersitting","Tierkommunikation","Tierfotografie","Tiergestützte Arbeit","Tierarztpraxis","Anderer Tierberuf"];
 var SYS="Du bist Susanne, erfahrene Business-Coachin fuer Menschen in Tierberufen mit ueber 30 Jahren Erfahrung. Du arbeitest mit dem Tierberufler-Kompass (5 Bereiche: 1.Beziehung Mensch&Tier 2.Businessstruktur 3.Mentale Muster 4.Wert&Geld 5.Positionierung). Warm, direkt, ohne Floskeln. Deutsch, du-Ansprache. Kein Markdown, fliessender Text. Verwende niemals automatisch Hundebeispiele. Richte Sprache, Kundensituationen und Beispiele konsequent am angegebenen Tierberuf und Schwerpunkt aus. Wenn keine Tierart genannt ist, bleibe tierartenneutral.";
 var QUESTIONS=[
   "Was beschäftigt dich in deinem Tierbusiness gerade am meisten?",
-  "Wie lange besteht dieses Problem schon?",
-  "Was hast du bisher versucht um es zu lösen?",
-  "Was glaubst du selbst, wo die eigentliche Ursache liegt?",
-  "Wie ist deine Beziehung zu deinen Kunden gerade – energiespendend oder zehrend?",
-  "Was hält dich davon ab, den nächsten Schritt zu gehen?",
-  "Was brauchst du gerade am meisten – Klarheit, Mut oder einen konkreten Plan?"
+  "Was genau möchtest du aktuell verkaufen oder häufiger gebucht bekommen?",
+  "Wer soll dieses Angebot kaufen – und ist dein Geschäft regional, online oder beides?",
+  "Wie machst du momentan auf dein Angebot aufmerksam? Nenne alles, zum Beispiel Instagram, Facebook, Skool, Flyer, Google, Empfehlungen, Veranstaltungen oder Kooperationen.",
+  "Beschreibe bitte konkret, wie du diese Maßnahmen einsetzt: Wo verteilst du zum Beispiel Flyer, was veröffentlichst du und wie oft?",
+  "Welche Reaktionen, Anfragen oder Verkäufe entstehen bisher daraus?",
+  "Was hast du bereits verändert oder ausprobiert, um bessere Ergebnisse zu erzielen?",
+  "Was glaubst du selbst: Fehlt es eher an der richtigen Zielgruppe, der Botschaft, dem passenden Kanal oder an Regelmäßigkeit?",
+  "Was kannst du realistisch umsetzen: Texte, Fotos, kurze Videos, persönliche Kontakte oder lokale Aktionen?",
+  "Was brauchst du gerade am meisten – Klarheit, einen konkreten Plan oder fertige Inhalte?"
 ];
-var screen="welcome",tab=0,dStep=0,dAnswers=[],dCurQ=0,dDiag="",dTask="",dChat=[],dCont="",cCat=CATS[0],cTopic="",cResult="",profession="",professionOther="",animalFocus="";
+var screen="welcome",tab=0,dStep=0,dAnswers=[],dCurQ=0,dDiag="",dTask="",dChat=[],dCont="",cCat=CATS[0],cTopic="",cResult="",profession="",professionOther="",animalFocus="",businessReach="";
 
 function $(id){return document.getElementById(id);}
 
@@ -116,30 +119,32 @@ function render(){
 function renderWelcome(){
   var popts='<option value="">Bitte wählen...</option>'+PROFESSIONS.map(function(p){return '<option value="'+p+'"'+(profession===p?' selected':'')+'>'+p+'</option>';}).join('');
   $("card").innerHTML=
-    '<div class="card-hdr"><div class="e">Willkommen</div><h2>Damit die App wirklich zu deinem Tierberuf passt.</h2><p>Erzähl uns zuerst kurz, in welcher Branche du arbeitest. Alle Fragen, Beispiele und Content-Ideen werden darauf abgestimmt.</p></div>'+ 
+    '<div class="card-hdr"><div class="e">Willkommen</div><h2>Dein Marketing-Kompass für Tierberufe.</h2><p>Die App prüft Positionierung, Botschaft und Kundenerreichung – online wie offline.</p></div>'+ 
     '<div class="body">'+
     '<span class="lbl" style="margin-top:0">Was ist dein Tierberuf / deine Branche?</span><select id="profession" onchange="profession=this.value;toggleOther()">'+popts+'</select>'+ 
     '<div id="other-wrap" class="'+(profession==='Anderer Tierberuf'?'':'hidden')+'"><span class="lbl">Dein Tierberuf</span><input id="profession-other" type="text" value="'+professionOther+'" placeholder="z. B. Pferdeosteopathie" oninput="professionOther=this.value"></div>'+ 
     '<span class="lbl">Mit welchen Tieren oder Kunden arbeitest du?</span><input id="animal-focus" type="text" value="'+animalFocus+'" placeholder="z. B. Pferde und ihre Halterinnen" oninput="animalFocus=this.value">'+
     '<p class="field-help">Optional, aber hilfreich fuer wirklich passende Beispiele.</p>'+ 
-    '<div class="tip">&#128161; Deine Angabe gilt fuer die Diagnose, das Coaching und alle Content-Ideen. Du kannst sie spaeter jederzeit aendern.</div>'+ 
+    '<span class="lbl">Wo können Kunden dein Angebot nutzen?</span><select id="business-reach" onchange="businessReach=this.value"><option value="">Bitte wählen...</option><option'+(businessReach==='Regional'?' selected':'')+'>Regional</option><option'+(businessReach==='Online'?' selected':'')+'>Online</option><option'+(businessReach==='Regional und online'?' selected':'')+'>Regional und online</option></select>'+
+    '<div class="tip">&#128161; Deine Angaben gelten für Diagnose, Kanalwahl und Marketing-Ideen. Die App berücksichtigt auch Flyer, Empfehlungen, Kooperationen und lokale Maßnahmen.</div>'+ 
     '<button class="btn-p" onclick="startApp()">Weiter zum Kompass &#8594;</button>'+ 
     '</div>';
 }
 
 function toggleOther(){var w=$("other-wrap");if(w)w.className=profession==="Anderer Tierberuf"?"":"hidden";}
 function getProfession(){return profession==="Anderer Tierberuf"?professionOther.trim():profession;}
-function profileContext(){return "Tierberuf/Branche: "+getProfession()+"\nTier- oder Kundenschwerpunkt: "+(animalFocus.trim()||"nicht angegeben; bitte tierartenneutral formulieren");}
+function profileContext(){return "Tierberuf/Branche: "+getProfession()+"\nTier- oder Kundenschwerpunkt: "+(animalFocus.trim()||"nicht angegeben; bitte tierartenneutral formulieren")+"\nGeschäftsmodell/Reichweite: "+(businessReach||"nicht angegeben");}
 function startApp(){
-  var p=$("profession"),o=$("profession-other"),a=$("animal-focus");
-  profession=p?p.value:profession;professionOther=o?o.value:professionOther;animalFocus=a?a.value:animalFocus;
+  var p=$("profession"),o=$("profession-other"),a=$("animal-focus"),r=$("business-reach");
+  profession=p?p.value:profession;professionOther=o?o.value:professionOther;animalFocus=a?a.value:animalFocus;businessReach=r?r.value:businessReach;
   if(!getProfession()){alert("Bitte waehle deinen Tierberuf oder trage ihn ein.");return;}
+  if(!businessReach){alert("Bitte gib an, ob dein Angebot regional, online oder beides verfügbar ist.");return;}
   screen="main";tab=0;dCurQ=0;dAnswers=[];render();
 }
-function profileBanner(){return '<div class="profile-note"><button onclick="screen=\'welcome\';render()">Ändern</button><strong>Dein Bereich:</strong> '+getProfession()+(animalFocus.trim()?' · '+animalFocus.trim():'')+'</div>';}
+function profileBanner(){return '<div class="profile-note"><button onclick="screen=\'welcome\';render()">Ändern</button><strong>Dein Bereich:</strong> '+getProfession()+(animalFocus.trim()?' · '+animalFocus.trim():'')+' · '+businessReach+'</div>';}
 
 function renderMain(){
-  var hdr='<div class="tabs"><button class="tab'+(tab===0?" on":"")+'" onclick="tab=0;renderMain()">&#129517; Kompass-Diagnose</button><button class="tab'+(tab===1?" on":"")+'" onclick="tab=1;renderMain()">&#9997;&#65039; Content-Ideen</button></div>';
+  var hdr='<div class="tabs"><button class="tab'+(tab===0?" on":"")+'" onclick="tab=0;renderMain()">&#129517; Marketing-Kompass</button><button class="tab'+(tab===1?" on":"")+'" onclick="tab=1;renderMain()">&#9997;&#65039; Marketing-Ideen</button></div>';
   var body='';
   if(tab===0){
     if(dStep===0)body=renderQuestions();
@@ -148,7 +153,7 @@ function renderMain(){
     body=renderContent();
   }
   $("card").innerHTML=
-    '<div class="card-hdr"><div class="e">Tierbusiness Community</div><h2>Kompass & Content</h2><p>Diagnose · Aufgabe · Gespräch · Post</p></div>'+
+    '<div class="card-hdr"><div class="e">Tierbusiness Community</div><h2>Marketing-Kompass</h2><p>Diagnose · Kanalwahl · Wochenplan · Umsetzung</p></div>'+ 
     hdr+'<div class="body">'+profileBanner()+body+'</div>'+ 
     '';
 }
@@ -173,16 +178,21 @@ function saveAndGo(dir){
   dCurQ+=dir;renderMain();
 }
 
+function answersSummary(){
+  var summary="";
+  for(var i=0;i<QUESTIONS.length;i++)summary+=QUESTIONS[i]+"\nAntwort: "+(dAnswers[i]||"keine Angabe")+"\n\n";
+  return summary;
+}
+
 function saveAndStartDiag(){
   var qa=$("qa");if(qa)dAnswers[dCurQ]=qa.value;
   dStep=1;dDiag="";dTask="";renderMain();
-  var summary="";
-  for(var i=0;i<QUESTIONS.length;i++){summary+=QUESTIONS[i]+"\nAntwort: "+(dAnswers[i]||"keine Angabe")+"\n\n";}
-  callAI(SYS+"\n\nAnalysiere die 7 Antworten im Kontext des angegebenen Tierberufs. Nenne den wahrscheinlichsten Kompass-Bereich. Erklaere in 3 Saetzen warum. Zeige dann konkret: Ein beruflich passendes Beispiel fuer einen Post, der NICHT funktioniert, und direkt darunter einen BESSEREN Post fuer dieselbe Person. Nutze nur Beispiele, die zu ihrem Tierberuf und Tier-/Kundenschwerpunkt passen. Format: Diagnose / Warum / Schwacher Post-Beispiel / Starker Post-Beispiel. Maximal 200 Woerter.",
+  var summary=answersSummary();
+  callAI(SYS+"\n\nAnalysiere die Antworten als Marketing-Kompass. Bewerte getrennt: 1. Positionierung und Botschaft, 2. ob die Person ihre echten Wunschkunden erreicht, 3. ob die genutzten Online- oder Offline-Kanäle zum Angebot passen. Skool ist eine Fachcommunity und nur dann ein Kundengewinnungskanal, wenn dort tatsächlich Wunschkunden sind. Flyer sind ein vollwertiger Offline-Kanal: Prüfe Zielgruppe, Verteilort, Botschaft, Handlungsaufforderung, Anschlussziel wie Webseite/Termin/QR-Code und Messbarkeit. Empfiehl nicht pauschal mehr Social Media und auch nicht alle Kanäle gleichzeitig. Nenne den wahrscheinlichsten Kompass-Bereich, das zentrale Marketingproblem und höchstens zwei passende Hauptkanäle mit kurzer Begründung. Zeige ein schwaches und ein verbessertes, zum empfohlenen Kanal passendes Beispiel. Maximal 260 Wörter.",
     profileContext()+"\n\n"+summary,null,
     function(d){
       dDiag=d;
-      callAI(SYS+"\n\nGib 3 konkrete Schritte (nummeriert) die der Person diese Woche helfen ihre Zielgruppe klarer zu sehen und bessere Posts zu schreiben. Jeder Schritt: eine Handlung, maximal 2 Saetze. Kein allgemeines Coaching. Direkt umsetzbar.",
+      callAI(SYS+"\n\nErstelle einen konkreten Marketing-Wochenplan mit 3 nummerierten Schritten. Jeder Schritt nennt Handlung, Kanal/Ort und Ziel. Berücksichtige auch Offline-Maßnahmen. Wenn Flyer genutzt werden, prüfe beziehungsweise verbessere Verteilort, Botschaft, Call-to-Action, QR-/Kontaktziel und Erfolgsmessung. Wenn Social Media sinnvoll ist, nenne exakt die passende Plattform und das Format. Skool nur empfehlen, wenn dort echte Wunschkunden erreichbar sind. Keine pauschale Mehr-Posten-Empfehlung. Jeder Schritt maximal 3 Sätze.",
         profileContext()+"\n\nAntworten:\n"+summary+"\nDiagnose: "+dDiag,null,
         function(t){dTask=t;renderMain();},
         function(e){dTask="Fehler: "+e;renderMain();});
@@ -196,14 +206,14 @@ function renderDiagResult(){
   if(dDiag)html+='<div class="rbox d"><div class="rl">&#129517; Kompass-Diagnose</div>'+dDiag+'</div>';
   if(dDiag&&!dTask)html+='<div class="spin-w"><div class="spin"></div></div><div class="status">Erstelle Aufgabe...</div>';
   if(dTask)html+='<div class="rbox"><div class="rl">&#9989; Deine Aufgabe diese Woche</div>'+dTask+'</div>';
-  if(dTask&&dStep===1)html+='<div class="btn-row"><button class="btn-g" onclick="genCont()">&#9997;&#65039; Content-Idee dazu</button></div>';
+  if(dTask&&dStep===1)html+='<div class="btn-row"><button class="btn-g" onclick="genCont()">&#9997;&#65039; Passende Maßnahme erstellen</button></div>';
   if(dStep===2)html+=renderChat();
   if(dStep===3)html+=renderContArea();
     return html;
 }
 
 function renderStepBar(){
-  var steps=["Diagnose","Aufgabe","Gespräch","Content"],cur=Math.min(dStep,3);
+  var steps=["Diagnose","Plan","Gespräch","Umsetzung"],cur=Math.min(dStep,3);
   var html='<div class="sbar">';
   for(var i=0;i<steps.length;i++){
     var done=i<cur,active=i===cur;
@@ -221,13 +231,13 @@ function renderChat(){
   }
   return '<div class="chat-w" id="cw">'+msgs+'</div>'+
     '<div class="ci-row"><input type="text" id="ci" placeholder="Deine Antwort..." onkeydown="if(event.key===\'Enter\'&&!event.shiftKey){event.preventDefault();sendChat()}" oninput="var b=$(&apos;csend&apos;);if(b)b.disabled=!this.value.trim()"><button id="csend" onclick="sendChat()" disabled>&#8594;</button></div>'+
-    '<button class="btn-g" onclick="genCont()" style="margin-top:8px;width:100%">&#9997;&#65039; Content-Idee generieren</button>';
+    '<button class="btn-g" onclick="genCont()" style="margin-top:8px;width:100%">&#9997;&#65039; Passende Maßnahme erstellen</button>';
 }
 
 function renderContArea(){
   var html='';
   if(!dCont)html+='<div class="spin-w"><div class="spin"></div></div>';
-  else html+='<div class="rbox"><div class="rl">&#9997;&#65039; Fertiger Community-Post</div>'+dCont+
+  else html+='<div class="rbox"><div class="rl">&#9997;&#65039; Dein fertiges Marketing-Paket</div>'+dCont+
     '<p class="copy-hint">&#128070; Klick ins Feld &#8594; alles markiert &#8594; Strg+C</p>'+
     '<textarea class="copy-field" readonly rows="'+(Math.max(3,dCont.split("\n").length+1))+'" onclick="this.select()">'+dCont+'</textarea></div>';
     return html;
@@ -235,10 +245,10 @@ function renderContArea(){
 
 function renderContent(){
   var opts=CATS.map(function(c){return '<option'+(c===cCat?" selected":"")+'>'+c+'</option>';}).join("");
-  return '<p style="font-size:13px;color:#6B8A7E;line-height:1.65;margin-bottom:12px">Wähle eine Kategorie und optional ein Fokusthema – du erhältst drei fertige Post-Ideen zum Kopieren.</p>'+
-    '<span class="lbl" style="margin-top:0">Kategorie</span><select id="ccat" onchange="cCat=this.value">'+opts+'</select>'+
-    '<span class="lbl">Thema (optional)</span><input type="text" id="ctop" placeholder="z. B. Preisangst, Erstgespräch..." value="'+cTopic+'" oninput="cTopic=this.value">'+
-    '<button class="btn-p" id="cgenbtn" onclick="genContent()">&#9997;&#65039; Post-Ideen generieren</button>'+
+  return '<p style="font-size:13px;color:#6B8A7E;line-height:1.65;margin-bottom:12px">Lass die App den passenden Kanal wählen oder fordere gezielt einen Inhalt für Social Media, Google, Flyer, Kooperationen oder Skool an.</p>'+ 
+    '<span class="lbl" style="margin-top:0">Kanal oder Maßnahme</span><select id="ccat" onchange="cCat=this.value">'+opts+'</select>'+ 
+    '<span class="lbl">Angebot oder Thema</span><input type="text" id="ctop" placeholder="z. B. Ernährungsberatung, Neukundenaktion..." value="'+cTopic+'" oninput="cTopic=this.value">'+
+    '<button class="btn-p" id="cgenbtn" onclick="genContent()">&#9997;&#65039; Marketing-Ideen erstellen</button>'+ 
     (cResult?'<div class="rbox" style="white-space:pre-wrap;margin-top:12px">'+cResult+'</div>':"");
 }
 
@@ -258,8 +268,8 @@ function sendChat(){
 
 function genCont(){
   dStep=3;dCont="";renderMain();
-  callAI(SYS+"\n\nSchreibe einen fertigen Skool-Community-Post der das Kernproblem dieser Person aufgreift. Der Post soll die richtige Zielgruppe direkt ansprechen, ein echtes Problem benennen und am Ende eine Frage stellen die Kommentare ausloest. Kein Hashtag. Kein Markdown. Max. 90 Woerter.",
-    profileContext()+"\n\nDiagnose: "+dDiag+"\nAufgabe: "+dTask,null,
+  callAI(SYS+"\n\nWähle aus der Diagnose die sinnvollste einzelne Marketingmaßnahme für diese Woche und erstelle sie vollständig. Möglich sind z. B. Instagram-/Facebook-Post, Reel-Skript, Google-Unternehmensbeitrag, Flyertext mit Vorder-/Rückseite und CTA, Kooperationsanschreiben, E-Mail oder Skool-Beitrag. Skool nur, wenn dort Wunschkunden sind. Bei Flyern zusätzlich: geeignete Verteilorte, QR-/Kontaktziel und einfache Erfolgsmessung. Ausgabe: Empfohlener Kanal / Warum / Fertiger Inhalt / Konkrete Veröffentlichung oder Verteilung / Erfolg messen. Kein Markdown. Maximal 320 Wörter.",
+    profileContext()+"\n\nAlle Antworten:\n"+answersSummary()+"\nDiagnose: "+dDiag+"\nWochenplan: "+dTask,null,
     function(c){dCont=c;renderMain();},
     function(e){dCont="Fehler: "+e;renderMain();});
 }
@@ -267,8 +277,8 @@ function genCont(){
 function genContent(){
   var btn=$("cgenbtn");if(btn)btn.disabled=true;
   cResult="";renderMain();
-  callAI(SYS+"\n\nDu bist ausserdem Community-Gastgeberin der Tierbusiness Community. Erstelle 3 fertige Post-Ideen fuer die angegebene Kategorie und den angegebenen Tierberuf. Jede: kopierfertiger Post-Einstieg + Anmerkung in Klammern warum er funktioniert. Beispiele muessen fachlich und sprachlich zur Branche passen. Authentisch, warm, kein Marketing-Sprech.",
-    profileContext()+"\nKategorie: "+cCat+(cTopic?"\nFokus: "+cTopic:""),null,
+  callAI(SYS+"\n\nErstelle 3 konkrete Marketing-Ideen für den angegebenen Kanal und Tierberuf. Wenn 'Automatisch' gewählt ist, wähle anhand von regional/online und Zielgruppe höchstens zwei passende Kanäle. Liefere pro Idee einen fertigen Inhalt und eine klare Handlungsaufforderung. Für Flyer: Überschrift, Kurztext, Nutzen, CTA, QR-/Kontaktziel, Verteilorte und Messung. Für Social Media: genaue Plattform und Format. Für Google: lokaler, suchnaher Beitrag. Für Kooperation: fertige Nachricht und passende Partner. Für Skool: klarstellen, ob Kunden oder Fachkollegen angesprochen werden. Authentisch, konkret, kein Marketing-Sprech. Maximal 450 Wörter.",
+    profileContext()+"\nKanal/Maßnahme: "+cCat+(cTopic?"\nAngebot/Thema: "+cTopic:""),null,
     function(r){cResult=r;renderMain();},
     function(e){cResult="Fehler: "+e;renderMain();});
 }
