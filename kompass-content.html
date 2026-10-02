@@ -66,6 +66,10 @@ textarea:focus,input:focus,select:focus{border-color:#C4923A}
 .qprog{font-size:11px;color:#C4923A;font-family:system-ui;font-weight:700;margin-bottom:6px}
 .qbar{height:4px;background:#E8DCC8;border-radius:4px;margin-bottom:16px}
 .qbar-fill{height:4px;background:linear-gradient(90deg,#2D4A3E,#C4923A);border-radius:4px;transition:width .3s}
+.profile-note{background:#FFF8EC;border:1px solid #E9D2A6;border-radius:10px;padding:10px 12px;margin-bottom:14px;font:12px/1.55 system-ui;color:#5E513A}
+.profile-note button{float:right;background:none;border:0;color:#2D4A3E;text-decoration:underline;cursor:pointer;font:inherit}
+.field-help{font:12px/1.5 system-ui;color:#6B8A7E;margin-top:5px}
+.hidden{display:none}
 </style>
 </head>
 <body>
@@ -79,7 +83,8 @@ textarea:focus,input:focus,select:focus{border-color:#C4923A}
 
 <script>
 var CATS=["Tierbusiness Austausch","Mindset & Businessblockaden","Sichtbarkeit & Marketing","Positionierung & Angebote","KI fuer Tierberufler"];
-var SYS="Du bist Susanne, erfahrene Hundetrainerin, Tiergesundheitsassistentin, Physiotherapeutin und Business-Coach fuer Tierberufler mit ueber 30 Jahren Erfahrung. Du arbeitest mit dem Tierberufler-Kompass (5 Bereiche: 1.Beziehung Mensch&Tier 2.Businessstruktur 3.Mentale Muster 4.Wert&Geld 5.Positionierung). Warm, direkt, ohne Floskeln. Deutsch, du-Ansprache. Kein Markdown, fliessender Text.";
+var PROFESSIONS=["Hundetraining","Katzenberatung","Tierphysiotherapie","Tierheilpraxis","Tierernährungsberatung","Tierpflege / Grooming","Tierbetreuung / Tiersitting","Tierkommunikation","Tierfotografie","Tiergestützte Arbeit","Tierarztpraxis","Anderer Tierberuf"];
+var SYS="Du bist Susanne, erfahrene Business-Coachin fuer Menschen in Tierberufen mit ueber 30 Jahren Erfahrung. Du arbeitest mit dem Tierberufler-Kompass (5 Bereiche: 1.Beziehung Mensch&Tier 2.Businessstruktur 3.Mentale Muster 4.Wert&Geld 5.Positionierung). Warm, direkt, ohne Floskeln. Deutsch, du-Ansprache. Kein Markdown, fliessender Text. Verwende niemals automatisch Hundebeispiele. Richte Sprache, Kundensituationen und Beispiele konsequent am angegebenen Tierberuf und Schwerpunkt aus. Wenn keine Tierart genannt ist, bleibe tierartenneutral.";
 var QUESTIONS=[
   "Was beschäftigt dich in deinem Tierbusiness gerade am meisten?",
   "Wie lange besteht dieses Problem schon?",
@@ -89,7 +94,7 @@ var QUESTIONS=[
   "Was hält dich davon ab, den nächsten Schritt zu gehen?",
   "Was brauchst du gerade am meisten – Klarheit, Mut oder einen konkreten Plan?"
 ];
-var screen="welcome",tab=0,dStep=0,dAnswers=[],dCurQ=0,dDiag="",dTask="",dChat=[],dCont="",cCat=CATS[0],cTopic="",cResult="";
+var screen="welcome",tab=0,dStep=0,dAnswers=[],dCurQ=0,dDiag="",dTask="",dChat=[],dCont="",cCat=CATS[0],cTopic="",cResult="",profession="",professionOther="",animalFocus="";
 
 function $(id){return document.getElementById(id);}
 
@@ -109,15 +114,29 @@ function render(){
 }
 
 function renderWelcome(){
+  var popts='<option value="">Bitte wählen...</option>'+PROFESSIONS.map(function(p){return '<option value="'+p+'"'+(profession===p?' selected':'')+'>'+p+'</option>';}).join('');
   $("card").innerHTML=
-    '<div class="card-hdr"><div class="e">Willkommen</div><h2>Kompass-Diagnose & Content in einem.</h2><p>Die Diagnose zeigt, wo die eigentliche Ursache deines Business-Problems liegt. Der Content-Generator erstellt fertige Post-Ideen fuer Skool.</p></div>'+
+    '<div class="card-hdr"><div class="e">Willkommen</div><h2>Damit die App wirklich zu deinem Tierberuf passt.</h2><p>Erzähl uns zuerst kurz, in welcher Branche du arbeitest. Alle Fragen, Beispiele und Content-Ideen werden darauf abgestimmt.</p></div>'+ 
     '<div class="body">'+
-    '<div class="tc"><div class="tc-h"><span style="font-size:18px">&#129517;</span><span style="font-size:15px;font-weight:700;color:#2D4A3E">Kompass-Diagnose</span></div><p style="font-size:13px;color:#6B8A7E;font-family:system-ui;line-height:1.65">7 Fragen &#8594; Ursache erkennen &#8594; Aufgabe erhalten &#8594; Gespräch führen &#8594; Post kopieren.</p></div>'+
-    '<div class="tc"><div class="tc-h"><span style="font-size:18px">&#9997;&#65039;</span><span style="font-size:15px;font-weight:700;color:#C4923A">Content-Ideen</span></div><p style="font-size:13px;color:#6B8A7E;font-family:system-ui;line-height:1.65">Kategorie wählen &#8594; Thema optional &#8594; 3 fertige Posts &#8594; direkt kopieren.</p></div>'+
-    '<div class="tip">&#128161; <strong>Tipp:</strong> Starte mit der <strong>Kompass-Diagnose</strong> – beantworte 7 kurze Fragen und erhalte deine persönliche Analyse.</div>'+
-    '<button class="btn-p" onclick="screen=\'main\';tab=0;dCurQ=0;dAnswers=[];render()">&#129517; Los geht\'s</button>'+
+    '<span class="lbl" style="margin-top:0">Was ist dein Tierberuf / deine Branche?</span><select id="profession" onchange="profession=this.value;toggleOther()">'+popts+'</select>'+ 
+    '<div id="other-wrap" class="'+(profession==='Anderer Tierberuf'?'':'hidden')+'"><span class="lbl">Dein Tierberuf</span><input id="profession-other" type="text" value="'+professionOther+'" placeholder="z. B. Pferdeosteopathie" oninput="professionOther=this.value"></div>'+ 
+    '<span class="lbl">Mit welchen Tieren oder Kunden arbeitest du?</span><input id="animal-focus" type="text" value="'+animalFocus+'" placeholder="z. B. Pferde und ihre Halterinnen" oninput="animalFocus=this.value">'+
+    '<p class="field-help">Optional, aber hilfreich fuer wirklich passende Beispiele.</p>'+ 
+    '<div class="tip">&#128161; Deine Angabe gilt fuer die Diagnose, das Coaching und alle Content-Ideen. Du kannst sie spaeter jederzeit aendern.</div>'+ 
+    '<button class="btn-p" onclick="startApp()">Weiter zum Kompass &#8594;</button>'+ 
     '</div>';
 }
+
+function toggleOther(){var w=$("other-wrap");if(w)w.className=profession==="Anderer Tierberuf"?"":"hidden";}
+function getProfession(){return profession==="Anderer Tierberuf"?professionOther.trim():profession;}
+function profileContext(){return "Tierberuf/Branche: "+getProfession()+"\nTier- oder Kundenschwerpunkt: "+(animalFocus.trim()||"nicht angegeben; bitte tierartenneutral formulieren");}
+function startApp(){
+  var p=$("profession"),o=$("profession-other"),a=$("animal-focus");
+  profession=p?p.value:profession;professionOther=o?o.value:professionOther;animalFocus=a?a.value:animalFocus;
+  if(!getProfession()){alert("Bitte waehle deinen Tierberuf oder trage ihn ein.");return;}
+  screen="main";tab=0;dCurQ=0;dAnswers=[];render();
+}
+function profileBanner(){return '<div class="profile-note"><button onclick="screen=\'welcome\';render()">Ändern</button><strong>Dein Bereich:</strong> '+getProfession()+(animalFocus.trim()?' · '+animalFocus.trim():'')+'</div>';}
 
 function renderMain(){
   var hdr='<div class="tabs"><button class="tab'+(tab===0?" on":"")+'" onclick="tab=0;renderMain()">&#129517; Kompass-Diagnose</button><button class="tab'+(tab===1?" on":"")+'" onclick="tab=1;renderMain()">&#9997;&#65039; Content-Ideen</button></div>';
@@ -130,7 +149,7 @@ function renderMain(){
   }
   $("card").innerHTML=
     '<div class="card-hdr"><div class="e">Tierbusiness Community</div><h2>Kompass & Content</h2><p>Diagnose · Aufgabe · Gespräch · Post</p></div>'+
-    hdr+'<div class="body">'+body+'</div>'+
+    hdr+'<div class="body">'+profileBanner()+body+'</div>'+ 
     '';
 }
 
@@ -159,12 +178,12 @@ function saveAndStartDiag(){
   dStep=1;dDiag="";dTask="";renderMain();
   var summary="";
   for(var i=0;i<QUESTIONS.length;i++){summary+=QUESTIONS[i]+"\nAntwort: "+(dAnswers[i]||"keine Angabe")+"\n\n";}
-  callAI(SYS+"\n\nAnalysiere die 7 Antworten. Nenne den wahrscheinlichsten Kompass-Bereich. Erklaere in 3 Saetzen warum. Zeige dann konkret: Ein Beispiel-Post der NICHT funktioniert (mit diesem Problem) und direkt darunter wie ein BESSERER Post fuer dieselbe Person aussieht. Format: Diagnose / Warum / Schwacher Post-Beispiel / Starker Post-Beispiel. Maximal 200 Woerter.",
-    summary,null,
+  callAI(SYS+"\n\nAnalysiere die 7 Antworten im Kontext des angegebenen Tierberufs. Nenne den wahrscheinlichsten Kompass-Bereich. Erklaere in 3 Saetzen warum. Zeige dann konkret: Ein beruflich passendes Beispiel fuer einen Post, der NICHT funktioniert, und direkt darunter einen BESSEREN Post fuer dieselbe Person. Nutze nur Beispiele, die zu ihrem Tierberuf und Tier-/Kundenschwerpunkt passen. Format: Diagnose / Warum / Schwacher Post-Beispiel / Starker Post-Beispiel. Maximal 200 Woerter.",
+    profileContext()+"\n\n"+summary,null,
     function(d){
       dDiag=d;
       callAI(SYS+"\n\nGib 3 konkrete Schritte (nummeriert) die der Person diese Woche helfen ihre Zielgruppe klarer zu sehen und bessere Posts zu schreiben. Jeder Schritt: eine Handlung, maximal 2 Saetze. Kein allgemeines Coaching. Direkt umsetzbar.",
-        "Antworten:\n"+summary+"\nDiagnose: "+dDiag,null,
+        profileContext()+"\n\nAntworten:\n"+summary+"\nDiagnose: "+dDiag,null,
         function(t){dTask=t;renderMain();},
         function(e){dTask="Fehler: "+e;renderMain();});
     },
@@ -230,7 +249,7 @@ function sendChat(){
   var cw=$("cw");
   if(cw){cw.innerHTML+='<div style="display:flex"><div class="bm a"><div style="display:flex;gap:4px"><div style="width:6px;height:6px;border-radius:50%;background:#8FAF9F;animation:bounce 1s ease 0s infinite"></div><div style="width:6px;height:6px;border-radius:50%;background:#8FAF9F;animation:bounce 1s ease .2s infinite"></div><div style="width:6px;height:6px;border-radius:50%;background:#8FAF9F;animation:bounce 1s ease .4s infinite"></div></div></div></div>';cw.scrollTop=cw.scrollHeight;}
   var summary="";for(var i=0;i<QUESTIONS.length;i++){summary+=QUESTIONS[i]+"\nAntwort: "+(dAnswers[i]||"keine Angabe")+"\n\n";}
-  var hist=[{role:"user",content:summary},{role:"assistant",content:dDiag+"\n\n"+dTask}];
+  var hist=[{role:"user",content:profileContext()+"\n\n"+summary},{role:"assistant",content:dDiag+"\n\n"+dTask}];
   for(var i=0;i<dChat.length-1;i++)hist.push({role:dChat[i].r==="u"?"user":"assistant",content:dChat[i].c});
   callAI(SYS+"\n\nCoaching-Gespräch. Antworte kurz, klar, mit Rückfrage oder konkretem Hinweis. Max. 120 Wörter.",msg,hist,
     function(rep){dChat.push({r:"a",c:rep});renderMain();setTimeout(function(){var cw=$("cw");if(cw)cw.scrollTop=cw.scrollHeight;},50);},
@@ -240,7 +259,7 @@ function sendChat(){
 function genCont(){
   dStep=3;dCont="";renderMain();
   callAI(SYS+"\n\nSchreibe einen fertigen Skool-Community-Post der das Kernproblem dieser Person aufgreift. Der Post soll die richtige Zielgruppe direkt ansprechen, ein echtes Problem benennen und am Ende eine Frage stellen die Kommentare ausloest. Kein Hashtag. Kein Markdown. Max. 90 Woerter.",
-    "Diagnose: "+dDiag+"\nAufgabe: "+dTask,null,
+    profileContext()+"\n\nDiagnose: "+dDiag+"\nAufgabe: "+dTask,null,
     function(c){dCont=c;renderMain();},
     function(e){dCont="Fehler: "+e;renderMain();});
 }
@@ -248,8 +267,8 @@ function genCont(){
 function genContent(){
   var btn=$("cgenbtn");if(btn)btn.disabled=true;
   cResult="";renderMain();
-  callAI("Du bist Susanne, Community-Gastgeberin der Tierbusiness Community. Erstelle 3 fertige Post-Ideen fuer die angegebene Kategorie. Jede: kopierfertiger Post-Einstieg + Anmerkung in Klammern warum er funktioniert. Authentisch, warm, kein Marketing-Sprech. Deutsch, du-Ansprache.",
-    "Kategorie: "+cCat+(cTopic?"\nFokus: "+cTopic:""),null,
+  callAI(SYS+"\n\nDu bist ausserdem Community-Gastgeberin der Tierbusiness Community. Erstelle 3 fertige Post-Ideen fuer die angegebene Kategorie und den angegebenen Tierberuf. Jede: kopierfertiger Post-Einstieg + Anmerkung in Klammern warum er funktioniert. Beispiele muessen fachlich und sprachlich zur Branche passen. Authentisch, warm, kein Marketing-Sprech.",
+    profileContext()+"\nKategorie: "+cCat+(cTopic?"\nFokus: "+cTopic:""),null,
     function(r){cResult=r;renderMain();},
     function(e){cResult="Fehler: "+e;renderMain();});
 }
