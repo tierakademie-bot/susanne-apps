@@ -70,6 +70,14 @@ textarea:focus,input:focus,select:focus{border-color:#C4923A}
 .profile-note button{float:right;background:none;border:0;color:#2D4A3E;text-decoration:underline;cursor:pointer;font:inherit}
 .field-help{font:12px/1.5 system-ui;color:#6B8A7E;margin-top:5px}
 .hidden{display:none}
+.choices{display:grid;gap:8px;margin:8px 0 12px}
+.choice{display:flex;align-items:flex-start;gap:9px;background:#F5F0E8;border:1.5px solid #D8CDBB;border-radius:9px;padding:10px 12px;font:13px/1.45 system-ui;color:#1E2E28;cursor:pointer}
+.choice:has(input:checked){border-color:#C4923A;background:#FFF8EC}
+.choice input{width:auto;margin-top:2px;accent-color:#2D4A3E}
+.example{font:12px/1.5 system-ui;color:#6B8A7E;background:#F5F0E8;border-radius:8px;padding:8px 10px;margin:0 0 10px}
+.mini-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.validation{font:12px/1.5 system-ui;color:#A23A2A;margin:7px 0}
+@media(max-width:520px){.mini-grid{grid-template-columns:1fr}.body{padding:18px 16px 24px}}
 </style>
 </head>
 <body>
@@ -84,30 +92,32 @@ textarea:focus,input:focus,select:focus{border-color:#C4923A}
 <script>
 var CATS=["Automatisch passenden Kanal wählen","Instagram","Facebook","Google-Unternehmensprofil","Flyer / Plakat","Kooperationen","E-Mail / Newsletter","Skool / Fachcommunity"];
 var PROFESSIONS=["Hundetraining","Katzenberatung","Tierphysiotherapie","Tierheilpraxis","Tierernährungsberatung","Tierpflege / Grooming","Tierbetreuung / Tiersitting","Tierkommunikation","Tierfotografie","Tiergestützte Arbeit","Tierarztpraxis","Anderer Tierberuf"];
-var SYS="Du bist Susanne, erfahrene Business-Coachin fuer Menschen in Tierberufen mit ueber 30 Jahren Erfahrung. Du arbeitest mit dem Tierberufler-Kompass (5 Bereiche: 1.Beziehung Mensch&Tier 2.Businessstruktur 3.Mentale Muster 4.Wert&Geld 5.Positionierung). Warm, direkt, ohne Floskeln. Deutsch, du-Ansprache. Kein Markdown, fliessender Text. Verwende niemals automatisch Hundebeispiele. Richte Sprache, Kundensituationen und Beispiele konsequent am angegebenen Tierberuf und Schwerpunkt aus. Wenn keine Tierart genannt ist, bleibe tierartenneutral.";
+var SYS="Du bist Susanne, erfahrene Business-Coachin fuer Menschen in Tierberufen mit ueber 30 Jahren Erfahrung. Du arbeitest mit dem Tierberufler-Kompass (5 Bereiche: 1.Beziehung Mensch&Tier 2.Businessstruktur 3.Mentale Muster 4.Wert&Geld 5.Positionierung). Warm, klar, respektvoll und ohne Floskeln. Deutsch, du-Ansprache. Verwende niemals automatisch Hundebeispiele. Richte Sprache, Kundensituationen und Beispiele konsequent am angegebenen Tierberuf und Schwerpunkt aus. Wenn keine Tierart genannt ist, bleibe tierartenneutral.";
+var GUARDRAILS="VERBINDLICHE QUALITAETSREGELN: Nutze ausschließlich Angaben, die die Person tatsächlich gemacht hat. Erfinde keine Qualifikation, Zertifizierung, Spezialisierung, Kundenerfahrung, Erfolgsgeschichte, Preise, Gratisangebote, Vorträge, Rabatte oder Fallbeispiele. Fehlende Angaben erscheinen klar als [Platzhalter] oder werden als Rückfrage benannt. Beachte Regional/Online strikt: Bei 'Online' keine lokalen Suchanfragen, Aushänge, Umkreis-Empfehlungen oder Vor-Ort-Termine; bei 'Regional' keine rein digitalen Annahmen. Erstelle nur die verlangte Anzahl an Maßnahmen. Keine willkürlichen Postingzeiten; empfehle nur, nach eigenen Nutzungsdaten zu planen oder dann zu veröffentlichen, wenn Rückfragen beantwortet werden können. Keine abwertenden Sätze wie 'du ignorierst', 'leerer Raum' oder 'Likes zahlen keine Rechnungen'. Keine unbelegten medizinischen, therapeutischen oder ernährungsbezogenen Ursachen-, Diagnose-, Heilungs-, Wirkungs- oder Kostenversprechen. Symptome haben verschiedene mögliche Ursachen; bei Beschwerden tierärztliche Abklärung nennen und das jeweilige Berufsrecht beziehungsweise die Fachgrenzen respektieren. Ernährungsberatung nie als Ersatz für tierärztliche Diagnostik darstellen. Bei Kontakt zu Tierarztpraxen niemals 'Kollegin/Kollege' schreiben, wenn die Person nicht ausdrücklich Tierärztin/Tierarzt ist; nutze 'Guten Tag liebes Praxisteam' und beschreibe die Tätigkeit als ergänzend. Keine erfundenen Vorher-Nachher-Fotos oder Testimonials. Gib ausschließlich Klartext ohne Markdownzeichen wie **, # oder Tabellen aus. Gliedere mit kurzen Klartext-Ueberschriften und Leerzeilen. Beende jeden Text vollständig, nie mitten im Satz. Prüfe vor der Ausgabe intern: Fakten erfunden? Reichweite passend? Fachgrenzen gewahrt? Anzahl eingehalten? Ton respektvoll? Text vollständig? Gib nur die korrigierte Endfassung aus, nicht die Prüfung.";
 var QUESTIONS=[
-  "Was beschäftigt dich in deinem Tierbusiness gerade am meisten?",
-  "Was genau möchtest du aktuell verkaufen oder häufiger gebucht bekommen?",
-  "Wer soll dieses Angebot kaufen – und ist dein Geschäft regional, online oder beides?",
-  "Wie machst du momentan auf dein Angebot aufmerksam? Nenne alles, zum Beispiel Instagram, Facebook, Skool, Flyer, Google, Empfehlungen, Veranstaltungen oder Kooperationen.",
-  "Beschreibe bitte konkret, wie du diese Maßnahmen einsetzt: Wo verteilst du zum Beispiel Flyer, was veröffentlichst du und wie oft?",
-  "Welche Reaktionen, Anfragen oder Verkäufe entstehen bisher daraus?",
-  "Was hast du bereits verändert oder ausprobiert, um bessere Ergebnisse zu erzielen?",
-  "Was glaubst du selbst: Fehlt es eher an der richtigen Zielgruppe, der Botschaft, dem passenden Kanal oder an Regelmäßigkeit?",
-  "Was kannst du realistisch umsetzen: Texte, Fotos, kurze Videos, persönliche Kontakte oder lokale Aktionen?",
-  "Was brauchst du gerade am meisten – Klarheit, einen konkreten Plan oder fertige Inhalte?"
+  {title:"Was möchtest du in den nächsten vier Wochen konkret erreichen?",type:"goal",example:"Beispiel: Ich möchte fünf passende Anfragen für meine Online-Beratung erhalten."},
+  {title:"Welches konkrete Angebot sollen Kunden kaufen oder buchen?",type:"offer",example:"Beispiel: 60-minütige Online-Ernährungsberatung für 89 Euro. Interessenten sollen einen Termin buchen."},
+  {title:"Für wen ist dieses Angebot gedacht – und welches konkrete Problem oder Bedürfnis hat diese Person?",type:"text",example:"Beispiel: Halter älterer Katzen, die bei der Futterauswahl Orientierung suchen."},
+  {title:"Wie werden potenzielle Kunden momentan auf dich aufmerksam?",type:"channels",example:"Wähle alles aus, was du derzeit wirklich nutzt."},
+  {title:"Wie setzt du diese Marketingwege konkret ein?",type:"channelDetails",example:"Die passende Folgefrage richtet sich nach deiner Auswahl."},
+  {title:"Was ist in den vergangenen vier Wochen daraus entstanden?",type:"results",example:"Schätzungen sind in Ordnung. Wichtig ist die Trennung zwischen Reaktionen, Anfragen und Verkäufen."},
+  {title:"Was passiert, wenn sich jemand für dein Angebot interessiert?",type:"path",example:"Wähle den tatsächlichen nächsten Schritt – nicht den gewünschten."},
+  {title:"Was kannst du pro Woche realistisch für dein Marketing einsetzen?",type:"capacity",example:"So empfiehlt dir die App nur Maßnahmen, die du wirklich umsetzen kannst."}
 ];
-var screen="welcome",tab=0,dStep=0,dAnswers=[],dCurQ=0,dDiag="",dTask="",dChat=[],dCont="",cCat=CATS[0],cTopic="",cResult="",profession="",professionOther="",animalFocus="",businessReach="";
+var screen="welcome",tab=0,dStep=0,dAnswers=[],dCurQ=0,dDiag="",dTask="",dChat=[],dCont="",cCat=CATS[0],cTopic="",cResult="",profession="",professionOther="",animalFocus="",businessReach="",qualification="";
 
 function $(id){return document.getElementById(id);}
+function esc(s){return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;");}
+function cleanAI(s){return String(s||"").replace(/\*\*/g,"").replace(/^#{1,6}\s*/gm,"").replace(/```[a-z]*|```/gi,"").replace(/[ \t]+\n/g,"\n").replace(/\n{3,}/g,"\n\n").trim();}
+function formatAI(s){return esc(cleanAI(s)).replace(/\n\n/g,"</p><p style=\"margin-top:10px\">").replace(/\n/g,"<br>");}
 
 function callAI(sys,user,history,cb,errcb){
   var msgs=history?history.concat([{role:"user",content:user}]):[{role:"user",content:user}];
   fetch("https://tierakademie-proxy.tierakademie.workers.dev",{
     method:"POST",headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({model:"claude-haiku-4-5-20251001",max_tokens:800,system:sys,messages:msgs})
+    body:JSON.stringify({model:"claude-haiku-4-5-20251001",max_tokens:1200,system:sys+"\n\n"+GUARDRAILS,messages:msgs})
   }).then(function(r){if(!r.ok)throw new Error("Fehler "+r.status);return r.json();})
-  .then(function(d){if(d.error)throw new Error(d.error.message);cb(d.content&&d.content[0]?d.content[0].text:"");})
+  .then(function(d){if(d.error)throw new Error(d.error.message);var out=cleanAI(d.content&&d.content[0]?d.content[0].text:"");if(!out)throw new Error("Leere Antwort");cb(out);})
   .catch(function(e){errcb(e.message||"Verbindungsfehler");});
 }
 
@@ -123,6 +133,8 @@ function renderWelcome(){
     '<div class="body">'+
     '<span class="lbl" style="margin-top:0">Was ist dein Tierberuf / deine Branche?</span><select id="profession" onchange="profession=this.value;toggleOther()">'+popts+'</select>'+ 
     '<div id="other-wrap" class="'+(profession==='Anderer Tierberuf'?'':'hidden')+'"><span class="lbl">Dein Tierberuf</span><input id="profession-other" type="text" value="'+professionOther+'" placeholder="z. B. Pferdeosteopathie" oninput="professionOther=this.value"></div>'+ 
+    '<span class="lbl">Wie lautet deine genaue berufliche Bezeichnung?</span><input id="qualification" type="text" value="'+esc(qualification)+'" placeholder="z. B. Tierernährungsberaterin – oder: noch in Ausbildung" oninput="qualification=this.value">'+
+    '<p class="field-help">Die App verwendet nur diese Angabe und erfindet keine Qualifikation.</p>'+ 
     '<span class="lbl">Mit welchen Tieren oder Kunden arbeitest du?</span><input id="animal-focus" type="text" value="'+animalFocus+'" placeholder="z. B. Pferde und ihre Halterinnen" oninput="animalFocus=this.value">'+
     '<p class="field-help">Optional, aber hilfreich fuer wirklich passende Beispiele.</p>'+ 
     '<span class="lbl">Wo können Kunden dein Angebot nutzen?</span><select id="business-reach" onchange="businessReach=this.value"><option value="">Bitte wählen...</option><option'+(businessReach==='Regional'?' selected':'')+'>Regional</option><option'+(businessReach==='Online'?' selected':'')+'>Online</option><option'+(businessReach==='Regional und online'?' selected':'')+'>Regional und online</option></select>'+
@@ -133,15 +145,16 @@ function renderWelcome(){
 
 function toggleOther(){var w=$("other-wrap");if(w)w.className=profession==="Anderer Tierberuf"?"":"hidden";}
 function getProfession(){return profession==="Anderer Tierberuf"?professionOther.trim():profession;}
-function profileContext(){return "Tierberuf/Branche: "+getProfession()+"\nTier- oder Kundenschwerpunkt: "+(animalFocus.trim()||"nicht angegeben; bitte tierartenneutral formulieren")+"\nGeschäftsmodell/Reichweite: "+(businessReach||"nicht angegeben");}
+function profileContext(){return "Tierberuf/Branche: "+getProfession()+"\nGenaue berufliche Bezeichnung/Qualifikation: "+qualification.trim()+"\nTier- oder Kundenschwerpunkt: "+(animalFocus.trim()||"nicht angegeben; bitte tierartenneutral formulieren")+"\nGeschäftsmodell/Reichweite: "+(businessReach||"nicht angegeben");}
 function startApp(){
-  var p=$("profession"),o=$("profession-other"),a=$("animal-focus"),r=$("business-reach");
-  profession=p?p.value:profession;professionOther=o?o.value:professionOther;animalFocus=a?a.value:animalFocus;businessReach=r?r.value:businessReach;
+  var p=$("profession"),o=$("profession-other"),q=$("qualification"),a=$("animal-focus"),r=$("business-reach");
+  profession=p?p.value:profession;professionOther=o?o.value:professionOther;qualification=q?q.value:qualification;animalFocus=a?a.value:animalFocus;businessReach=r?r.value:businessReach;
   if(!getProfession()){alert("Bitte waehle deinen Tierberuf oder trage ihn ein.");return;}
+  if(!qualification.trim()){alert("Bitte trage deine genaue berufliche Bezeichnung ein – oder 'noch in Ausbildung'.");return;}
   if(!businessReach){alert("Bitte gib an, ob dein Angebot regional, online oder beides verfügbar ist.");return;}
   screen="main";tab=0;dCurQ=0;dAnswers=[];render();
 }
-function profileBanner(){return '<div class="profile-note"><button onclick="screen=\'welcome\';render()">Ändern</button><strong>Dein Bereich:</strong> '+getProfession()+(animalFocus.trim()?' · '+animalFocus.trim():'')+' · '+businessReach+'</div>';}
+function profileBanner(){return '<div class="profile-note"><button onclick="screen=\'welcome\';render()">Ändern</button><strong>Dein Bereich:</strong> '+esc(getProfession())+' · '+esc(qualification)+(animalFocus.trim()?' · '+esc(animalFocus.trim()):'')+' · '+esc(businessReach)+'</div>';}
 
 function renderMain(){
   var hdr='<div class="tabs"><button class="tab'+(tab===0?" on":"")+'" onclick="tab=0;renderMain()">&#129517; Marketing-Kompass</button><button class="tab'+(tab===1?" on":"")+'" onclick="tab=1;renderMain()">&#9997;&#65039; Marketing-Ideen</button></div>';
@@ -160,39 +173,124 @@ function renderMain(){
 
 function renderQuestions(){
   var q=QUESTIONS[dCurQ];
-  var pct=Math.round((dCurQ/QUESTIONS.length)*100);
-  return '<div class="qprog">Frage '+(dCurQ+1)+' von '+QUESTIONS.length+'</div>'+
-    '<div class="qbar"><div class="qbar-fill" style="width:'+pct+'%"></div></div>'+
-    '<p style="font-size:15px;font-weight:700;color:#2D4A3E;line-height:1.5;margin-bottom:12px">'+q+'</p>'+
-    '<textarea id="qa" rows="4" placeholder="Deine Antwort...">'+(dAnswers[dCurQ]||"")+'</textarea>'+
-    '<p style="font-size:12px;color:#6B8A7E;font-family:system-ui;margin:6px 0 10px;font-style:italic">&#128161; Du kannst auch schreiben: <strong>Ich weiss es nicht</strong> – das ist oft der ehrlichste Einstieg.</p>'+
+  var pct=Math.round(((dCurQ+1)/QUESTIONS.length)*100);
+  return '<div class="qprog">Frage '+(dCurQ+1)+' von '+QUESTIONS.length+'</div>'+ 
+    '<div class="qbar"><div class="qbar-fill" style="width:'+pct+'%"></div></div>'+ 
+    '<p style="font-size:15px;font-weight:700;color:#2D4A3E;line-height:1.5;margin-bottom:8px">'+q.title+'</p>'+ 
+    '<div class="example">&#128161; '+q.example+'</div>'+renderQuestionInput(q)+
+    '<div id="qerror" class="validation"></div>'+ 
     '<div class="btn-row">'+
+    (dCurQ>0?'<button class="btn-o" onclick="saveAndGo(-1)">&#8592; Zurück</button>':'')+
     (dCurQ<QUESTIONS.length-1?
       '<button class="btn-p" onclick="saveAndGo(1)">Weiter &#8594;</button>':
       '<button class="btn-p" onclick="saveAndStartDiag()">&#129517; Diagnose starten</button>')+
     '</div>';
 }
 
+function choiceList(name,items,selected,multiple){
+  selected=multiple?(selected||[]):selected||"";
+  return '<div class="choices">'+items.map(function(x){var on=multiple?selected.indexOf(x)>=0:selected===x;return '<label class="choice"><input type="'+(multiple?'checkbox':'radio')+'" name="'+name+'" value="'+esc(x)+'"'+(on?' checked':'')+'><span>'+esc(x)+'</span></label>';}).join('')+'</div>';
+}
+
+function renderQuestionInput(q){
+  var a=dAnswers[dCurQ];
+  if(q.type==="goal"){
+    a=a||{};
+    return choiceList("goal",["Mehr passende Anfragen","Mehr Buchungen oder Verkäufe","Ein bestimmtes Angebot bekannter machen","Die richtige Zielgruppe erreichen","Den passenden Marketingkanal finden","Etwas anderes"],a.choice,false)+
+      '<span class="lbl">Dein Ziel in einem Satz</span><input id="goal-detail" value="'+esc(a.detail)+'" placeholder="Was soll konkret anders sein?">';
+  }
+  if(q.type==="offer"){
+    a=a||{};
+    return '<span class="lbl" style="margin-top:0">Angebot</span><textarea id="offer-name" rows="3" placeholder="Was genau bietest du an?">'+esc(a.offer)+'</textarea>'+ 
+      '<div class="mini-grid"><div><span class="lbl">Preis, falls festgelegt</span><input id="offer-price" value="'+esc(a.price)+'" placeholder="z. B. 89 Euro"></div><div><span class="lbl">Gewünschter nächster Schritt</span><input id="offer-action" value="'+esc(a.action)+'" placeholder="z. B. Termin buchen"></div></div>';
+  }
+  if(q.type==="text")return '<textarea id="qa" rows="5" placeholder="Beschreibe Wunschkunde und konkretes Problem...">'+esc(a||"")+'</textarea>';
+  if(q.type==="channels")return choiceList("channels",["Instagram","Facebook","TikTok","Skool oder andere Community","Google oder Webseite","Flyer oder Plakate","Empfehlungen","Kooperationen","Veranstaltungen oder Märkte","Bezahlte Werbung","Bisher gar nicht","Etwas anderes"],a,true);
+  if(q.type==="channelDetails"){
+    var chans=dAnswers[3]||[],hints=[];
+    if(chans.some(function(x){return /Instagram|Facebook|TikTok/.test(x);}))hints.push("Social Media: Was veröffentlichst du, wie oft und wohin führst du Interessenten?");
+    if(chans.indexOf("Skool oder andere Community")>=0)hints.push("Community: Wen erreichst du dort – potenzielle Kunden oder vor allem Fachkollegen? Was veröffentlichst du und wohin führst du Interessenten?");
+    if(chans.indexOf("Flyer oder Plakate")>=0)hints.push("Flyer: Wo verteilst du sie, was steht darauf, gibt es QR-Code/Kontaktziel und wie viele wurden verteilt?");
+    if(chans.indexOf("Empfehlungen")>=0)hints.push("Empfehlungen: Wer empfiehlt dich und wie erleichterst du das Weiterempfehlen?");
+    if(chans.indexOf("Kooperationen")>=0)hints.push("Kooperationen: Welche Partner hast du angesprochen und mit welchem Vorschlag?");
+    if(chans.indexOf("Google oder Webseite")>=0)hints.push("Google/Webseite: Was finden Besucher dort und können sie direkt Kontakt aufnehmen oder buchen?");
+    if(!hints.length)hints.push("Beschreibe konkret, was du bisher tust, wie häufig und wohin du Interessenten führst.");
+    return '<div class="example">'+hints.map(esc).join('<br>')+'</div><textarea id="qa" rows="6" placeholder="Deine konkrete Beschreibung...">'+esc(a||"")+'</textarea>';
+  }
+  if(q.type==="results"){
+    a=a||{};
+    return '<div class="mini-grid"><div><span class="lbl" style="margin-top:0">Likes, Reaktionen, Kommentare</span><input id="res-reactions" value="'+esc(a.reactions)+'" placeholder="z. B. etwa 20"></div><div><span class="lbl" style="margin-top:0">Nachrichten oder Anfragen</span><input id="res-inquiries" value="'+esc(a.inquiries)+'" placeholder="z. B. 3"></div><div><span class="lbl">Gespräche</span><input id="res-talks" value="'+esc(a.talks)+'" placeholder="z. B. 1"></div><div><span class="lbl">Buchungen oder Verkäufe</span><input id="res-sales" value="'+esc(a.sales)+'" placeholder="z. B. 0"></div></div>'+ 
+      '<label class="choice" style="margin-top:10px"><input id="res-unknown" type="checkbox"'+(a.unknown?' checked':'')+'><span>Ich habe das bisher nicht gemessen.</span></label>';
+  }
+  if(q.type==="path")return choiceList("path",["Die Person schreibt mir eine Nachricht","Sie gelangt zu einer Angebotsseite","Sie kann direkt einen Termin buchen","Sie kann direkt kaufen","Ich melde mich persönlich","Es gibt noch keinen klaren nächsten Schritt","Etwas anderes"],a,false);
+  if(q.type==="capacity"){
+    a=a||{};
+    return '<span class="lbl" style="margin-top:0">Verfügbare Zeit pro Woche</span><select id="cap-time"><option value="">Bitte wählen...</option>'+["Unter 1 Stunde","1–2 Stunden","3–5 Stunden","Mehr als 5 Stunden"].map(function(x){return '<option'+(a.time===x?' selected':'')+'>'+x+'</option>';}).join('')+'</select>'+ 
+      '<span class="lbl">Monatliches Budget (optional)</span><input id="cap-budget" value="'+esc(a.budget)+'" placeholder="z. B. 0 Euro oder 100 Euro">'+ 
+      '<span class="lbl">Was kannst und möchtest du umsetzen?</span>'+choiceList("formats",["Texte","Fotos","Kurze Videos","Persönliche Gespräche","Veranstaltungen oder lokale Aktionen"],a.formats,true)+
+      '<span class="lbl">Was möchtest du ausdrücklich nicht machen? (optional)</span><input id="cap-nogo" value="'+esc(a.noGo)+'" placeholder="z. B. keine Videos">';
+  }
+  return '';
+}
+
+function selectedValues(name){return Array.prototype.slice.call(document.querySelectorAll('input[name="'+name+'"]:checked')).map(function(x){return x.value;});}
+function selectedValue(name){var x=document.querySelector('input[name="'+name+'"]:checked');return x?x.value:"";}
+
+function saveCurrentAnswer(){
+  var type=QUESTIONS[dCurQ].type,a;
+  if(type==="goal")a={choice:selectedValue("goal"),detail:$("goal-detail").value.trim()};
+  else if(type==="offer")a={offer:$("offer-name").value.trim(),price:$("offer-price").value.trim(),action:$("offer-action").value.trim()};
+  else if(type==="text"||type==="channelDetails")a=$("qa").value.trim();
+  else if(type==="channels")a=selectedValues("channels");
+  else if(type==="results")a={reactions:$("res-reactions").value.trim(),inquiries:$("res-inquiries").value.trim(),talks:$("res-talks").value.trim(),sales:$("res-sales").value.trim(),unknown:$("res-unknown").checked};
+  else if(type==="path")a=selectedValue("path");
+  else if(type==="capacity")a={time:$("cap-time").value,budget:$("cap-budget").value.trim(),formats:selectedValues("formats"),noGo:$("cap-nogo").value.trim()};
+  dAnswers[dCurQ]=a;return validateAnswer(type,a);
+}
+
+function validateAnswer(type,a){
+  if(type==="goal"&&(!a.choice||!a.detail))return "Bitte wähle ein Ziel und beschreibe es kurz.";
+  if(type==="offer"&&(!a.offer||!a.action))return "Bitte nenne dein Angebot und den gewünschten nächsten Schritt.";
+  if((type==="text"||type==="channelDetails")&&!a)return "Bitte beantworte die Frage – 'Ich weiß es nicht' ist ebenfalls möglich.";
+  if(type==="channels"&&!a.length)return "Bitte wähle mindestens eine Möglichkeit.";
+  if(type==="channels"&&a.indexOf("Bisher gar nicht")>=0&&a.length>1)return "'Bisher gar nicht' kann nicht zusammen mit anderen Marketingwegen gewählt werden.";
+  if(type==="results"&&!a.unknown&&!a.reactions&&!a.inquiries&&!a.talks&&!a.sales)return "Bitte trage mindestens ein Ergebnis ein oder wähle 'nicht gemessen'.";
+  if(type==="path"&&!a)return "Bitte wähle den aktuellen nächsten Schritt.";
+  if(type==="capacity"&&(!a.time||!a.formats.length))return "Bitte wähle deine verfügbare Zeit und mindestens ein umsetzbares Format.";
+  return "";
+}
+
 function saveAndGo(dir){
-  var qa=$("qa");if(qa)dAnswers[dCurQ]=qa.value;
+  var err=saveCurrentAnswer();if(dir>0&&err){$("qerror").textContent=err;return;}
   dCurQ+=dir;renderMain();
 }
 
 function answersSummary(){
   var summary="";
-  for(var i=0;i<QUESTIONS.length;i++)summary+=QUESTIONS[i]+"\nAntwort: "+(dAnswers[i]||"keine Angabe")+"\n\n";
+  for(var i=0;i<QUESTIONS.length;i++)summary+=QUESTIONS[i].title+"\nAntwort: "+answerText(i,dAnswers[i])+"\n\n";
   return summary;
 }
 
+function answerText(i,a){
+  if(!a)return "keine Angabe";
+  if(Array.isArray(a))return a.join(", ");
+  if(typeof a==="string")return a;
+  if(i===0)return a.choice+" – "+a.detail;
+  if(i===1)return "Angebot: "+a.offer+"; Preis: "+(a.price||"nicht angegeben")+"; nächster Schritt: "+a.action;
+  if(i===5)return a.unknown?"bisher nicht gemessen":"Reaktionen: "+(a.reactions||"0")+"; Anfragen: "+(a.inquiries||"0")+"; Gespräche: "+(a.talks||"0")+"; Verkäufe: "+(a.sales||"0");
+  if(i===7)return "Zeit: "+a.time+"; Budget: "+(a.budget||"nicht angegeben")+"; mögliche Formate: "+a.formats.join(", ")+"; ausgeschlossen: "+(a.noGo||"nichts angegeben");
+  return JSON.stringify(a);
+}
+
 function saveAndStartDiag(){
-  var qa=$("qa");if(qa)dAnswers[dCurQ]=qa.value;
+  var err=saveCurrentAnswer();if(err){$("qerror").textContent=err;return;}
   dStep=1;dDiag="";dTask="";renderMain();
   var summary=answersSummary();
-  callAI(SYS+"\n\nAnalysiere die Antworten als Marketing-Kompass. Bewerte getrennt: 1. Positionierung und Botschaft, 2. ob die Person ihre echten Wunschkunden erreicht, 3. ob die genutzten Online- oder Offline-Kanäle zum Angebot passen. Skool ist eine Fachcommunity und nur dann ein Kundengewinnungskanal, wenn dort tatsächlich Wunschkunden sind. Flyer sind ein vollwertiger Offline-Kanal: Prüfe Zielgruppe, Verteilort, Botschaft, Handlungsaufforderung, Anschlussziel wie Webseite/Termin/QR-Code und Messbarkeit. Empfiehl nicht pauschal mehr Social Media und auch nicht alle Kanäle gleichzeitig. Nenne den wahrscheinlichsten Kompass-Bereich, das zentrale Marketingproblem und höchstens zwei passende Hauptkanäle mit kurzer Begründung. Zeige ein schwaches und ein verbessertes, zum empfohlenen Kanal passendes Beispiel. Maximal 260 Wörter.",
+  callAI(SYS+"\n\nAnalysiere die Antworten als Marketing-Kompass. Bewerte getrennt: Positionierung und Botschaft; Erreichen echter Wunschkunden; Passung der Online- oder Offline-Kanäle. Die angegebene Reichweite Regional/Online ist eine harte Grenze. Skool ist nur dann ein Kundengewinnungskanal, wenn dort tatsächlich Wunschkunden sind. Flyer: Prüfe Zielgruppe, Verteilort, Botschaft, Handlungsaufforderung, Anschlussziel und Messbarkeit. Empfiehl nicht pauschal mehr Social Media. Nenne den wahrscheinlichsten Kompass-Bereich, das zentrale Marketingproblem und genau einen vorrangigen Hauptkanal; höchstens einen späteren Ergänzungskanal nur als Ausblick. Zeige ein schwaches und ein verbessertes, zum Hauptkanal passendes Beispiel. Keine neuen Angebote oder Gratisleistungen erfinden. Maximal 220 Wörter.",
     profileContext()+"\n\n"+summary,null,
     function(d){
       dDiag=d;
-      callAI(SYS+"\n\nErstelle einen konkreten Marketing-Wochenplan mit 3 nummerierten Schritten. Jeder Schritt nennt Handlung, Kanal/Ort und Ziel. Berücksichtige auch Offline-Maßnahmen. Wenn Flyer genutzt werden, prüfe beziehungsweise verbessere Verteilort, Botschaft, Call-to-Action, QR-/Kontaktziel und Erfolgsmessung. Wenn Social Media sinnvoll ist, nenne exakt die passende Plattform und das Format. Skool nur empfehlen, wenn dort echte Wunschkunden erreichbar sind. Keine pauschale Mehr-Posten-Empfehlung. Jeder Schritt maximal 3 Sätze.",
+      callAI(SYS+"\n\nErstelle einen kurzen Marketing-Wochenplan mit genau 3 nummerierten Schritten für genau den einen vorrangigen Hauptkanal aus der Diagnose. Jeder Schritt nennt Handlung und Ziel. Die angegebene Reichweite Regional/Online ist zwingend. Wenn Flyer der Hauptkanal sind, behandle Verteilort, Botschaft, Call-to-Action, Anschlussziel und Messung. Bei Social Media nenne Plattform und Format. Skool nur bei echten Wunschkunden. Keine zusätzlichen Kanäle, keine erfundenen Gratisangebote, Vorträge oder Referenzen. Maximal 170 Wörter.",
         profileContext()+"\n\nAntworten:\n"+summary+"\nDiagnose: "+dDiag,null,
         function(t){dTask=t;renderMain();},
         function(e){dTask="Fehler: "+e;renderMain();});
@@ -203,9 +301,9 @@ function saveAndStartDiag(){
 function renderDiagResult(){
   var html=renderStepBar();
   if(dStep===1&&!dDiag)return html+'<div class="spin-w"><div class="spin"></div></div><div class="status">Analysiere deine Antworten...</div>';
-  if(dDiag)html+='<div class="rbox d"><div class="rl">&#129517; Kompass-Diagnose</div>'+dDiag+'</div>';
-  if(dDiag&&!dTask)html+='<div class="spin-w"><div class="spin"></div></div><div class="status">Erstelle Aufgabe...</div>';
-  if(dTask)html+='<div class="rbox"><div class="rl">&#9989; Deine Aufgabe diese Woche</div>'+dTask+'</div>';
+  if(dDiag)html+='<div class="rbox d"><div class="rl">&#129517; Kompass-Diagnose</div><p>'+formatAI(dDiag)+'</p></div>';
+  if(dDiag.indexOf("Fehler:")!==0&&!dTask)html+='<div class="spin-w"><div class="spin"></div></div><div class="status">Erstelle Aufgabe...</div>';
+  if(dTask)html+='<div class="rbox"><div class="rl">&#9989; Deine Aufgabe diese Woche</div><p>'+formatAI(dTask)+'</p></div>';
   if(dTask&&dStep===1)html+='<div class="btn-row"><button class="btn-g" onclick="genCont()">&#9997;&#65039; Passende Maßnahme erstellen</button></div>';
   if(dStep===2)html+=renderChat();
   if(dStep===3)html+=renderContArea();
@@ -227,7 +325,7 @@ function renderChat(){
   var msgs="";
   if(dChat.length===0)msgs='<div style="font-size:12px;color:#6B8A7E;font-style:italic;text-align:center;padding:10px 0">Schreib deine erste Frage oder Reaktion...</div>';
   for(var i=0;i<dChat.length;i++){
-    msgs+='<div style="display:flex;justify-content:'+(dChat[i].r==="u"?"flex-end":"flex-start")+'"><div class="bm '+(dChat[i].r==="u"?"u":"a")+'">'+dChat[i].c+'</div></div>';
+    msgs+='<div style="display:flex;justify-content:'+(dChat[i].r==="u"?"flex-end":"flex-start")+'"><div class="bm '+(dChat[i].r==="u"?"u":"a")+'">'+formatAI(dChat[i].c)+'</div></div>';
   }
   return '<div class="chat-w" id="cw">'+msgs+'</div>'+
     '<div class="ci-row"><input type="text" id="ci" placeholder="Deine Antwort..." onkeydown="if(event.key===\'Enter\'&&!event.shiftKey){event.preventDefault();sendChat()}" oninput="var b=$(&apos;csend&apos;);if(b)b.disabled=!this.value.trim()"><button id="csend" onclick="sendChat()" disabled>&#8594;</button></div>'+
@@ -237,7 +335,7 @@ function renderChat(){
 function renderContArea(){
   var html='';
   if(!dCont)html+='<div class="spin-w"><div class="spin"></div></div>';
-  else html+='<div class="rbox"><div class="rl">&#9997;&#65039; Dein fertiges Marketing-Paket</div>'+dCont+
+  else html+='<div class="rbox"><div class="rl">&#9997;&#65039; Deine fertige Marketing-Maßnahme</div><p>'+formatAI(dCont)+'</p>'+ 
     '<p class="copy-hint">&#128070; Klick ins Feld &#8594; alles markiert &#8594; Strg+C</p>'+
     '<textarea class="copy-field" readonly rows="'+(Math.max(3,dCont.split("\n").length+1))+'" onclick="this.select()">'+dCont+'</textarea></div>';
     return html;
@@ -249,7 +347,7 @@ function renderContent(){
     '<span class="lbl" style="margin-top:0">Kanal oder Maßnahme</span><select id="ccat" onchange="cCat=this.value">'+opts+'</select>'+ 
     '<span class="lbl">Angebot oder Thema</span><input type="text" id="ctop" placeholder="z. B. Ernährungsberatung, Neukundenaktion..." value="'+cTopic+'" oninput="cTopic=this.value">'+
     '<button class="btn-p" id="cgenbtn" onclick="genContent()">&#9997;&#65039; Marketing-Ideen erstellen</button>'+ 
-    (cResult?'<div class="rbox" style="white-space:pre-wrap;margin-top:12px">'+cResult+'</div>':"");
+    (cResult?'<div class="rbox" style="margin-top:12px"><p>'+formatAI(cResult)+'</p></div>':"");
 }
 
 function sendChat(){
@@ -261,14 +359,14 @@ function sendChat(){
   var summary="";for(var i=0;i<QUESTIONS.length;i++){summary+=QUESTIONS[i]+"\nAntwort: "+(dAnswers[i]||"keine Angabe")+"\n\n";}
   var hist=[{role:"user",content:profileContext()+"\n\n"+summary},{role:"assistant",content:dDiag+"\n\n"+dTask}];
   for(var i=0;i<dChat.length-1;i++)hist.push({role:dChat[i].r==="u"?"user":"assistant",content:dChat[i].c});
-  callAI(SYS+"\n\nCoaching-Gespräch. Antworte kurz, klar, mit Rückfrage oder konkretem Hinweis. Max. 120 Wörter.",msg,hist,
+  callAI(SYS+"\n\nCoaching-Gespräch. Antworte kurz, klar und respektvoll, mit Rückfrage oder einem konkreten Hinweis. Nutze keine Angaben, die nicht im Profil oder Gespräch stehen. Maximal 100 Wörter.",msg,hist,
     function(rep){dChat.push({r:"a",c:rep});renderMain();setTimeout(function(){var cw=$("cw");if(cw)cw.scrollTop=cw.scrollHeight;},50);},
     function(e){dChat.push({r:"a",c:"Fehler: "+e});renderMain();});
 }
 
 function genCont(){
   dStep=3;dCont="";renderMain();
-  callAI(SYS+"\n\nWähle aus der Diagnose die sinnvollste einzelne Marketingmaßnahme für diese Woche und erstelle sie vollständig. Möglich sind z. B. Instagram-/Facebook-Post, Reel-Skript, Google-Unternehmensbeitrag, Flyertext mit Vorder-/Rückseite und CTA, Kooperationsanschreiben, E-Mail oder Skool-Beitrag. Skool nur, wenn dort Wunschkunden sind. Bei Flyern zusätzlich: geeignete Verteilorte, QR-/Kontaktziel und einfache Erfolgsmessung. Ausgabe: Empfohlener Kanal / Warum / Fertiger Inhalt / Konkrete Veröffentlichung oder Verteilung / Erfolg messen. Kein Markdown. Maximal 320 Wörter.",
+  callAI(SYS+"\n\nErstelle genau eine vollständige Marketingmaßnahme für den einen vorrangigen Hauptkanal der Diagnose. Keine zweite Plattform, keine weitere Maßnahme. Möglich sind Instagram-/Facebook-Inhalt, Reel-Skript, Google-Beitrag, Flyertext, Kooperationsanschreiben, E-Mail oder Skool-Beitrag. Reichweite Regional/Online zwingend beachten. Nutze für Qualifikation, Angebot, Preis, Gratisleistung, Kontakt, Erfahrungen und Spezialisierung nur ausdrücklich vorhandene Angaben; sonst [Platzhalter] oder neutrale Rückfrage. Bei Beschwerden keine Diagnose oder Ursache behaupten, tierärztliche Abklärung nennen. Bei Tierarztpraxen 'Guten Tag liebes Praxisteam', Tätigkeit als ergänzend und Diagnostik in tierärztlicher Hand. Ausgabe: Hauptkanal / Warum / Fertiger Inhalt / Umsetzung / Erfolg messen. Keine Uhrzeit ohne Nutzungsdaten. Maximal 240 Wörter.",
     profileContext()+"\n\nAlle Antworten:\n"+answersSummary()+"\nDiagnose: "+dDiag+"\nWochenplan: "+dTask,null,
     function(c){dCont=c;renderMain();},
     function(e){dCont="Fehler: "+e;renderMain();});
@@ -277,7 +375,7 @@ function genCont(){
 function genContent(){
   var btn=$("cgenbtn");if(btn)btn.disabled=true;
   cResult="";renderMain();
-  callAI(SYS+"\n\nErstelle 3 konkrete Marketing-Ideen für den angegebenen Kanal und Tierberuf. Wenn 'Automatisch' gewählt ist, wähle anhand von regional/online und Zielgruppe höchstens zwei passende Kanäle. Liefere pro Idee einen fertigen Inhalt und eine klare Handlungsaufforderung. Für Flyer: Überschrift, Kurztext, Nutzen, CTA, QR-/Kontaktziel, Verteilorte und Messung. Für Social Media: genaue Plattform und Format. Für Google: lokaler, suchnaher Beitrag. Für Kooperation: fertige Nachricht und passende Partner. Für Skool: klarstellen, ob Kunden oder Fachkollegen angesprochen werden. Authentisch, konkret, kein Marketing-Sprech. Maximal 450 Wörter.",
+  callAI(SYS+"\n\nErstelle genau 3 kurze Marketing-Ideen innerhalb des ausgewählten Kanals. Bei 'Automatisch' wähle genau einen zur Reichweite passenden Hauptkanal und bleibe für alle drei Ideen dort. Nutze nur vorhandene Fakten; sonst [Platzhalter]. Für Flyer: Text, CTA, Anschlussziel, passende Verteilung und Messung. Für Social Media: Plattform und Format. Google nur bei passender regionaler beziehungsweise persönlicher Kundenbedienung. Kooperation: neutrale, korrekte Ansprache ohne erfundene Gleichstellung oder Qualifikation. Skool: klarstellen, ob Kunden oder Fachkollegen angesprochen werden. Keine medizinischen Ursache-, Diagnose- oder Heilversprechen. Maximal 330 Wörter.",
     profileContext()+"\nKanal/Maßnahme: "+cCat+(cTopic?"\nAngebot/Thema: "+cTopic:""),null,
     function(r){cResult=r;renderMain();},
     function(e){cResult="Fehler: "+e;renderMain();});
