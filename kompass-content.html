@@ -121,6 +121,18 @@ function callAI(sys,user,history,cb,errcb){
   .catch(function(e){errcb(e.message||"Verbindungsfehler");});
 }
 
+function needsReview(s){
+  return /(allergische Symptome|oft liegt.{0,50}(Futter|Fütterung)|bevor.{0,80}Tierarzt|Futter.{0,40}(löst|heilt|verursacht|triggert)|Tierarztkosten|kostenlos|zertifiziert|\bKollegin\b|\bKollege\b|an alle [0-9]+|leerer Raum|zahlen keine Rechnungen)/i.test(s);
+}
+
+function callCheckedAI(sys,user,history,cb,errcb){
+  callAI(sys,user,history,function(first){
+    if(!needsReview(first)){cb(first);return;}
+    var review="Prüfe den folgenden Entwurf streng gegen alle Qualitätsregeln. Korrigiere insbesondere medizinische Kausalbehauptungen, erfundene Qualifikationen oder Gratisangebote, falsche Gleichstellung mit Tierärzten, pauschale Massenansprache und respektlosen Ton. Symptome nie als Diagnose bezeichnen; bei Beschwerden tierärztliche Abklärung vor ergänzender Beratung nennen. Erhalte die hilfreiche Marketingaussage, aber ändere riskante Stellen. Gib nur die vollständig korrigierte Endfassung in Klartext aus.\n\nVERIFIZIERTE ANGABEN:\n"+user+"\n\nENTWURF:\n"+first;
+    callAI(SYS,review,null,cb,function(){errcb("Die Sicherheitsprüfung konnte nicht abgeschlossen werden. Bitte erneut versuchen.");});
+  },errcb);
+}
+
 function render(){
   if(screen==="welcome")renderWelcome();
   else renderMain();
@@ -220,6 +232,8 @@ function renderQuestionInput(q){
   if(q.type==="results"){
     a=a||{};
     return '<div class="mini-grid"><div><span class="lbl" style="margin-top:0">Likes, Reaktionen, Kommentare</span><input id="res-reactions" value="'+esc(a.reactions)+'" placeholder="z. B. etwa 20"></div><div><span class="lbl" style="margin-top:0">Nachrichten oder Anfragen</span><input id="res-inquiries" value="'+esc(a.inquiries)+'" placeholder="z. B. 3"></div><div><span class="lbl">Gespräche</span><input id="res-talks" value="'+esc(a.talks)+'" placeholder="z. B. 1"></div><div><span class="lbl">Buchungen oder Verkäufe</span><input id="res-sales" value="'+esc(a.sales)+'" placeholder="z. B. 0"></div></div>'+ 
+      '<span class="lbl">Wer hat angefragt?</span><input id="res-who" value="'+esc(a.who)+'" placeholder="z. B. Tierhalter, Fachkollegen oder unklar">'+
+      '<span class="lbl">Warum wurde bisher nicht gekauft? (falls bekannt)</span><input id="res-why" value="'+esc(a.why)+'" placeholder="z. B. Preis, noch unentschlossen oder keine Rückmeldung">'+
       '<label class="choice" style="margin-top:10px"><input id="res-unknown" type="checkbox"'+(a.unknown?' checked':'')+'><span>Ich habe das bisher nicht gemessen.</span></label>';
   }
   if(q.type==="path")return choiceList("path",["Die Person schreibt mir eine Nachricht","Sie gelangt zu einer Angebotsseite","Sie kann direkt einen Termin buchen","Sie kann direkt kaufen","Ich melde mich persönlich","Es gibt noch keinen klaren nächsten Schritt","Etwas anderes"],a,false);
@@ -242,7 +256,7 @@ function saveCurrentAnswer(){
   else if(type==="offer")a={offer:$("offer-name").value.trim(),price:$("offer-price").value.trim(),action:$("offer-action").value.trim()};
   else if(type==="text"||type==="channelDetails")a=$("qa").value.trim();
   else if(type==="channels")a=selectedValues("channels");
-  else if(type==="results")a={reactions:$("res-reactions").value.trim(),inquiries:$("res-inquiries").value.trim(),talks:$("res-talks").value.trim(),sales:$("res-sales").value.trim(),unknown:$("res-unknown").checked};
+  else if(type==="results")a={reactions:$("res-reactions").value.trim(),inquiries:$("res-inquiries").value.trim(),talks:$("res-talks").value.trim(),sales:$("res-sales").value.trim(),who:$("res-who").value.trim(),why:$("res-why").value.trim(),unknown:$("res-unknown").checked};
   else if(type==="path")a=selectedValue("path");
   else if(type==="capacity")a={time:$("cap-time").value,budget:$("cap-budget").value.trim(),formats:selectedValues("formats"),noGo:$("cap-nogo").value.trim()};
   dAnswers[dCurQ]=a;return validateAnswer(type,a);
@@ -277,7 +291,7 @@ function answerText(i,a){
   if(typeof a==="string")return a;
   if(i===0)return a.choice+" – "+a.detail;
   if(i===1)return "Angebot: "+a.offer+"; Preis: "+(a.price||"nicht angegeben")+"; nächster Schritt: "+a.action;
-  if(i===5)return a.unknown?"bisher nicht gemessen":"Reaktionen: "+(a.reactions||"0")+"; Anfragen: "+(a.inquiries||"0")+"; Gespräche: "+(a.talks||"0")+"; Verkäufe: "+(a.sales||"0");
+  if(i===5)return a.unknown?"bisher nicht gemessen":"Reaktionen: "+(a.reactions||"0")+"; Anfragen: "+(a.inquiries||"0")+"; Gespräche: "+(a.talks||"0")+"; Verkäufe: "+(a.sales||"0")+"; Art der Anfragenden: "+(a.who||"unbekannt")+"; bekanntes Kaufhindernis: "+(a.why||"unbekannt");
   if(i===7)return "Zeit: "+a.time+"; Budget: "+(a.budget||"nicht angegeben")+"; mögliche Formate: "+a.formats.join(", ")+"; ausgeschlossen: "+(a.noGo||"nichts angegeben");
   return JSON.stringify(a);
 }
@@ -286,11 +300,11 @@ function saveAndStartDiag(){
   var err=saveCurrentAnswer();if(err){$("qerror").textContent=err;return;}
   dStep=1;dDiag="";dTask="";renderMain();
   var summary=answersSummary();
-  callAI(SYS+"\n\nAnalysiere die Antworten als Marketing-Kompass. Bewerte getrennt: Positionierung und Botschaft; Erreichen echter Wunschkunden; Passung der Online- oder Offline-Kanäle. Die angegebene Reichweite Regional/Online ist eine harte Grenze. Skool ist nur dann ein Kundengewinnungskanal, wenn dort tatsächlich Wunschkunden sind. Flyer: Prüfe Zielgruppe, Verteilort, Botschaft, Handlungsaufforderung, Anschlussziel und Messbarkeit. Empfiehl nicht pauschal mehr Social Media. Nenne den wahrscheinlichsten Kompass-Bereich, das zentrale Marketingproblem und genau einen vorrangigen Hauptkanal; höchstens einen späteren Ergänzungskanal nur als Ausblick. Zeige ein schwaches und ein verbessertes, zum Hauptkanal passendes Beispiel. Keine neuen Angebote oder Gratisleistungen erfinden. Maximal 220 Wörter.",
+  callCheckedAI(SYS+"\n\nAnalysiere die Antworten als Marketing-Kompass. Bewerte Positionierung und Botschaft, Erreichen echter Wunschkunden, Kanalpassung und den Weg von Interesse zu Kauf. Regional/Online ist eine harte Grenze. Unterscheide strikt: Ein Marketingkanal erzeugt neue Aufmerksamkeit oder Anfragen; Nachfassen bei vorhandenen Anfragen ist eine Conversion-Maßnahme und darf nie als Hauptkanal bezeichnet werden. Bei Anfragen ohne Verkäufe prüfe mehrere mögliche Ursachen: Qualität der Anfragen, Zielgruppe, Angebot, Preis, Vertrauen, nächster Schritt, Nachfassen und Reaktionszeit. Behaupte keine Ursache ohne Beleg. Skool ist nur bei echten Wunschkunden ein Kundengewinnungskanal. Nenne das wahrscheinlichste Problem und kennzeichne Unsicherheit. Wähle entweder genau einen Hauptkanal ODER genau eine Conversion-Maßnahme. Zeige ein schwaches und ein verbessertes passendes Beispiel. Maximal 210 Wörter.",
     profileContext()+"\n\n"+summary,null,
     function(d){
       dDiag=d;
-      callAI(SYS+"\n\nErstelle einen kurzen Marketing-Wochenplan mit genau 3 nummerierten Schritten für genau den einen vorrangigen Hauptkanal aus der Diagnose. Jeder Schritt nennt Handlung und Ziel. Die angegebene Reichweite Regional/Online ist zwingend. Wenn Flyer der Hauptkanal sind, behandle Verteilort, Botschaft, Call-to-Action, Anschlussziel und Messung. Bei Social Media nenne Plattform und Format. Skool nur bei echten Wunschkunden. Keine zusätzlichen Kanäle, keine erfundenen Gratisangebote, Vorträge oder Referenzen. Maximal 170 Wörter.",
+      callCheckedAI(SYS+"\n\nErstelle einen Plan ausschließlich für die nächsten 7 Tage mit genau 3 nummerierten Schritten. Bleibe bei der einen empfohlenen Hauptmaßnahme und nenne korrekt, ob sie Marketingkanal oder Conversion-Maßnahme ist. Beginne mit der vom Nutzer angegebenen Wochenzeit und überschreite sie nicht. Jeder Schritt nennt Handlung, ungefähren Zeitaufwand und Ziel. Bei vorhandenen Kontakten nur aktuelle, passende Gespräche individuell fortführen; keine identische Nachricht wahllos an alle oder alte Kontakte senden. Der Call-to-Action muss exakt zum angegebenen nächsten Kundenschritt passen. Keine zusätzlichen Kanäle oder erfundenen Angebote. Erfolg nach 7 Tagen prüfen. Maximal 180 Wörter.",
         profileContext()+"\n\nAntworten:\n"+summary+"\nDiagnose: "+dDiag,null,
         function(t){dTask=t;renderMain();},
         function(e){dTask="Fehler: "+e;renderMain();});
@@ -366,7 +380,7 @@ function sendChat(){
 
 function genCont(){
   dStep=3;dCont="";renderMain();
-  callAI(SYS+"\n\nErstelle genau eine vollständige Marketingmaßnahme für den einen vorrangigen Hauptkanal der Diagnose. Keine zweite Plattform, keine weitere Maßnahme. Möglich sind Instagram-/Facebook-Inhalt, Reel-Skript, Google-Beitrag, Flyertext, Kooperationsanschreiben, E-Mail oder Skool-Beitrag. Reichweite Regional/Online zwingend beachten. Nutze für Qualifikation, Angebot, Preis, Gratisleistung, Kontakt, Erfahrungen und Spezialisierung nur ausdrücklich vorhandene Angaben; sonst [Platzhalter] oder neutrale Rückfrage. Bei Beschwerden keine Diagnose oder Ursache behaupten, tierärztliche Abklärung nennen. Bei Tierarztpraxen 'Guten Tag liebes Praxisteam', Tätigkeit als ergänzend und Diagnostik in tierärztlicher Hand. Ausgabe: Hauptkanal / Warum / Fertiger Inhalt / Umsetzung / Erfolg messen. Keine Uhrzeit ohne Nutzungsdaten. Maximal 240 Wörter.",
+  callCheckedAI(SYS+"\n\nErstelle genau eine vollständige Maßnahme und benenne sie korrekt als Marketingkanal oder Conversion-Maßnahme. Keine zweite Plattform. Bei vorhandenen Anfragen nur eine respektvolle individuelle Anschlussnachricht für aktuelle, passende Kontakte; kein Massenversand und keine medizinische Anamnese per Marketingnachricht. Der nächste Schritt muss exakt dem angegebenen Verkaufsweg entsprechen. Beschwerden nie diagnostizieren oder als allergisch bezeichnen. Nenne bei Beschwerden zuerst tierärztliche Abklärung; Beratung nur ergänzend im angegebenen Kompetenzbereich. Wiederhole die Diagnose nicht. Ausgabe: Maßnahme / Fertiger Inhalt / Umsetzung in dieser Woche / Erfolg nach 7 Tagen. Maximal 220 Wörter.",
     profileContext()+"\n\nAlle Antworten:\n"+answersSummary()+"\nDiagnose: "+dDiag+"\nWochenplan: "+dTask,null,
     function(c){dCont=c;renderMain();},
     function(e){dCont="Fehler: "+e;renderMain();});
@@ -375,7 +389,7 @@ function genCont(){
 function genContent(){
   var btn=$("cgenbtn");if(btn)btn.disabled=true;
   cResult="";renderMain();
-  callAI(SYS+"\n\nErstelle genau 3 kurze Marketing-Ideen innerhalb des ausgewählten Kanals. Bei 'Automatisch' wähle genau einen zur Reichweite passenden Hauptkanal und bleibe für alle drei Ideen dort. Nutze nur vorhandene Fakten; sonst [Platzhalter]. Für Flyer: Text, CTA, Anschlussziel, passende Verteilung und Messung. Für Social Media: Plattform und Format. Google nur bei passender regionaler beziehungsweise persönlicher Kundenbedienung. Kooperation: neutrale, korrekte Ansprache ohne erfundene Gleichstellung oder Qualifikation. Skool: klarstellen, ob Kunden oder Fachkollegen angesprochen werden. Keine medizinischen Ursache-, Diagnose- oder Heilversprechen. Maximal 330 Wörter.",
+  callCheckedAI(SYS+"\n\nErstelle genau 3 kurze Marketing-Ideen innerhalb des ausgewählten Kanals. Bei 'Automatisch' wähle genau einen passenden Hauptkanal und bleibe dort. Nutze nur vorhandene Fakten; sonst [Platzhalter]. Der Call-to-Action muss zum angegebenen Kundenschritt passen. Für Flyer: Text, CTA, Anschlussziel, Verteilung und Messung. Für Social Media: Plattform und Format. Kooperation: neutrale Ansprache ohne erfundene Gleichstellung. Skool: klären, ob echte Kunden oder Fachkollegen erreicht werden. Beschwerden nie diagnostizieren; tierärztliche Abklärung vor ergänzender Beratung nennen. Maximal 300 Wörter.",
     profileContext()+"\nKanal/Maßnahme: "+cCat+(cTopic?"\nAngebot/Thema: "+cTopic:""),null,
     function(r){cResult=r;renderMain();},
     function(e){cResult="Fehler: "+e;renderMain();});
