@@ -301,7 +301,7 @@ function startApp(){
 function profileBanner(){return '<div class="profile-note"><button onclick="screen=\'welcome\';render()">Ändern</button><strong>Dein Bereich:</strong> '+esc(getProfession())+(qualification.trim()?' · '+esc(qualification.trim()):'')+(animalFocus.trim()?' · '+esc(animalFocus.trim()):'')+' · '+esc(businessReach)+'</div>';}
 
 function renderMain(){
-  if(window.testRun)return;
+  if(window.testRun||window.testPage)return;
   var hdr='<div class="tabs"><button class="tab'+(tab===0?" on":"")+'" onclick="tab=0;renderMain()">&#129517; Marketing Kompass</button><button class="tab'+(tab===1?" on":"")+'" onclick="tab=1;renderMain()">&#9997;&#65039; Marketing-Ideen</button></div>';
   var body='';
   if(tab===0){
@@ -716,16 +716,19 @@ function renderTestlauf(){
 }
 function startTest(){
   var g=$("tgroup").value,cs=TESTCASES.filter(function(c){return !g||GROUP_OF[c[0]]===g;}),i=0;testResults=[];window.testRun=true;
+  $("tout").innerHTML="";
   (function next(){
-    if(i>=cs.length){window.testRun=false;showTestReport();return;}
+    if(i>=cs.length){window.testRun=false;showTestReport(true);return;}
     $("tprog").textContent="Fall "+(i+1)+" von "+cs.length+": "+cs[i][0];
-    runCase(cs[i],function(r){testResults.push(r);i++;next();});
+    try{
+      runCase(cs[i],function(r){testResults.push(r);i++;showTestReport(false);setTimeout(next,1500);});
+    }catch(e){testResults.push({name:cs[i][0],groups:"",hits:["Testfehler: "+e.message],text:""});i++;showTestReport(false);setTimeout(next,1500);}
   })();
 }
-function showTestReport(){
+function showTestReport(final){
   var bad=testResults.filter(function(r){return r.hits.length;}).length,rep="Testlauf: "+(testResults.length-bad)+" von "+testResults.length+" ohne Befund\n";
   testResults.forEach(function(r){rep+="\n"+(r.hits.length?"✗ ":"✓ ")+r.name+" ("+r.groups+")"+r.hits.map(function(h){return "\n   - "+h;}).join("");});
-  $("tprog").textContent="Fertig: "+(testResults.length-bad)+" von "+testResults.length+" ohne Befund";
+  $("tprog").textContent=(final?"Fertig: ":"Zwischenstand: ")+(testResults.length-bad)+" von "+testResults.length+" ohne Befund";
   $("tout").innerHTML='<p class="copy-hint">Ergebnis kopieren und an Claude schicken:</p><textarea class="copy-field" readonly rows="14" onclick="this.select()">'+esc(rep)+'</textarea>'+testResults.map(function(r){return '<details class="full"><summary>'+(r.hits.length?'✗ ':'✓ ')+esc(r.name)+'</summary><div class="rbox"><p>'+formatAI(r.text)+'</p></div></details>';}).join('');
 }
 
@@ -741,7 +744,7 @@ document.addEventListener("input",function(e){
     if(x)x.className=((a&&num(a.value)>0)||(t&&num(t.value)>0))?"":"hidden";
   }
 });
-if(/[?&]test(=|&|$)/.test(location.search))renderTestlauf();
+if(/[?&]test(=|&|$)/.test(location.search)){window.testPage=true;renderTestlauf();}
 window.addEventListener("beforeprint",function(){Array.prototype.forEach.call(document.querySelectorAll("details"),function(d){d.open=true;});});
 if(!/[?&]test(=|&|$)/.test(location.search))render();
 </script>
