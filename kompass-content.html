@@ -86,6 +86,7 @@ textarea:focus,input:focus,select:focus{border-color:#C4923A}
 .vis-row.ok .vis-ic{background:#4A7C6F;color:white}
 .vis-row.no .vis-ic{background:#E8DCC8;color:#6B8A7E}
 .vis small{color:#6B8A7E}
+details.full>summary{cursor:pointer;font:600 13px system-ui;color:#2D4A3E;margin:10px 0}
 .mix-row{display:flex;align-items:center;gap:8px;margin:7px 0;font:13px system-ui;color:#1E2E28}
 .mix-lbl{width:78px;flex-shrink:0}
 .mix-bar{flex:1;height:10px;background:#E8DCC8;border-radius:6px;overflow:hidden}
@@ -111,27 +112,27 @@ textarea:focus,input:focus,select:focus{border-color:#C4923A}
 var CATS=["Automatisch passenden Kanal wählen","Instagram","Facebook","LinkedIn","YouTube","Google-Unternehmensprofil","Website / Angebotsseite","Flyer / Plakat","Kooperationen","E-Mail / Newsletter","Skool / Fachcommunity"];
 var PROFESSIONS=["Hundetraining / Hundeschule","Hundeverhaltensberatung","Hundetrainerausbildung","Pferdetraining","Reitunterricht","Tierphysiotherapie","Tierosteopathie","Tierheilpraxis","Tierernährungsberatung","Tierpsychologie / Verhaltensberatung","Grooming / Tierpflege","Tierfotografie","Tierbetreuung / Gassi-Service","Zucht","Tierkommunikation","Tiergestützte Arbeit","Coaching mit Tierbezug","Online-Angebote","Produkte / Shop","Tierarztpraxis","Andere Tätigkeit"];
 var SYS="Du bist Susanne, erfahrene Business-Coachin fuer Menschen in Tierberufen mit 35 Jahren Erfahrung. Du arbeitest mit dem Tierberufler-Kompass (5 Bereiche: 1.Beziehung Mensch&Tier 2.Businessstruktur 3.Mentale Muster 4.Wert&Geld 5.Positionierung). Warm, klar, respektvoll und ohne Floskeln. Deutsch, du-Ansprache. Verwende niemals automatisch Hundebeispiele. Richte Sprache, Kundensituationen und Beispiele konsequent am angegebenen Tierberuf und Schwerpunkt aus. Wenn keine Tierart genannt ist, bleibe tierartenneutral. Grundsatz: Posten allein ist noch kein Sichtbarkeitssystem. Prüfe zuerst Beruf, Angebot, Kundensituation, Sichtbarkeitswege, vorhandene Inhalte und Kaufweg, bevor du Content empfiehlst.";
-var GUARDRAILS="VERBINDLICHE QUALITAETSREGELN: Nutze ausschließlich Angaben, die die Person tatsächlich gemacht hat. Erfinde keine Qualifikation, Zertifizierung, Spezialisierung, Kundenerfahrung, Erfolgsgeschichte, Preise, Gratisangebote, Vorträge, Rabatte, Verfügbarkeiten oder Fallbeispiele. Fehlende Angaben erscheinen als [Platzhalter] oder Rückfrage. Beachte Regional/Online strikt. Erstelle nur die verlangte Anzahl an Maßnahmen. Keine willkürlichen Postingzeiten oder Antwortfristen. Bei kleinen Datenmengen wie ein oder zwei Anfragen niemals von guter Quote oder zusammengebrochener Conversion sprechen; nur als vorläufigen Hinweis formulieren. Aus null Gesprächen nicht schließen, dass die Person nicht geantwortet hat. Keine Rückmeldung bedeutet nicht automatisch fehlendes Interesse. Keine garantierten Ergebnisse wie 'mindestens eine Person wird buchen'. Alte Kontakte nur individuell aufgreifen, wenn das Gespräch aktuell und eine Fortsetzung passend ist. Keine abwertenden Formulierungen. Keine unbelegten medizinischen, therapeutischen oder ernährungsbezogenen Ursachen-, Diagnose-, Heilungs-, Wirkungs- oder Kostenversprechen. Symptome haben verschiedene mögliche Ursachen; bei Beschwerden tierärztliche Abklärung nennen und Fachgrenzen respektieren. Ernährungsberatung nie als Ersatz für tierärztliche Diagnostik darstellen. Bei Tierarztpraxen niemals 'Kollegin/Kollege' schreiben, wenn die Person nicht ausdrücklich Tierärztin/Tierarzt ist. Keine erfundenen Vorher-Nachher-Fotos oder Testimonials. Nutze im Diagnoseziel vier Wochen, aber im konkreten Aktionsplan ausschließlich sieben Tage und vermische die Zeiträume nicht. Schreibe in verständlichem, natürlichem Alltagsdeutsch ohne unklare Redewendungen und ohne Fachwort Conversion; sage stattdessen Übergang von Anfrage zu Buchung. Bewerte das Angebot der Person niemals als klar, gut oder schlüssig strukturiert, solange Leistungsumfang, Ablauf, Zielgruppe und Vergütungsmodell nicht aus den Angaben hervorgehen; fehlende Punkte gehören in die Unsicherheiten. Bei kleinen Datenmengen (insgesamt wenige Reaktionen, Anfragen oder Gespräche) ist die Sicherheit der Einschätzung niedrig und die Diagnose eine vorläufige Einschätzung. Behaupte dann nicht, dass ein Kanal funktioniert, dass das Problem sicher beim Übergang von Anfrage zu Buchung liegt, dass die Verbindung abbricht oder dass es kein Reichweitenproblem ist. Sage stattdessen, dass die Datenmenge noch nicht ausreicht, um Kanal-, Angebots- und Übergangsproblem sicher zu unterscheiden. Zähle Personen nicht doppelt: Ist unklar, ob die Person aus einem Gespräch zu den genannten Anfragen gehört, behandle die Zahlen nicht als verschiedene Kontakte. Empfiehl keine erneute Kontaktaufnahme zu früheren Interessenten oder abgebrochenen Gesprächen, solange die Person nicht angegeben hat, dass das Gespräch noch offen ist, eine Fortsetzung vereinbart wurde oder eine erneute Nachricht passend ist. Beschreibe bei Ernährung und Gesundheit nie, woran man eine Allergie, Unverträglichkeit oder Krankheit erkennt; nenne stattdessen, welche Angaben die Beratung benötigt und wann Beschwerden zuerst tierärztlich abgeklärt werden sollten. Erfolgskriterien beschreiben nur eigene Handlungen und Dokumentation (zum Beispiel Nachrichten versendet, nächster Schritt klar erklärt, Antworten festgehalten), niemals Reaktionen oder Gespräche anderer Menschen. Empfiehl einen neuen Kanal nur, wenn die Person laut Angabe dafür offen ist, und nur aus den von ihr gewählten Kanälen. Empfiehl niemals, überall gleichzeitig aktiv zu sein. Ziel sind nicht möglichst viele Kanäle, sondern mehrere sinnvoll verbundene Wege, über die Menschen dich finden, verstehen, kennenlernen und buchen können. Erfinde keine Kundenstimmen, Fallbeispiele oder Arbeitsergebnisse; fehlen Beweise, schlage vor, echte Beispiele zu sammeln. Gib Klartext ohne Markdownzeichen aus. Gliedere mit kurzen Überschriften und Leerzeilen. Beende jeden Text vollständig. Prüfe intern: Fakten erfunden? Reichweite passend? Stichprobe überinterpretiert? Fachgrenzen gewahrt? Zeitraum korrekt? Ton respektvoll? Text vollständig? Gib nur die korrigierte Endfassung aus.";
+var GUARDRAILS="VERBINDLICHE QUALITAETSREGELN: Nutze ausschließlich Angaben, die die Person tatsächlich gemacht hat. Erfinde keine Qualifikation, Zertifizierung, Spezialisierung, Kundenerfahrung, Erfolgsgeschichte, Preise, Gratisangebote, Vorträge, Rabatte, Verfügbarkeiten oder Fallbeispiele. Fehlende Angaben erscheinen als [Platzhalter] oder Rückfrage. Beachte Regional/Online strikt. Erstelle nur die verlangte Anzahl an Maßnahmen. Keine willkürlichen Postingzeiten oder Antwortfristen. Bei kleinen Datenmengen wie ein oder zwei Anfragen niemals von guter Quote oder zusammengebrochener Conversion sprechen; nur als vorläufigen Hinweis formulieren. Aus null Gesprächen nicht schließen, dass die Person nicht geantwortet hat. Keine Rückmeldung bedeutet nicht automatisch fehlendes Interesse. Keine garantierten Ergebnisse wie 'mindestens eine Person wird buchen'. Empfiehl nie, frühere Interessenten oder Gesprächspartner erneut anzuschreiben oder nachzufassen. Keine abwertenden Formulierungen. Keine unbelegten medizinischen, therapeutischen oder ernährungsbezogenen Ursachen-, Diagnose-, Heilungs-, Wirkungs- oder Kostenversprechen. Symptome haben verschiedene mögliche Ursachen; bei Beschwerden tierärztliche Abklärung nennen und Fachgrenzen respektieren. Ernährungsberatung nie als Ersatz für tierärztliche Diagnostik darstellen. Bei Tierarztpraxen niemals 'Kollegin/Kollege' schreiben, wenn die Person nicht ausdrücklich Tierärztin/Tierarzt ist. Keine erfundenen Vorher-Nachher-Fotos oder Testimonials. Nutze im Diagnoseziel vier Wochen, aber im konkreten Aktionsplan ausschließlich sieben Tage und vermische die Zeiträume nicht. Schreibe in verständlichem, natürlichem Alltagsdeutsch ohne unklare Redewendungen und ohne Fachwort Conversion; sage stattdessen Übergang von Anfrage zu Buchung. Bewerte das Angebot der Person niemals als klar, gut oder schlüssig strukturiert, solange Leistungsumfang, Ablauf, Zielgruppe und Vergütungsmodell nicht aus den Angaben hervorgehen; fehlende Punkte gehören in die Unsicherheiten. Bei kleinen Datenmengen (insgesamt wenige Reaktionen, Anfragen oder Gespräche) ist die Sicherheit der Einschätzung niedrig und die Diagnose eine vorläufige Einschätzung. Behaupte dann nicht, dass ein Kanal funktioniert, dass das Problem sicher beim Übergang von Anfrage zu Buchung liegt, dass die Verbindung abbricht oder dass es kein Reichweitenproblem ist. Sage stattdessen, dass die Datenmenge noch nicht ausreicht, um Kanal-, Angebots- und Übergangsproblem sicher zu unterscheiden. Zähle Personen nicht doppelt: Ist unklar, ob die Person aus einem Gespräch zu den genannten Anfragen gehört, behandle die Zahlen nicht als verschiedene Kontakte. Maßnahmen betreffen nur eigene Handlungen: eigene Zahlen festhalten, eigenen Antwortweg und das eigene Angebot aufschreiben, eigene Beiträge vorbereiten. Angaben, die fehlen oder 'weiß ich nicht' lauten, sind unbekannt und nicht 'nicht vorhanden': schreibe nie 'ohne Website', 'hat keine Website' oder 'gibt es nicht', sondern 'in deinen Angaben nicht genannt'. Erfinde kein Geschäftsmodell oder Angebotsdetail (zum Beispiel 'Online-Geschäftsmodell'), das nicht angegeben wurde. Sprich die Person durchgehend direkt mit du an und nie als 'die Person' oder 'sie'. Behaupte nie, eine Community allein sei nicht tragfähig; sage stattdessen, dass die Sichtbarkeit von einem Kanal abhängt und Menschen außerhalb dieses Kanals dich vielleicht nicht finden. Schreibe nur vollständige Sätze mit Großschreibung am Anfang, ohne Rohlabels wie 'nur ein kanal:', und prüfe Rechtschreibung und zusammengeschriebene Wörter. Beschreibe bei Ernährung und Gesundheit nie, woran man eine Allergie, Unverträglichkeit oder Krankheit erkennt; nenne stattdessen, welche Angaben die Beratung benötigt und wann Beschwerden zuerst tierärztlich abgeklärt werden sollten. Erfolgskriterien beschreiben nur eigene Handlungen und Dokumentation (zum Beispiel Nachrichten versendet, nächster Schritt klar erklärt, Antworten festgehalten), niemals Reaktionen oder Gespräche anderer Menschen. Empfiehl einen neuen Kanal nur, wenn die Person laut Angabe dafür offen ist, und nur aus den von ihr gewählten Kanälen. Empfiehl niemals, überall gleichzeitig aktiv zu sein. Ziel sind nicht möglichst viele Kanäle, sondern mehrere sinnvoll verbundene Wege, über die Menschen dich finden, verstehen, kennenlernen und buchen können. Erfinde keine Kundenstimmen, Fallbeispiele oder Arbeitsergebnisse; fehlen Beweise, schlage vor, echte Beispiele zu sammeln. Gib Klartext ohne Markdownzeichen aus. Gliedere mit kurzen Überschriften und Leerzeilen. Beende jeden Text vollständig. Prüfe intern: Fakten erfunden? Reichweite passend? Stichprobe überinterpretiert? Fachgrenzen gewahrt? Zeitraum korrekt? Ton respektvoll? Text vollständig? Gib nur die korrigierte Endfassung aus.";
 var QUESTIONS=[
-  {title:"Was möchtest du in den nächsten vier Wochen konkret erreichen?",type:"goal",example:"Beispiel: Ich möchte fünf passende Anfragen für meine Online-Beratung erhalten."},
-  {title:"Was möchtest du hauptsächlich verkaufen – und welches konkrete Angebot sollen Kunden buchen oder kaufen?",type:"offer",example:"Beispiel: 60-minütige Online-Ernährungsberatung für 89 Euro. Interessenten sollen einen Termin buchen."},
-  {title:"Für wen ist dieses Angebot gedacht – und welches konkrete Problem oder Bedürfnis hat diese Person?",type:"text",example:"Beispiel: Halter älterer Katzen, die bei der Futterauswahl Orientierung suchen."},
-  {title:"In welcher Situation befindet sich dein Kunde meistens, wenn er dich sucht?",type:"situation",example:"Wähle alles, was am häufigsten zutrifft. Davon hängt ab, welcher Content gebraucht wird."},
-  {title:"Wo und wie können Menschen dich heute finden?",type:"channels",example:"Wähle alles aus, was du derzeit wirklich nutzt. Du brauchst nicht möglichst viele Kanäle – wichtig ist, was tatsächlich besteht."},
-  {title:"Wie setzt du diese Marketingwege konkret ein?",type:"channelDetails",example:"Die passende Folgefrage richtet sich nach deiner Auswahl."},
+  {title:"Was wünschst du dir für die nächsten vier Wochen?",type:"goal",example:"Wähle, was am besten passt."},
+  {title:"Was bietest du an?",type:"offer",example:"Beispiel: Ernährungsberatung für Hunde und Katzen mit Futterproblemen. Du kannst auch schreiben: noch nicht ganz klar."},
+  {title:"Für wen ist das – und welches Problem hat diese Person?",type:"text",example:"Beispiel: Halter älterer Katzen, die bei der Futterauswahl Orientierung suchen. „Ich weiß es nicht“ ist erlaubt."},
+  {title:"In welcher Lage sind deine Kunden meistens, wenn sie dich suchen? (optional)",type:"situation",example:"Wähle, was am häufigsten zutrifft – oder lass die Frage aus."},
+  {title:"Wo finden dich Menschen heute?",type:"channels",example:"Nur das, was wirklich besteht. Du brauchst nicht viele Kanäle."},
   {title:"Was veröffentlichst du aktuell?",type:"content",example:"Wähle, was in den letzten Wochen tatsächlich vorkam."},
-  {title:"Was ist in den vergangenen vier Wochen daraus entstanden?",type:"results",example:"Schätzungen sind in Ordnung. Wichtig ist die Trennung zwischen Reaktionen, Anfragen und Verkäufen."},
-  {title:"Was passiert, wenn sich jemand für dein Angebot interessiert?",type:"path",example:"Mehrfachauswahl möglich. Wähle die tatsächlichen nächsten Schritte – nicht die gewünschten."},
-  {title:"Was kannst du pro Woche realistisch für dein Marketing einsetzen?",type:"capacity",example:"So empfiehlt dir die App nur Maßnahmen, die du wirklich umsetzen kannst."},
-  {title:"Bist du bereit, dich zusätzlich auf einen anderen Social-Media-Kanal oder Marketingweg einzulassen?",type:"openness",example:"Davon hängt ab, ob die App neue Wege vorschlagen darf oder bei deinen bisherigen bleibt."}
+  {title:"Was ist in den letzten vier Wochen daraus entstanden?",type:"results",example:"Schätzungen sind in Ordnung. Lass leer, was du nicht weißt."},
+  {title:"Was passiert, wenn sich jemand für dich interessiert?",type:"path",example:"Mehrere Antworten möglich. Wähle, was wirklich passiert."},
+  {title:"Wie viel Zeit und Budget hast du?",type:"capacity",example:"So schlägt dir die App nur vor, was du auch schaffst."},
+  {title:"Wärst du für einen weiteren Kanal offen?",type:"openness",example:"Davon hängt ab, ob die App neue Wege vorschlagen darf."}
 ];
-var PATHS=["Die Person schreibt mir eine Nachricht (z. B. in der Community oder auf Instagram)","WhatsApp","E-Mail","Telefon","Kontaktformular","Sie gelangt zu einer Angebotsseite","Sie kann direkt einen Termin buchen","Sie kann direkt kaufen","Persönliches Gespräch","Weiterleitung durch Kooperationspartner","Ich melde mich persönlich bei ihr","Mehrere unterschiedliche Wege","Es gibt noch keinen klaren nächsten Schritt","Ich weiß es nicht","Etwas anderes"];
+var PAGES=[[0],[1],[2,3],[4],[5],[6],[7],[8,9]];
+var PATHS=["Sie schreibt mir eine Nachricht","Sie ruft an oder kommt persönlich vorbei","Sie landet auf einer Angebotsseite oder Website","Sie kann direkt einen Termin buchen","Sie kann direkt kaufen","Sie wird von Kooperationspartnern weitergeleitet","Ich melde mich persönlich bei ihr","Es gibt noch keinen klaren nächsten Schritt","Ich weiß es nicht","Etwas anderes"];
 var OPEN_OPTS=["Ja, ich bin offen","Ja, aber nur für bestimmte Kanäle","Vielleicht – wenn der Aufwand überschaubar ist","Nein, ich möchte meinen bisherigen Kanal verbessern","Ich weiß es noch nicht"];
 var OPEN_CHANNELS=["Instagram","Facebook","TikTok","LinkedIn","YouTube","Pinterest","Skool oder andere Community","Newsletter / E-Mail","Google-Unternehmensprofil","Etwas anderes"];
 var OFFER_MODELS=["Einzeltermin","Behandlung","Beratung","Training","Gruppenkurs","Workshop","Onlinekurs","Mitgliedschaft","Ausbildung","Digitales Produkt","Physisches Produkt","Veranstaltung","Langfristige Begleitung","Abonnement","Noch nicht klar","Etwas anderes"];
 var SITUATIONS=["Er hat ein akutes Problem.","Er sucht Orientierung.","Er möchte etwas verbessern.","Er möchte vorbeugen.","Er braucht fachliche Unterstützung.","Er möchte lernen.","Er möchte sich weiterbilden.","Er möchte seinem Tier etwas Gutes tun.","Er sucht ein besonderes Erlebnis.","Er möchte längerfristig begleitet werden."];
-var CHANNEL_LIST=["Facebook","Instagram","LinkedIn","TikTok","YouTube","Website","Landingpage / Angebotsseite","Google-Unternehmensprofil","Blog","Newsletter / E-Mail-Liste","Community (z. B. Skool)","Empfehlungen","Kooperationspartner","Tierärzte / andere Tierberufler","Veranstaltungen oder Märkte","Flyer","Printwerbung","Lokale Werbung","Bezahlte Online-Werbung","Etwas anderes","Bisher gar nicht"];
-var CONTENT_TYPES=["Tipps","Fachwissen","Persönliche Beiträge","Fallbeispiele","Kundenstimmen","Angebote","Videos","Behind-the-Scenes","Erklärbeiträge","Verkaufsbeiträge","Kaum Content","Sehr unregelmäßig"];
+var CHANNEL_LIST=["Instagram","Facebook","LinkedIn","TikTok","YouTube","Website oder Blog","Angebotsseite (eigene Seite für ein Angebot)","Google-Unternehmensprofil","Newsletter / E-Mail-Liste","Community (z. B. Skool)","Empfehlungen","Kooperationen / Tierärzte","Veranstaltungen oder Märkte","Flyer / Printwerbung","Bezahlte Werbung","Etwas anderes","Bisher gar nicht"];
+var CONTENT_TYPES=["Tipps","Fachwissen","Persönliche Beiträge","Fallbeispiele","Kundenstimmen","Angebote","Videos","Einblicke hinter die Kulissen","Verkaufsbeiträge","Kaum Content","Sehr unregelmäßig"];
 var BTYPES={suchgeschaeft:"Suchgeschäft – Kunden suchen aktiv, meist bei einem akuten Problem",vertrauensgeschaeft:"Vertrauensgeschäft – Vertrauen muss vor der Entscheidung wachsen",wunschgeschaeft:"Wunschgeschäft – Kaufinteresse entsteht über Emotion und Vorstellungskraft",vorsorgegeschaeft:"Vorsorgegeschäft – Kunden wollen vorbeugen oder gut vorbereitet sein",mischform:"Mischform"};
 var PILLAR_OPTS=["Automatisch nach meinem Content-Mix","Erkennen – der Kunde erkennt seine Situation","Verstehen – Zusammenhänge erklären","Vertrauen – Haltung und Arbeitsweise zeigen","Beweis – Fälle und Erfahrungen","Angebot – konkret erklären, wobei du hilfst","Entscheiden – klarer nächster Schritt"];
 var cPillar=PILLAR_OPTS[0],formGaps=[];
@@ -173,13 +174,13 @@ function callAI(sys,user,history,cb,errcb,model,jsonMode){
 }
 
 function needsReview(s){
-  return /(allergische Symptome|oft liegt.{0,50}(Futter|Fütterung)|bevor.{0,80}Tierarzt|Futter.{0,40}(löst|heilt|verursacht|triggert)|Tierarztkosten|kostenlos|zertifiziert|\bKollegin\b|\bKollege\b|an alle [0-9]+|leerer Raum|zahlen keine Rechnungen|innerhalb von 24 Stunden|Anfragequote ist gut|Conversion.{0,30}(bricht|zusammen)|keine Rückmeldung.{0,50}kein.{0,20}Interesse|mindestens.{0,80}(antwort|buch|Interesse)|garantiert|das funktioniert|identifiziere.{0,100}(Person|Tierhalter).{0,100}Direktnachricht|erkennst.{0,80}(Allergie|Unverträglichkeit)|(Allergie|Unverträglichkeit).{0,60}erkenn|kein Reichweitenproblem|Skool (generiert|funktioniert)|Verbindung bricht|Angebot.{0,30}(klar|gut|schlüssig) strukturiert|führt zu einem Gespräch|Conversion|lädt sich)/i.test(s);
+  return /(allergische Symptome|oft liegt.{0,50}(Futter|Fütterung)|bevor.{0,80}Tierarzt|Futter.{0,40}(löst|heilt|verursacht|triggert)|Tierarztkosten|kostenlos|zertifiziert|\bKollegin\b|\bKollege\b|an alle [0-9]+|leerer Raum|zahlen keine Rechnungen|innerhalb von 24 Stunden|Anfragequote ist gut|Conversion.{0,30}(bricht|zusammen)|keine Rückmeldung.{0,50}kein.{0,20}Interesse|mindestens.{0,80}(antwort|buch|Interesse)|garantiert|das funktioniert|identifiziere.{0,100}(Person|Tierhalter).{0,100}Direktnachricht|erkennst.{0,80}(Allergie|Unverträglichkeit)|(Allergie|Unverträglichkeit).{0,60}erkenn|kein Reichweitenproblem|Skool (generiert|funktioniert)|Verbindung bricht|Angebot.{0,30}(klar|gut|schlüssig) strukturiert|führt zu einem Gespräch|Conversion|lädt sich|\bdie Person\b|(?:ohne|keine|hat keine) Website|Online-Geschäftsmodell|(?:kein|nicht) tragfähig|erneut(?:e|en)? (?:Nachricht|Kontakt)|nachfass|nachhaken|noch nicht zu einem gemeinsamen Termin)/i.test(s);
 }
 
 function callCheckedAI(sys,user,history,cb,errcb){
   callAI(sys,user,history,function(first){
     if(!needsReview(first)){cb(first);return;}
-    var review="Prüfe den folgenden Entwurf streng gegen alle Qualitätsregeln. Korrigiere insbesondere medizinische Kausalbehauptungen, erfundene Qualifikationen oder Gratisangebote, falsche Gleichstellung mit Tierärzten, pauschale Massenansprache und respektlosen Ton. Symptome nie als Diagnose bezeichnen; bei Beschwerden tierärztliche Abklärung vor ergänzender Beratung nennen. Erhalte die hilfreiche Marketingaussage, aber ändere riskante Stellen. Gib nur die vollständig korrigierte Endfassung in Klartext aus.\n\nVERIFIZIERTE ANGABEN:\n"+user+"\n\nENTWURF:\n"+first;
+    var review="Prüfe den folgenden Entwurf streng gegen alle Qualitätsregeln. Korrigiere insbesondere medizinische Kausalbehauptungen, erfundene Qualifikationen oder Gratisangebote, falsche Gleichstellung mit Tierärzten, pauschale Massenansprache und respektlosen Ton. Sprich durchgehend in der Du-Form (nie 'die Person'), schreibe 'in deinen Angaben nicht genannt' statt 'fehlt' oder 'ohne', entferne Nachfass-Nachrichten an frühere Interessenten und korrigiere Rechtschreibung und Rohlabels. Symptome nie als Diagnose bezeichnen; bei Beschwerden tierärztliche Abklärung vor ergänzender Beratung nennen. Erhalte die hilfreiche Marketingaussage, aber ändere riskante Stellen. Gib nur die vollständig korrigierte Endfassung in Klartext aus.\n\nVERIFIZIERTE ANGABEN:\n"+user+"\n\nENTWURF:\n"+first;
     callAI(SYS,review,null,cb,function(){errcb("Die Sicherheitsprüfung konnte nicht abgeschlossen werden. Bitte erneut versuchen.");});
   },errcb);
 }
@@ -228,7 +229,7 @@ function callJSONChecked(sys,user,cb,errcb){
   callJSON(sys,user,function(data){
     var raw=JSON.stringify(data);
     if(!needsReview(raw)){cb(data);return;}
-    var review="Prüfe dieses JSON streng gegen alle Qualitätsregeln. Entferne Garantien, Kaltakquise an Fremde, erfundene Fakten, medizinische Behauptungen und unzulässige Schlussfolgerungen. Bewahre exakt dieselben JSON-Schlüssel und Datentypen. Gib nur das korrigierte JSON zurück.\n\nVERIFIZIERTE ANGABEN:\n"+user+"\n\nJSON:\n"+raw;
+    var review="Prüfe dieses JSON streng gegen alle Qualitätsregeln. Sprich durchgehend in der Du-Form (nie 'die Person'), schreibe 'in deinen Angaben nicht genannt' statt 'fehlt' oder 'ohne', entferne Nachfass-Nachrichten an frühere Interessenten, korrigiere Rechtschreibung und Rohlabels. Entferne Garantien, Kaltakquise an Fremde, erfundene Fakten, medizinische Behauptungen und unzulässige Schlussfolgerungen. Bewahre exakt dieselben JSON-Schlüssel und Datentypen. Gib nur das korrigierte JSON zurück.\n\nVERIFIZIERTE ANGABEN:\n"+user+"\n\nJSON:\n"+raw;
     callJSON(SYS,review,cb,function(){errcb("Die Sicherheitsprüfung konnte nicht abgeschlossen werden. Bitte erneut versuchen.");});
   },errcb);
 }
@@ -244,8 +245,8 @@ function renderWelcome(){
     '<div class="body">'+
     '<span class="lbl" style="margin-top:0">Was machst du beruflich mit Tieren oder Tierhaltern?</span><p class="field-help" style="margin:0 0 6px">Mehrfachauswahl möglich – viele Tierberufler kombinieren mehrere Leistungen.</p>'+choiceList("prof",PROFESSIONS,professions,true,"two")+
     '<div id="other-wrap" class="'+(professions.indexOf("Andere Tätigkeit")>=0?'':'hidden')+'"><span class="lbl">Deine Tätigkeit</span><input id="profession-other" type="text" value="'+esc(professionOther)+'" placeholder="z. B. Pferdeosteopathie" oninput="professionOther=this.value"></div>'+
-    '<span class="lbl">Wie lautet deine genaue berufliche Bezeichnung?</span><input id="qualification" type="text" value="'+esc(qualification)+'" placeholder="z. B. Tierernährungsberaterin – oder: noch in Ausbildung" oninput="qualification=this.value">'+
-    '<p class="field-help">Die App verwendet nur diese Angabe und erfindet keine Qualifikation.</p>'+
+    '<span class="lbl">Deine berufliche Bezeichnung (optional)</span><input id="qualification" type="text" value="'+esc(qualification)+'" placeholder="z. B. Tierernährungsberaterin – oder: noch in Ausbildung" oninput="qualification=this.value">'+
+    '<p class="field-help">Die App verwendet nur das, was du hier schreibst, und erfindet keine Qualifikation.</p>'+
     '<span class="lbl">Mit welchen Tieren oder Kunden arbeitest du?</span><input id="animal-focus" type="text" value="'+esc(animalFocus)+'" placeholder="z. B. Pferde und ihre Halterinnen" oninput="animalFocus=this.value">'+
     '<p class="field-help">Optional, aber hilfreich für wirklich passende Beispiele.</p>'+
     '<span class="lbl">Wo können Kunden dein Angebot nutzen?</span><select id="business-reach" onchange="businessReach=this.value"><option value="">Bitte wählen...</option><option'+(businessReach==='Regional'?' selected':'')+'>Regional</option><option'+(businessReach==='Online'?' selected':'')+'>Online</option><option'+(businessReach==='Regional und online'?' selected':'')+'>Regional und online</option></select>'+
@@ -259,18 +260,17 @@ function getProfession(){
   if(professions.indexOf("Andere Tätigkeit")>=0&&professionOther.trim())l.push(professionOther.trim());
   return l.join(", ");
 }
-function profileContext(){return "Tierberuf/Branche (Mehrfachauswahl): "+getProfession()+"\nGenaue berufliche Bezeichnung/Qualifikation: "+qualification.trim()+"\nTier- oder Kundenschwerpunkt: "+(animalFocus.trim()||"nicht angegeben; bitte tierartenneutral formulieren")+"\nGeschäftsmodell/Reichweite: "+(businessReach||"nicht angegeben");}
+function profileContext(){return "Tierberuf/Branche (Mehrfachauswahl): "+getProfession()+"\nBerufliche Bezeichnung/Qualifikation: "+(qualification.trim()||"nicht angegeben")+"\nTier- oder Kundenschwerpunkt: "+(animalFocus.trim()||"nicht angegeben; bitte tierartenneutral formulieren")+"\nGeschäftsmodell/Reichweite: "+(businessReach||"nicht angegeben");}
 function startApp(){
   var o=$("profession-other"),q=$("qualification"),a=$("animal-focus"),r=$("business-reach");
   professions=selectedValues("prof");professionOther=o?o.value:professionOther;qualification=q?q.value:qualification;animalFocus=a?a.value:animalFocus;businessReach=r?r.value:businessReach;
   if(!professions.length){alert("Bitte wähle mindestens eine Tätigkeit aus.");return;}
   if(professions.indexOf("Andere Tätigkeit")>=0&&!professionOther.trim()){alert("Bitte trage deine Tätigkeit ein.");return;}
   if(!getProfession()){alert("Bitte wähle deinen Tierberuf oder trage ihn ein.");return;}
-  if(!qualification.trim()){alert("Bitte trage deine genaue berufliche Bezeichnung ein – oder 'noch in Ausbildung'.");return;}
   if(!businessReach){alert("Bitte gib an, ob dein Angebot regional, online oder beides verfügbar ist.");return;}
   screen="main";tab=0;dCurQ=0;dAnswers=[];render();
 }
-function profileBanner(){return '<div class="profile-note"><button onclick="screen=\'welcome\';render()">Ändern</button><strong>Dein Bereich:</strong> '+esc(getProfession())+' · '+esc(qualification)+(animalFocus.trim()?' · '+esc(animalFocus.trim()):'')+' · '+esc(businessReach)+'</div>';}
+function profileBanner(){return '<div class="profile-note"><button onclick="screen=\'welcome\';render()">Ändern</button><strong>Dein Bereich:</strong> '+esc(getProfession())+(qualification.trim()?' · '+esc(qualification.trim()):'')+(animalFocus.trim()?' · '+esc(animalFocus.trim()):'')+' · '+esc(businessReach)+'</div>';}
 
 function renderMain(){
   var hdr='<div class="tabs"><button class="tab'+(tab===0?" on":"")+'" onclick="tab=0;renderMain()">&#129517; Marketing Kompass</button><button class="tab'+(tab===1?" on":"")+'" onclick="tab=1;renderMain()">&#9997;&#65039; Marketing-Ideen</button></div>';
@@ -296,7 +296,7 @@ function renderClarification(){
   var rows=clarifyItems.map(function(x){return '<div class="tc"><p style="font:13px/1.55 system-ui;color:#1E2E28">'+esc(x.message)+'</p><button class="btn-o" style="margin-top:8px" onclick="editClarification('+x.q+')">Antwort bearbeiten</button></div>';}).join('');
   return '<div class="qprog">Kurze Klärung vor der Diagnose</div><h3 style="color:#2D4A3E;margin-bottom:8px">Für eine verlässliche Empfehlung fehlt noch etwas.</h3><p style="font:13px/1.6 system-ui;color:#6B8A7E;margin-bottom:14px">Die App erstellt bewusst noch keine Strategie und erfindet keine fehlenden Angaben.</p>'+rows;
 }
-function editClarification(q){clarifyMode=false;dStep=0;dCurQ=q;renderMain();}
+function editClarification(q){clarifyMode=false;dStep=0;for(var k=0;k<PAGES.length;k++)if(PAGES[k].indexOf(q)>=0){dCurQ=k;break;}renderMain();}
 function submitAIClarification(){
   var parts=[];
   for(var i=0;i<clarifyItems.length;i++){
@@ -307,18 +307,14 @@ function submitAIClarification(){
 }
 
 function renderQuestions(){
-  var q=QUESTIONS[dCurQ];
-  var pct=Math.round(((dCurQ+1)/QUESTIONS.length)*100);
-  return '<div class="qprog">Frage '+(dCurQ+1)+' von '+QUESTIONS.length+'</div>'+ 
-    '<div class="qbar"><div class="qbar-fill" style="width:'+pct+'%"></div></div>'+ 
-    '<p style="font-size:15px;font-weight:700;color:#2D4A3E;line-height:1.5;margin-bottom:8px">'+q.title+'</p>'+ 
-    '<div class="example">&#128161; '+q.example+'</div>'+renderQuestionInput(q)+
-    '<div id="qerror" class="validation"></div>'+ 
+  var pg=PAGES[dCurQ],pct=Math.round(((dCurQ+1)/PAGES.length)*100),html='';
+  pg.forEach(function(i,k){var q=QUESTIONS[i];html+='<p style="font-size:15px;font-weight:700;color:#2D4A3E;line-height:1.5;margin:'+(k?'22px':'0')+' 0 8px">'+q.title+'</p><div class="example">&#128161; '+q.example+'</div>'+renderQuestionInput(i);});
+  return '<div class="qprog">Schritt '+(dCurQ+1)+' von '+PAGES.length+'</div>'+
+    '<div class="qbar"><div class="qbar-fill" style="width:'+pct+'%"></div></div>'+html+
+    '<div id="qerror" class="validation"></div>'+
     '<div class="btn-row">'+
     (dCurQ>0?'<button class="btn-o" onclick="saveAndGo(-1)">&#8592; Zurück</button>':'')+
-    (dCurQ<QUESTIONS.length-1?
-      '<button class="btn-p" onclick="saveAndGo(1)">Weiter &#8594;</button>':
-      '<button class="btn-p" onclick="saveAndStartDiag()">&#129517; Diagnose starten</button>')+
+    (dCurQ<PAGES.length-1?'<button class="btn-p" onclick="saveAndGo(1)">Weiter &#8594;</button>':'<button class="btn-p" onclick="saveAndStartDiag()">&#129517; Diagnose starten</button>')+
     '</div>';
 }
 
@@ -327,61 +323,39 @@ function choiceList(name,items,selected,multiple,cls){
   return '<div class="choices'+(cls?' '+cls:'')+'">'+items.map(function(x){var on=multiple?selected.indexOf(x)>=0:selected===x;return '<label class="choice"><input type="'+(multiple?'checkbox':'radio')+'" name="'+name+'" value="'+esc(x)+'"'+(on?' checked':'')+'><span>'+esc(x)+'</span></label>';}).join('')+'</div>';
 }
 
-function renderQuestionInput(q){
-  var a=dAnswers[dCurQ];
+function renderQuestionInput(i){
+  var q=QUESTIONS[i],a=dAnswers[i];
+  function sel(id,list,cur){return '<select id="'+id+'"><option value="">Bitte wählen...</option>'+list.map(function(x){return '<option'+(cur===x?' selected':'')+'>'+x+'</option>';}).join('')+'</select>';}
   if(q.type==="goal"){
     a=a||{};
     return choiceList("goal",["Mehr passende Anfragen","Mehr Buchungen oder Verkäufe","Ein bestimmtes Angebot bekannter machen","Die richtige Zielgruppe erreichen","Den passenden Marketingkanal finden","Etwas anderes"],a.choice,false)+
-      '<span class="lbl">Dein Ziel in einem Satz</span><input id="goal-detail" value="'+esc(a.detail)+'" placeholder="Was soll konkret anders sein?">';
+      '<span class="lbl">Dein Ziel in einem Satz (optional)</span><input id="goal-detail" value="'+esc(a.detail)+'" placeholder="Was soll konkret anders sein?">';
   }
   if(q.type==="offer"){
     a=a||{};
-    return '<span class="lbl" style="margin-top:0">Was möchtest du hauptsächlich verkaufen?</span>'+choiceList("offer-model",OFFER_MODELS,a.model,false,"two")+
-      '<span class="lbl">Konkretes Angebot</span><textarea id="offer-name" rows="3" placeholder="Was genau bietest du an?">'+esc(a.offer)+'</textarea>'+ 
-      '<div class="mini-grid"><div><span class="lbl">Preisstatus</span><select id="offer-price-status"><option value="">Bitte wählen...</option>'+["Preis steht fest","Kostenlos","Preis noch nicht festgelegt","Individuelles Angebot"].map(function(x){return '<option'+(a.priceStatus===x?' selected':'')+'>'+x+'</option>';}).join('')+'</select></div><div><span class="lbl">Betrag bei festem Preis</span><input id="offer-price" value="'+esc(a.price)+'" placeholder="z. B. 89 Euro"></div></div>'+ 
-      '<span class="lbl">Was soll ein Interessent als Nächstes tun?</span><select id="offer-action"><option value="">Bitte wählen...</option>'+["Nachricht schreiben","Erstgespräch vereinbaren","Termin buchen","Produkt bestellen","Angebotsseite öffnen","Anrufen","Noch nicht festgelegt","Etwas anderes"].map(function(x){return '<option'+(a.action===x?' selected':'')+'>'+x+'</option>';}).join('')+'</select>';
+    return '<textarea id="offer-name" rows="3" placeholder="Was genau bietest du an? (oder: noch nicht klar)">'+esc(a.offer)+'</textarea>'+
+      '<div class="mini-grid"><div><span class="lbl">Preis (falls festgelegt)</span><input id="offer-price" value="'+esc(a.price)+'" placeholder="z. B. 89 Euro oder: individuell"></div><div><span class="lbl">Was soll ein Interessent als Nächstes tun?</span>'+sel("offer-action",["Nachricht schreiben","Erstgespräch vereinbaren","Termin buchen","Produkt bestellen","Angebotsseite öffnen","Anrufen","Weiß ich noch nicht","Etwas anderes"],a.action)+'</div></div>';
   }
-  if(q.type==="text")return '<textarea id="qa" rows="5" placeholder="Beschreibe Wunschkunde und konkretes Problem...">'+esc(a||"")+'</textarea>';
+  if(q.type==="text")return '<textarea id="qa" rows="4" placeholder="Beschreibe kurz, wer dein Kunde ist und was ihn beschäftigt...">'+esc(a||"")+'</textarea>';
   if(q.type==="channels")return choiceList("channels",CHANNEL_LIST,a,true,"two");
-  if(q.type==="situation"){a=a||{};return choiceList("situation",SITUATIONS,a.items,true)+'<span class="lbl">Eigene Ergänzung (optional)</span><input id="situation-other" value="'+esc(a.other)+'" placeholder="Was beschreibt die Situation deiner Kunden noch?">';}
+  if(q.type==="situation"){a=a||{};return choiceList("situation",SITUATIONS,a.items,true);}
   if(q.type==="content"){a=a||{};return choiceList("content",CONTENT_TYPES,a.items,true,"two");}
-  if(q.type==="channelDetails"){
-    var chans=dAnswers[qIdx("channels")]||[],hints=[];
-    function hasAny(list){return chans.some(function(x){return list.indexOf(x)>=0;});}
-    if(hasAny(["Facebook","Instagram","TikTok","LinkedIn","YouTube"]))hints.push("Social Media: Was veröffentlichst du, wie oft und wohin führst du Interessenten?");
-    if(hasAny(["Community (z. B. Skool)"]))hints.push("Community: Wen erreichst du dort – potenzielle Kunden oder vor allem Fachkollegen? Was veröffentlichst du und wohin führst du Interessenten?");
-    if(hasAny(["Flyer","Printwerbung","Lokale Werbung"]))hints.push("Flyer und Print: Wo verteilst du sie, was steht darauf, gibt es QR-Code/Kontaktziel und wie viele wurden verteilt?");
-    if(hasAny(["Empfehlungen"]))hints.push("Empfehlungen: Wer empfiehlt dich und wie erleichterst du das Weiterempfehlen?");
-    if(hasAny(["Kooperationspartner","Tierärzte / andere Tierberufler"]))hints.push("Kooperationen: Welche Partner hast du angesprochen und mit welchem Vorschlag?");
-    if(hasAny(["Website","Landingpage / Angebotsseite","Google-Unternehmensprofil","Blog"]))hints.push("Website/Google: Was finden Besucher dort und können sie direkt Kontakt aufnehmen oder buchen?");
-    if(hasAny(["Newsletter / E-Mail-Liste"]))hints.push("Newsletter: Wie viele Empfänger ungefähr, wie oft schreibst du und wohin führst du?");
-    if(!hints.length)hints.push("Beschreibe konkret, was du bisher tust, wie häufig und wohin du Interessenten führst.");
-    return '<div class="example">'+hints.map(esc).join('<br>')+'</div><textarea id="qa" rows="6" placeholder="Deine konkrete Beschreibung...">'+esc(a||"")+'</textarea>';
-  }
   if(q.type==="results"){
     a=a||{};
-    return '<div class="mini-grid"><div><span class="lbl" style="margin-top:0">Likes, Reaktionen, Kommentare</span><input id="res-reactions" value="'+esc(a.reactions)+'" placeholder="z. B. etwa 20"></div><div><span class="lbl" style="margin-top:0">Nachrichten oder Anfragen</span><input id="res-inquiries" value="'+esc(a.inquiries)+'" placeholder="z. B. 3"></div><div><span class="lbl">Gespräche</span><input id="res-talks" value="'+esc(a.talks)+'" placeholder="z. B. 1"></div><div><span class="lbl">Buchungen oder Verkäufe</span><input id="res-sales" value="'+esc(a.sales)+'" placeholder="z. B. 0"></div></div>'+ 
-      '<span class="lbl">Wer hat angefragt?</span><input id="res-who" value="'+esc(a.who)+'" placeholder="z. B. Tierhalter, Fachkollegen oder unklar">'+
-      '<span class="lbl">Warum wurde bisher nicht gekauft? (falls bekannt)</span><input id="res-why" value="'+esc(a.why)+'" placeholder="z. B. Preis, noch unentschlossen oder keine Rückmeldung">'+
-      '<span class="lbl">Hast du auf die Anfragen geantwortet?</span><select id="res-answered"><option value="">Bitte wählen...</option>'+["Ja, auf alle","Nur teilweise","Nein","Weiß ich nicht mehr","Es gab keine Anfragen"].map(function(x){return '<option'+(a.answered===x?' selected':'')+'>'+x+'</option>';}).join('')+'</select>'+ 
+    return '<div class="mini-grid"><div><span class="lbl" style="margin-top:0">Reaktionen (Likes, Kommentare)</span><input id="res-reactions" value="'+esc(a.reactions)+'" placeholder="z. B. 20"></div><div><span class="lbl" style="margin-top:0">Anfragen</span><input id="res-inquiries" value="'+esc(a.inquiries)+'" placeholder="z. B. 3"></div><div><span class="lbl">Gespräche</span><input id="res-talks" value="'+esc(a.talks)+'" placeholder="z. B. 1"></div><div><span class="lbl">Buchungen oder Verkäufe</span><input id="res-sales" value="'+esc(a.sales)+'" placeholder="z. B. 0"></div></div>'+
       '<div id="res-extra" class="'+((num(a.inquiries)>0||num(a.talks)>0)?'':'hidden')+'">'+
-        '<span class="lbl">Falls du Anfragen UND Gespräche angegeben hast: War die Person aus dem Gespräch eine der genannten Anfragen?</span><select id="res-overlap">'+selOpts(["Ja","Nein","Ich weiß es nicht"],a.overlap)+'</select>'+
-        '<span class="lbl">Wie lange liegt die letzte Anfrage oder das letzte Gespräch zurück?</span><select id="res-age">'+selOpts(["Diese Woche","Vor 1–2 Wochen","Vor 3–4 Wochen","Länger her","Weiß ich nicht"],a.age)+'</select>'+
-        '<span class="lbl">Ist das Gespräch noch offen?</span><select id="res-open">'+selOpts(["Ja, es ist noch offen","Nein, es ist abgeschlossen oder eingeschlafen","Weiß ich nicht"],a.open)+'</select>'+
-        '<span class="lbl">Wurde eine weitere Kontaktaufnahme vereinbart?</span><select id="res-agreed">'+selOpts(["Ja","Nein","Weiß ich nicht"],a.agreed)+'</select>'+
-        '<span class="lbl">Wäre eine erneute Nachricht aus deiner Sicht passend?</span><select id="res-fit">'+selOpts(["Ja","Nein","Unsicher"],a.fit)+'</select>'+
+        '<span class="lbl">Wer hat angefragt?</span>'+sel("res-who",["Tierhalter / Kunden","Fachleute oder Kollegen","Beides","Weiß ich nicht"],a.who)+
+        '<span class="lbl">Waren die Gespräche dieselben Personen wie die Anfragen?</span>'+sel("res-overlap",["Ja","Nein","Weiß ich nicht"],a.overlap)+
       '</div>'+
-      '<div class="mini-grid"><div><span class="lbl">Ungefähre Reaktionszeit</span><input id="res-speed" value="'+esc(a.speed)+'" placeholder="z. B. am selben Tag"></div><div><span class="lbl">Was war dein letzter Schritt?</span><input id="res-last" value="'+esc(a.last)+'" placeholder="z. B. Terminlink gesendet"></div></div>'+ 
+      '<span class="lbl">Warum wurde bisher nicht gebucht? (optional, falls bekannt)</span><input id="res-why" value="'+esc(a.why)+'" placeholder="z. B. Preis, noch unentschlossen – oder: weiß ich nicht">'+
       '<label class="choice" style="margin-top:10px"><input id="res-unknown" type="checkbox"'+(a.unknown?' checked':'')+'><span>Ich habe das bisher nicht gemessen.</span></label>';
   }
-  if(q.type==="path"){a=a||{};return choiceList("path",PATHS,a.choices,true,"two")+'<span class="lbl">Eigene Ergänzung (bei „Etwas anderes“ bitte ausfüllen)</span><input id="path-other" value="'+esc(a.other)+'" placeholder="z. B. Sie rufen in meiner Praxis an und fragen nach Terminen">';}
+  if(q.type==="path"){a=a||{};return choiceList("path",PATHS,a.choices,true,"two")+'<span class="lbl">Falls etwas anderes (optional)</span><input id="path-other" value="'+esc(a.other)+'" placeholder="z. B. Sie rufen in meiner Praxis an">';}
   if(q.type==="openness"){a=a||{};return choiceList("open",OPEN_OPTS,a.choice,false)+'<div id="open-wrap" class="'+(a.choice===OPEN_OPTS[1]?'':'hidden')+'"><span class="lbl">Für welche Kanäle?</span>'+choiceList("openchannels",OPEN_CHANNELS,a.channels,true)+'</div>';}
   if(q.type==="capacity"){
     a=a||{};
-    return '<span class="lbl" style="margin-top:0">Verfügbare Zeit pro Woche</span><select id="cap-time"><option value="">Bitte wählen...</option>'+["Unter 1 Stunde","1–2 Stunden","3–5 Stunden","Mehr als 5 Stunden"].map(function(x){return '<option'+(a.time===x?' selected':'')+'>'+x+'</option>';}).join('')+'</select>'+ 
-      '<span class="lbl">Wie viel möchtest du monatlich für Marketingmaßnahmen ausgeben?</span><select id="cap-budget"><option value="">Bitte wählen...</option>'+["0 Euro","Bis 50 Euro","51–150 Euro","Mehr als 150 Euro","Noch nicht festgelegt"].map(function(x){return '<option'+(a.budget===x?' selected':'')+'>'+x+'</option>';}).join('')+'</select><p class="field-help">Gemeint sind z. B. Werbeanzeigen, Flyerdruck, Veranstaltungen oder Programme – nicht der Preis deines Angebots.</p>'+ 
-      '<span class="lbl">Was kannst und möchtest du umsetzen?</span>'+choiceList("formats",["Texte","Fotos","Kurze Videos","Persönliche Gespräche","Veranstaltungen oder lokale Aktionen"],a.formats,true)+
-      '<span class="lbl">Was möchtest du ausdrücklich nicht machen? (optional)</span><input id="cap-nogo" value="'+esc(a.noGo)+'" placeholder="z. B. keine Videos">';
+    return '<div class="mini-grid"><div><span class="lbl" style="margin-top:0">Zeit pro Woche</span>'+sel("cap-time",["Unter 1 Stunde","1–2 Stunden","3–5 Stunden","Mehr als 5 Stunden","Weiß ich noch nicht"],a.time)+'</div><div><span class="lbl" style="margin-top:0">Budget pro Monat für Marketing</span>'+sel("cap-budget",["0 Euro","Bis 50 Euro","51–150 Euro","Mehr als 150 Euro","Noch nicht festgelegt"],a.budget)+'</div></div>'+
+      '<span class="lbl">Was kannst und möchtest du umsetzen? (optional)</span>'+choiceList("formats",["Texte","Fotos","Kurze Videos","Persönliche Gespräche","Veranstaltungen oder lokale Aktionen"],a.formats,true);
   }
   return '';
 }
@@ -389,45 +363,39 @@ function renderQuestionInput(q){
 function selectedValues(name){return Array.prototype.slice.call(document.querySelectorAll('input[name="'+name+'"]:checked')).map(function(x){return x.value;});}
 function selectedValue(name){var x=document.querySelector('input[name="'+name+'"]:checked');return x?x.value:"";}
 
-function saveCurrentAnswer(){
-  var type=QUESTIONS[dCurQ].type,a;
-  if(type==="goal")a={choice:selectedValue("goal"),detail:$("goal-detail").value.trim()};
-  else if(type==="offer")a={model:selectedValue("offer-model"),offer:$("offer-name").value.trim(),priceStatus:$("offer-price-status").value,price:$("offer-price").value.trim(),action:$("offer-action").value};
-  else if(type==="text"||type==="channelDetails")a=$("qa").value.trim();
-  else if(type==="channels")a=selectedValues("channels");
-  else if(type==="situation")a={items:selectedValues("situation"),other:$("situation-other").value.trim()};
-  else if(type==="content")a={items:selectedValues("content")};
-  else if(type==="results")a={reactions:$("res-reactions").value.trim(),inquiries:$("res-inquiries").value.trim(),talks:$("res-talks").value.trim(),sales:$("res-sales").value.trim(),who:$("res-who").value.trim(),why:$("res-why").value.trim(),answered:$("res-answered").value,speed:$("res-speed").value.trim(),last:$("res-last").value.trim(),unknown:$("res-unknown").checked,overlap:$("res-overlap").value,age:$("res-age").value,open:$("res-open").value,agreed:$("res-agreed").value,fit:$("res-fit").value};
-  else if(type==="path")a={choices:selectedValues("path"),other:$("path-other").value.trim()};
+function saveQuestion(i){
+  var type=QUESTIONS[i].type,a;
+  function v(id){var e=$(id);return e?e.value.trim():"";}
+  if(type==="goal")a={choice:selectedValue("goal"),detail:v("goal-detail")};
+  else if(type==="offer")a={offer:v("offer-name"),price:v("offer-price"),action:v("offer-action")};
+  else if(type==="text")a=v("qa");
+  else if(type==="channels"){a=selectedValues("channels");if(a.length>1)a=a.filter(function(x){return x!=="Bisher gar nicht";});}
+  else if(type==="situation")a={items:selectedValues("situation")};
+  else if(type==="content"){var ci=selectedValues("content");if(ci.length>1)ci=ci.filter(function(x){return x!=="Kaum Content";});a={items:ci};}
+  else if(type==="results")a={reactions:v("res-reactions"),inquiries:v("res-inquiries"),talks:v("res-talks"),sales:v("res-sales"),who:v("res-who"),why:v("res-why"),unknown:!!($("res-unknown")&&$("res-unknown").checked),overlap:v("res-overlap")};
+  else if(type==="path"){var pc=selectedValues("path"),NP=["Es gibt noch keinen klaren nächsten Schritt","Ich weiß es nicht"],real=pc.filter(function(x){return NP.indexOf(x)<0;});a={choices:real.length?real:pc,other:v("path-other")};}
   else if(type==="openness"){var oc=selectedValue("open");a={choice:oc,channels:oc===OPEN_OPTS[1]?selectedValues("openchannels"):[]};}
-  else if(type==="capacity")a={time:$("cap-time").value,budget:$("cap-budget").value.trim(),formats:selectedValues("formats"),noGo:$("cap-nogo").value.trim()};
-  dAnswers[dCurQ]=a;return validateAnswer(type,a);
+  else if(type==="capacity")a={time:v("cap-time"),budget:v("cap-budget"),formats:selectedValues("formats")};
+  dAnswers[i]=a;return validateAnswer(type,a);
 }
+function saveCurrentAnswer(){var err="";PAGES[dCurQ].forEach(function(i){var e=saveQuestion(i);if(e&&!err)err=e;});return err;}
 
 function validateAnswer(type,a){
-  if(type==="goal"&&(!a.choice||!a.detail))return "Bitte wähle ein Ziel und beschreibe es kurz.";
-  if(type==="offer"&&(!a.model||!a.offer||!a.priceStatus||!a.action))return "Bitte wähle Angebotsart, Preisstatus und nächsten Schritt und beschreibe dein Angebot.";
-  if((type==="text"||type==="channelDetails")&&!a)return "Bitte beantworte die Frage – 'Ich weiß es nicht' ist ebenfalls möglich.";
-  if(type==="channels"&&!a.length)return "Bitte wähle mindestens eine Möglichkeit.";
-  if(type==="situation"&&!a.items.length&&!a.other)return "Bitte wähle mindestens eine Situation oder ergänze sie.";
-  if(type==="content"&&!a.items.length)return "Bitte wähle mindestens eine Möglichkeit.";
-  if(type==="content"&&a.items.indexOf("Kaum Content")>=0&&a.items.length>1)return "'Kaum Content' kann nicht zusammen mit anderen Inhalten gewählt werden.";
-  if(type==="channels"&&a.indexOf("Bisher gar nicht")>=0&&a.length>1)return "'Bisher gar nicht' kann nicht zusammen mit anderen Marketingwegen gewählt werden.";
-  if(type==="results"&&!a.unknown&&!a.reactions&&!a.inquiries&&!a.talks&&!a.sales)return "Bitte trage mindestens ein Ergebnis ein oder wähle 'nicht gemessen'.";
-  if(type==="results"&&num(a.inquiries)>0&&(!a.who||!a.answered))return "Bei vorhandenen Anfragen: Bitte gib an, wer angefragt hat und ob du geantwortet hast.";
-  if(type==="results"&&num(a.inquiries)>0&&num(a.talks)>0&&!a.overlap)return "Bitte gib an, ob die Person aus dem Gespräch eine der genannten Anfragen war – 'Ich weiß es nicht' ist möglich.";
-  if(type==="path"&&!a.choices.length)return "Bitte wähle mindestens einen Schritt – 'Ich weiß es nicht' ist ebenfalls möglich.";
-  if(type==="path"&&a.choices.length>1&&(a.choices.indexOf("Es gibt noch keinen klaren nächsten Schritt")>=0||a.choices.indexOf("Ich weiß es nicht")>=0))return "'Es gibt noch keinen klaren Schritt' und 'Ich weiß es nicht' lassen sich nicht mit anderen Schritten kombinieren.";
-  if(type==="path"&&a.choices.indexOf("Etwas anderes")>=0&&!a.other)return "Bitte beschreibe den nächsten Schritt kurz im Feld darunter.";
-  if(type==="openness"&&!a.choice)return "Bitte wähle eine Antwort – 'Ich weiß es noch nicht' ist auch möglich.";
-  if(type==="openness"&&a.choice===OPEN_OPTS[1]&&!a.channels.length)return "Bitte wähle mindestens einen Kanal.";
-  if(type==="capacity"&&(!a.time||!a.budget||!a.formats.length))return "Bitte wähle deine verfügbare Zeit, dein Marketingbudget und mindestens ein umsetzbares Format.";
+  if(type==="goal"&&!a.choice)return "Bitte wähle, was am besten passt.";
+  if(type==="offer"&&!a.offer)return "Bitte beschreibe kurz dein Angebot – „noch nicht klar“ ist auch eine gültige Antwort.";
+  if(type==="text"&&!a)return "Bitte schreib ein paar Worte – „Ich weiß es nicht“ ist erlaubt.";
+  if(type==="channels"&&!a.length)return "Bitte wähle mindestens eine Möglichkeit – „Bisher gar nicht“ ist auch möglich.";
+  if(type==="content"&&!a.items.length)return "Bitte wähle mindestens eine Möglichkeit – „Kaum Content“ ist auch möglich.";
+  if(type==="results"&&!a.unknown&&!a.reactions&&!a.inquiries&&!a.talks&&!a.sales)return "Bitte trage mindestens eine Zahl ein oder setze den Haken bei „noch nicht gemessen“.";
+  if(type==="path"&&!a.choices.length)return "Bitte wähle mindestens eine Antwort – „Ich weiß es nicht“ ist möglich.";
+  if(type==="openness"&&!a.choice)return "Bitte wähle eine Antwort – „Ich weiß es noch nicht“ ist möglich.";
+  if(type==="capacity"&&(!a.time||!a.budget))return "Bitte wähle Zeit und Budget – „Weiß ich noch nicht“ ist möglich.";
   return "";
 }
 
 function saveAndGo(dir){
   var err=saveCurrentAnswer();if(dir>0&&err){$("qerror").textContent=err;return;}
-  dCurQ+=dir;renderMain();
+  dCurQ+=dir;renderMain();window.scrollTo(0,0);
 }
 
 function answersSummary(){
@@ -439,28 +407,27 @@ function answersSummary(){
 function answerText(i,a){
   var t=QUESTIONS[i].type;
   if(!a)return "keine Angabe";
-  if(Array.isArray(a))return a.join(", ");
-  if(typeof a==="string")return a;
-  if(t==="goal")return a.choice+" – "+a.detail;
-  if(t==="offer")return "Hauptsächlich verkauft wird: "+a.model+"; Angebot: "+a.offer+"; Preisstatus: "+a.priceStatus+"; Betrag: "+(a.price||"nicht angegeben")+"; nächster Kundenschritt: "+a.action;
-  if(t==="situation")return a.items.join("; ")+(a.other?"; "+a.other:"");
-  if(t==="content")return a.items.join(", ");
+  if(Array.isArray(a))return a.join(", ")||"keine Angabe";
+  if(typeof a==="string")return a||"keine Angabe";
+  if(t==="goal")return a.choice+(a.detail?" – "+a.detail:"");
+  if(t==="offer")return "Angebot: "+(a.offer||"nicht angegeben")+"; Preis: "+(a.price||"nicht angegeben")+"; nächster Schritt für Interessenten: "+(a.action||"nicht angegeben");
+  if(t==="situation"||t==="content")return (a.items&&a.items.length)?a.items.join("; "):"keine Angabe";
   if(t==="results"){
     if(a.unknown)return "bisher nicht gemessen";
-    return "Reaktionen: "+(a.reactions||"0")+"; Anfragen: "+(a.inquiries||"0")+"; Gespräche: "+(a.talks||"0")+"; Verkäufe: "+(a.sales||"0")+"; Art der Anfragenden: "+(a.who||"unbekannt")+"; bekanntes Kaufhindernis: "+(a.why||"unbekannt")+"; beantwortet: "+(a.answered||"unbekannt")+"; Reaktionszeit: "+(a.speed||"unbekannt")+"; letzter Schritt: "+(a.last||"unbekannt")+"; Person aus dem Gespräch war eine der genannten Anfragen: "+(a.overlap||"nicht angegeben")+"; letzte Anfrage/letztes Gespräch liegt zurück: "+(a.age||"nicht angegeben")+"; Gespräch noch offen: "+(a.open||"nicht angegeben")+"; weitere Kontaktaufnahme vereinbart: "+(a.agreed||"nicht angegeben")+"; erneute Nachricht laut Person passend: "+(a.fit||"nicht angegeben");
+    function n(x){return x||"nicht angegeben";}
+    return "Reaktionen: "+n(a.reactions)+"; Anfragen: "+n(a.inquiries)+"; Gespräche: "+n(a.talks)+"; Verkäufe: "+n(a.sales)+"; Art der Anfragenden: "+n(a.who)+"; Gespräche waren dieselben Personen wie die Anfragen: "+n(a.overlap)+"; bekanntes Kaufhindernis: "+n(a.why);
   }
   if(t==="path")return a.choices.join("; ")+(a.other?" – "+a.other:"");
   if(t==="openness")return a.choice+(a.channels&&a.channels.length?" ("+a.channels.join(", ")+")":"");
-  if(t==="capacity")return "Zeit: "+a.time+"; Budget: "+(a.budget||"nicht angegeben")+"; mögliche Formate: "+a.formats.join(", ")+"; ausgeschlossen: "+(a.noGo||"nichts angegeben");
+  if(t==="capacity")return "Zeit: "+(a.time||"nicht angegeben")+"; Budget: "+(a.budget||"nicht angegeben")+"; mögliche Formate: "+((a.formats&&a.formats.length)?a.formats.join(", "):"nicht angegeben");
   return JSON.stringify(a);
 }
 
 function buildClarifications(){
   var items=[],offer=dAnswers[qIdx("offer")]||{},res=dAnswers[qIdx("results")]||{};
-  if(offer.model==="Noch nicht klar")items.push({q:qIdx("offer"),message:"Die Person weiß noch nicht, ob sie eine Beratung/Dienstleistung, ein Produkt oder beides verkauft."});
-  if(offer.action==="Noch nicht festgelegt")items.push({q:qIdx("offer"),message:"Es ist noch nicht festgelegt, was ein interessierter Mensch als Nächstes tun soll."});
-  if(num(res.inquiries)>0&&/unklar|weiß nicht/i.test(res.who||""))items.push({q:qIdx("results"),message:"Unklar, ob die Anfragen von potenziellen Kunden, Fachkollegen oder anderen Personen kamen."});
-  if(num(res.inquiries)>0&&res.answered!=="Nein"&&res.answered!=="Weiß ich nicht mehr"&&(!res.speed||!res.last))items.push({q:qIdx("results"),message:"Reaktionszeit und letzter Schritt in der Unterhaltung sind nicht angegeben."});
+  if(!offer.action||offer.action==="Weiß ich noch nicht")items.push({q:qIdx("offer"),message:"Es ist noch nicht festgelegt, was ein interessierter Mensch als Nächstes tun soll."});
+  if(num(res.inquiries)>0&&(!res.who||res.who==="Weiß ich nicht"))items.push({q:qIdx("results"),message:"Unklar, ob die Anfragen von potenziellen Kunden oder von Fachleuten kamen."});
+  if(num(res.inquiries)>0&&num(res.talks)>0&&res.overlap!=="Ja"&&res.overlap!=="Nein")items.push({q:qIdx("results"),message:"Unklar, ob die Gespräche aus den genannten Anfragen entstanden sind oder zusätzliche Personen waren."});
   return items;
 }
 
@@ -474,7 +441,7 @@ function runStructuredDiagnosis(retry){
   dStep=1;dDiag="";dTask="";diagData=null;planData=null;renderMain();
   var force=clarificationRounds>=1||!!retry;
   var facts=profileContext()+"\n\nANTWORTEN:\n"+answersSummary()+"\n\nSICHTBARKEITSSYSTEM (nur aus den Angaben abgeleitet):\n"+visibilityFacts()+(aiClarificationText?"\n\nZUSAETZLICHE KLAERUNGEN:\n"+aiClarificationText:"")+(formGaps.length?"\n\nBEKANNTE LUECKEN:\n- "+formGaps.join("\n- "):"");
-  var prompt="Analysiere, ob alle entscheidenden Informationen für eine belastbare Marketingdiagnose vorliegen. Fehlen Angaben, setze im Zweifel trotzdem status auf ready und benenne die Lücken in missing_info. Nur wenn ohne eine Antwort überhaupt keine sinnvolle vorläufige Diagnose möglich wäre, setze status auf needs_clarification und stelle höchstens 3 kurze Fragen. In diesem Status dürfen diagnosis und priority leer bleiben. Wenn genug Informationen vorliegen, setze status auf ready. Unterscheide Marketingkanal, Übergang von Anfrage zu Buchung und Bindung. Keine Kaltakquise an Fremde. REGELN FÜR DIE DIAGNOSE: (1) Bei insgesamt weniger als 10 Reaktionen, Anfragen und Gesprächen oder höchstens 2 Gesprächen ist confidence zwingend niedrig. Dann ist central_problem eine vorläufige Einschätzung und sagt, dass die Datenmenge noch nicht ausreicht, um Kanal-, Angebots- und Übergangsproblem sicher zu unterscheiden; priority_type ist dann klaerung, außer das SICHTBARKEITSSYSTEM zeigt eine klar belegte strukturelle Lücke (zum Beispiel nur ein Kanal, kein Handlungsweg, kein sichtbares Angebot); dann darf die Priorität diese Lücke sein, ohne Ergebnisversprechen. (2) Zähle Personen nicht doppelt: Antwortet die Person Nein oder Ich weiß es nicht auf die Frage, ob die Person aus dem Gespräch eine der Anfragen war, oder fehlt die Angabe, nenne das unter uncertainties und addiere die Zahlen nicht zu verschiedenen Kontakten. (3) evidence enthält nur nachprüfbare Tatsachen aus den Angaben, keine Bewertungen. (4) Bewerte das Angebot nicht. Fehlende Angebotsdetails wie Leistungsumfang, Ablauf nach dem Erstkontakt, Vergütungsmodell, Zielgruppe gehören in uncertainties. (5) Berücksichtige die Antwort zur Offenheit für andere Kanäle. (6) Empfiehl keine Wiederansprache früherer Interessenten, außer die Person hat angegeben, dass das Gespräch noch offen ist, eine Fortsetzung vereinbart wurde oder eine erneute Nachricht passend ist. (7) Die Beispiele weak_example und improved_example beziehen sich nur auf Formulierung oder Vorgehen, nicht auf eine Deutung der Zahlen. (8) business_type: Leite aus Beruf, Angebot und Kundensituation ab, ob das Geschäft überwiegend ein Suchgeschäft (Kunden suchen aktiv, meist bei akutem Problem), Vertrauensgeschäft (längerer Vertrauensaufbau, zum Beispiel Ausbildung oder Coaching), Wunschgeschäft (Emotion und Vorstellungskraft, zum Beispiel Fotografie) oder Vorsorgegeschäft (Vorbeugung, zum Beispiel Welpenberatung) ist; bei unklarer Lage mischform. business_type_reason ist ein Satz. (9) blind_spot: ein konkreter Satz, der nur aus den Angaben und dem SICHTBARKEITSSYSTEM belegbar ist, zum Beispiel nur ein einziger Kanal, kein klarer Handlungsweg, viel Fachwissen aber kein sichtbares Angebot oder Inhalte, die bei der Lösung beginnen, bevor der Kunde sein Problem erkannt hat. Steht laut Angaben nur ein Kanal zur Verfügung, sage sinngemäß, dass die Sichtbarkeit auf nur einem Bein steht und von diesem einen Kanal abhängt. Ist Flyer der einzige Weg, erkläre, dass Flyer lokal sinnvoll sein können, aber meist nur ein kurzer Kontakt sind und ohne digitale Vertiefung wie Website, Google oder Angebotsseite kaum weitere Begegnungen ermöglichen. (10) bottleneck: type ist genau einer aus: fehlende Klarheit, zu wenig Reichweite, falscher Kanal, nur ein Kanal, fehlende Auffindbarkeit, zu wenig Vertrauen, zu wenig Angebot, kein klarer Kaufweg, zu viel Fachsprache, zu wenig Kundenperspektive, unregelmäßige Sichtbarkeit, zu wenige Kontaktpunkte, zu wenig Beweis, noch nicht sicher bestimmbar. explanation sind ein bis zwei Sätze aus den Angaben. Bei unsicherer Datenlage wähle noch nicht sicher bestimmbar oder formuliere vorsichtig. (11) content_mix: Prozentwerte für erkennen, verstehen, vertrauen, beweis, angebot mit Summe 100, abhängig von Beruf, Geschäftsart und bisherigem Content. content_mix_note ist ein Satz mit der Begründung. Gibt es laut Angaben keine Fallbeispiele oder Kundenstimmen, setze beweis niedrig und erfinde keine Beweise. (12) profession_note: zwei Sätze, die konkret zum angegebenen Beruf sagen, was Kunden erkennen oder verstehen müssen, ohne Diagnosen, Heilversprechen oder Ursachenbehauptungen. (13) Empfiehl nie, überall gleichzeitig aktiv zu sein. (14) Behandle Angaben wie ich weiß es nicht, nicht ausgewertet, keine Angabe oder nicht beantwortet als fehlende Information, niemals als null oder als Beleg für etwas. missing_info listet die wichtigen fehlenden Angaben. completeness_note erklärt in ein bis zwei Sätzen, warum Diagnose, Content-Plan und Maßnahme dadurch nicht ganz vollständig sein können; sind alle wichtigen Angaben vorhanden, bleibt beides leer. JSON-Schema exakt: {\"status\":\"ready|needs_clarification\",\"questions\":[\"...\"],\"diagnosis\":{\"central_problem\":\"...\",\"confidence\":\"hoch|mittel|niedrig\",\"evidence\":[\"...\"],\"uncertainties\":[\"...\"],\"priority_type\":\"marketingkanal|uebergang|bindung|angebotsklaerung|klaerung\",\"priority\":\"...\",\"rationale\":\"...\",\"weak_example\":\"...\",\"improved_example\":\"...\",\"business_type\":\"suchgeschaeft|vertrauensgeschaeft|wunschgeschaeft|vorsorgegeschaeft|mischform\",\"business_type_reason\":\"...\",\"blind_spot\":\"...\",\"bottleneck\":{\"type\":\"...\",\"explanation\":\"...\"},\"content_mix\":{\"erkennen\":30,\"verstehen\":20,\"vertrauen\":20,\"beweis\":15,\"angebot\":15},\"content_mix_note\":\"...\",\"profession_note\":\"...\",\"missing_info\":[\"...\"],\"completeness_note\":\"...\"}}. Kleine Stichproben vorsichtig bewerten.\n\n"+facts+(force?" WICHTIG: Es wurde bereits nachgefragt oder weitere Antworten sind nicht möglich. Setze status ZWINGEND auf ready und stelle keine Fragen."+(retry?" ZWEITER VERSUCH: Gib ausschließlich status ready mit vollständiger diagnosis zurück.":""):"");
+  var prompt="Analysiere, ob alle entscheidenden Informationen für eine belastbare Marketingdiagnose vorliegen. Fehlen Angaben, setze im Zweifel trotzdem status auf ready und benenne die Lücken in missing_info. Nur wenn ohne eine Antwort überhaupt keine sinnvolle vorläufige Diagnose möglich wäre, setze status auf needs_clarification und stelle höchstens 3 kurze Fragen. In diesem Status dürfen diagnosis und priority leer bleiben. Wenn genug Informationen vorliegen, setze status auf ready. Unterscheide Marketingkanal, Übergang von Anfrage zu Buchung und Bindung. Keine Kaltakquise an Fremde. Alle Textwerte sind direkt an die Nutzerin gerichtet (du-Form, nie 'die Person'). REGELN FÜR DIE DIAGNOSE: (1) Bei insgesamt weniger als 10 Reaktionen, Anfragen und Gesprächen oder höchstens 2 Gesprächen ist confidence zwingend niedrig. Dann ist central_problem eine vorläufige Einschätzung und sagt, dass die Datenmenge noch nicht ausreicht, um Kanal-, Angebots- und Übergangsproblem sicher zu unterscheiden; priority_type ist dann klaerung, außer das SICHTBARKEITSSYSTEM zeigt eine klar belegte strukturelle Lücke (zum Beispiel nur ein Kanal, kein Handlungsweg, kein sichtbares Angebot); dann darf die Priorität diese Lücke sein, ohne Ergebnisversprechen. (2) Zähle Personen nicht doppelt: Ist nicht bekannt oder fehlt die Angabe, ob die Gespräche aus den Anfragen entstanden sind, nenne das unter uncertainties und addiere die Zahlen nicht zu verschiedenen Kontakten. (3) evidence enthält höchstens 6 kurze Punkte mit nachprüfbaren Tatsachen und Zahlen aus den Angaben, keine Bewertungen und nichts Hinzugedichtetes. (4) Bewerte das Angebot nicht. Fehlende Angebotsdetails wie Leistungsumfang, Ablauf nach dem Erstkontakt, Vergütungsmodell, Zielgruppe gehören in uncertainties. (5) Berücksichtige die Antwort zur Offenheit für andere Kanäle. (6) Empfiehl keine Wiederansprache und keine Nachfass-Nachricht an frühere Interessenten. (7) summary ist eine Kurzfassung in genau drei kurzen Sätzen, direkt an die Nutzerin in du-Form: was gerade am meisten bremst oder noch unklar ist, was schon vorhanden ist, was als Nächstes dran ist. topic_ideas sind immer genau 3 konkrete Themenideen für Beiträge aus Sicht der Kunden (title) mit passender Säule (pillar: erkennen, verstehen, vertrauen, beweis oder angebot), auch bei niedriger Sicherheit, passend zu Beruf und Zielgruppe, nur für Kanäle, die die Person nutzt oder für die sie offen ist (sonst allgemein), ohne erfundene Fakten, Diagnosen oder Heilversprechen. Prüfe außerdem als Möglichkeit, nicht als Tatsache, ob der erste Schritt für Interessenten zu groß sein könnte (zum Beispiel direktes Abonnement oder individuelles Angebot ohne genannten Preis oder kleinen Einstieg wie Erstgespräch oder Checkliste), und nenne einen nicht genannten kleinen Einstieg unter uncertainties. (8) business_type: Leite aus Beruf, Angebot und Kundensituation ab, ob das Geschäft überwiegend ein Suchgeschäft (Kunden suchen aktiv, meist bei akutem Problem), Vertrauensgeschäft (längerer Vertrauensaufbau, zum Beispiel Ausbildung oder Coaching), Wunschgeschäft (Emotion und Vorstellungskraft, zum Beispiel Fotografie) oder Vorsorgegeschäft (Vorbeugung, zum Beispiel Welpenberatung) ist; bei unklarer Lage mischform. business_type_reason ist ein Satz. (9) blind_spot: ein konkreter Satz in du-Form, der nur aus den Angaben und dem SICHTBARKEITSSYSTEM belegbar ist; was nicht genannt wurde, heißt 'in deinen Angaben nicht genannt', nie 'fehlt' oder 'gibt es nicht'; zum Beispiel nur ein einziger Kanal, kein klarer Handlungsweg, viel Fachwissen aber kein sichtbares Angebot oder Inhalte, die bei der Lösung beginnen, bevor der Kunde sein Problem erkannt hat. Steht laut Angaben nur ein Kanal zur Verfügung, sage sinngemäß, dass die Sichtbarkeit auf nur einem Bein steht und von diesem einen Kanal abhängt. Ist Flyer der einzige Weg, erkläre, dass Flyer lokal sinnvoll sein können, aber meist nur ein kurzer Kontakt sind und ohne digitale Vertiefung wie Website, Google oder Angebotsseite kaum weitere Begegnungen ermöglichen. (10) bottleneck: type ist genau einer aus: fehlende Klarheit, zu wenig Reichweite, falscher Kanal, nur ein Kanal, fehlende Auffindbarkeit, zu wenig Vertrauen, zu wenig Angebot, kein klarer Kaufweg, zu viel Fachsprache, zu wenig Kundenperspektive, unregelmäßige Sichtbarkeit, zu wenige Kontaktpunkte, zu wenig Beweis, noch nicht sicher bestimmbar. explanation sind ein bis zwei Sätze aus den Angaben. Bei unsicherer Datenlage wähle noch nicht sicher bestimmbar oder formuliere vorsichtig. (11) content_mix: Prozentwerte für erkennen, verstehen, vertrauen, beweis, angebot mit Summe 100, abhängig von Beruf, Geschäftsart und bisherigem Content. content_mix_note ist ein Satz mit der Begründung. Gibt es laut Angaben keine Fallbeispiele oder Kundenstimmen, setze beweis niedrig und erfinde keine Beweise. (12) profession_note: zwei Sätze, die konkret zum angegebenen Beruf sagen, was Kunden erkennen oder verstehen müssen, ohne Diagnosen, Heilversprechen oder Ursachenbehauptungen. (13) Empfiehl nie, überall gleichzeitig aktiv zu sein. (14) Behandle Angaben wie ich weiß es nicht, nicht ausgewertet, keine Angabe oder nicht beantwortet als fehlende Information, niemals als null oder als Beleg für etwas. missing_info listet die wichtigen fehlenden Angaben. completeness_note erklärt in ein bis zwei Sätzen, warum Diagnose, Content-Plan und Maßnahme dadurch nicht ganz vollständig sein können; sind alle wichtigen Angaben vorhanden, bleibt beides leer. JSON-Schema exakt: {\"status\":\"ready|needs_clarification\",\"questions\":[\"...\"],\"diagnosis\":{\"central_problem\":\"...\",\"confidence\":\"hoch|mittel|niedrig\",\"evidence\":[\"...\"],\"uncertainties\":[\"...\"],\"priority_type\":\"marketingkanal|uebergang|bindung|angebotsklaerung|klaerung\",\"priority\":\"...\",\"rationale\":\"...\",\"summary\":\"...\",\"topic_ideas\":[{\"title\":\"...\",\"pillar\":\"...\"}],\"business_type\":\"suchgeschaeft|vertrauensgeschaeft|wunschgeschaeft|vorsorgegeschaeft|mischform\",\"business_type_reason\":\"...\",\"blind_spot\":\"...\",\"bottleneck\":{\"type\":\"...\",\"explanation\":\"...\"},\"content_mix\":{\"erkennen\":30,\"verstehen\":20,\"vertrauen\":20,\"beweis\":15,\"angebot\":15},\"content_mix_note\":\"...\",\"profession_note\":\"...\",\"missing_info\":[\"...\"],\"completeness_note\":\"...\"}}. Kleine Stichproben vorsichtig bewerten.\n\n"+facts+(force?" WICHTIG: Es wurde bereits nachgefragt oder weitere Antworten sind nicht möglich. Setze status ZWINGEND auf ready und stelle keine Fragen."+(retry?" ZWEITER VERSUCH: Gib ausschließlich status ready mit vollständiger diagnosis zurück.":""):"");
   callJSONChecked(SYS,prompt,function(data){
     if(data.status==="needs_clarification"){
       if(force){if(!retry){runStructuredDiagnosis(true);return;}dDiag="Fehler: Die Diagnose konnte nicht erstellt werden. Bitte erneut versuchen.";renderMain();return;}
@@ -487,30 +454,33 @@ function runStructuredDiagnosis(retry){
   },function(e){dDiag="Fehler: "+e;renderMain();});
 }
 
-function diagnosisText(d){
+var BN_LABELS={"fehlende klarheit":"Fehlende Klarheit","zu wenig reichweite":"Zu wenig Reichweite","falscher kanal":"Falscher Kanal","nur ein kanal":"Nur ein Kanal","fehlende auffindbarkeit":"Fehlende Auffindbarkeit","zu wenig vertrauen":"Zu wenig Vertrauen","zu wenig angebot":"Zu wenig Angebot","kein klarer kaufweg":"Kein klarer Kaufweg","zu viel fachsprache":"Zu viel Fachsprache","zu wenig kundenperspektive":"Zu wenig Kundenperspektive","unregelmäßige sichtbarkeit":"Unregelmäßige Sichtbarkeit","zu wenige kontaktpunkte":"Zu wenige Kontaktpunkte","zu wenig beweis":"Zu wenig Beweis","noch nicht sicher bestimmbar":"Noch nicht sicher bestimmbar"};
+function fixText(t){return String(t||"").replace(/(^|\n)(- |\d+\. )?([a-zäöü])/g,function(m,a,b,c){return a+(b||"")+c.toUpperCase();}).replace(/Conversion/g,"Übergang von Anfrage zu Buchung").replace(/[ \t]+,/g,",");}
+function diagnosisText(d){return fixText(diagnosisRaw(d));}
+function diagnosisRaw(d){
   var out=(d.confidence==="niedrig"?"Deine vorläufige Einschätzung":"Deine Diagnose")+"\n"+d.central_problem+"\n\nSicherheit der Einschätzung: "+(d.confidence||"nicht angegeben");
   if(d.completeness_note||(d.missing_info&&d.missing_info.length)){out+="\n\nWarum diese Auswertung nicht ganz vollständig ist";if(d.completeness_note)out+="\n"+d.completeness_note;if(d.missing_info&&d.missing_info.length)out+="\nWichtige fehlende Angaben:\n- "+d.missing_info.join("\n- ");}
   if(d.business_type&&BTYPES[d.business_type])out+="\n\nGeschäftsart (Einschätzung)\n"+BTYPES[d.business_type]+(d.business_type_reason?"\n"+d.business_type_reason:"");
   if(d.blind_spot)out+="\n\nDein blinder Fleck\n"+d.blind_spot;
-  if(d.bottleneck&&d.bottleneck.type)out+="\n\nDein größter Engpass\n"+d.bottleneck.type+(d.bottleneck.explanation?": "+d.bottleneck.explanation:"");
+  if(d.bottleneck&&d.bottleneck.type)out+="\n\nDein größter Engpass\n"+(BN_LABELS[String(d.bottleneck.type).toLowerCase()]||d.bottleneck.type)+(d.bottleneck.explanation?": "+d.bottleneck.explanation:"");
   if(d.profession_note)out+="\n\nFür deinen Beruf\n"+d.profession_note;
   if(d.evidence&&d.evidence.length)out+="\n\nWoran die Einschätzung erkennbar ist\n- "+d.evidence.join("\n- ");
   if(d.uncertainties&&d.uncertainties.length)out+="\n\nWas noch unsicher ist\n- "+d.uncertainties.join("\n- ");
   out+="\n\nWas jetzt Vorrang hat\n"+typeLabel(d.priority_type)+": "+(d.priority||"")+"\n"+(d.rationale||"");
-  if(d.weak_example)out+="\n\nSchwaches Beispiel\n"+d.weak_example;
-  if(d.improved_example)out+="\n\nVerbessertes Beispiel\n"+d.improved_example;
+  if(d.topic_ideas&&d.topic_ideas.length)out+="\n\nDrei Themenideen für deinen nächsten Beitrag\n- "+d.topic_ideas.map(function(x){return (x&&x.title?x.title:"")+(x&&x.pillar?" (Säule: "+x.pillar+")":"");}).join("\n- ");
   return out;
 }
 
 function generateStructuredPlan(facts){
-  var prompt="Erstelle auf Basis der fertigen Diagnose einen 7-Tage-Plan. Genau 3 Schritte, nur die festgelegte Priorität, insgesamt innerhalb der angegebenen Wochenzeit und des Budgets. Keine neue Strategie, keine Kaltakquise, keine garantierten Antworten oder Verkäufe. Ist die Priorität klaerung, bestehen die Schritte darin, vorhandene Kontakte und Gesprächsverläufe festzuhalten, offene Fragen zu klären und den eigenen Antwortweg auf Anfragen aufzuschreiben. Keine erneute Kontaktaufnahme zu früheren Interessenten, außer die Angaben nennen das Gespräch als offen, eine vereinbarte Fortsetzung oder eine laut Person passende erneute Nachricht. Erfolgskriterien beschreiben ausschließlich eigene Handlungen und Dokumentation (zum Beispiel: Nachrichten versendet, nächster Schritt klar erklärt, Antworten und Reaktionen festgehalten) und niemals, dass jemand antwortet, bucht oder ein Gespräch führt. Nenne keinen neuen Kanal, wenn die Person dafür nicht offen ist. Die Schritte gehen den größten Engpass und den blinden Fleck aus der Diagnose an, soweit die Priorität das zulässt. Nenne den Zeitraum nur als sieben Tage. JSON-Schema exakt: {\"weekly_time\":\"...\",\"priority_type\":\"...\",\"steps\":[{\"title\":\"...\",\"action\":\"...\",\"minutes\":30,\"goal\":\"...\"}],\"success_metrics\":[\"...\"]}.\n\nFAKTEN:\n"+facts+"\n\nDIAGNOSE:\n"+JSON.stringify(diagData);
+  var prompt="Erstelle auf Basis der fertigen Diagnose einen 7-Tage-Plan. Genau 3 Schritte, nur die festgelegte Priorität, insgesamt innerhalb der angegebenen Wochenzeit und des Budgets. Keine neue Strategie, keine Kaltakquise, keine garantierten Antworten oder Verkäufe. Ist die Priorität klaerung, sind die drei Schritte klar getrennt: Schritt 1 die eigenen Zahlen und Gesprächsverläufe festhalten, Schritt 2 das Angebot in wenigen Sätzen verständlich aufschreiben (Leistungsumfang, Ablauf, Preismodell und ein kleiner erster Schritt für Interessenten), Schritt 3 einen Beitrag zu einer der Themenideen aus der Diagnose vorbereiten. Auch bei anderen Prioritäten überschneiden sich die drei Schritte inhaltlich nicht. Keine erneute Kontaktaufnahme und keine Nachfass-Nachricht an frühere Interessenten. Sprich direkt mit du. Erfolgskriterien beschreiben ausschließlich eigene Handlungen und Dokumentation (zum Beispiel: Nachrichten versendet, nächster Schritt klar erklärt, Antworten und Reaktionen festgehalten) und niemals, dass jemand antwortet, bucht oder ein Gespräch führt. Nenne keinen neuen Kanal, wenn die Person dafür nicht offen ist. Die Schritte gehen den größten Engpass und den blinden Fleck aus der Diagnose an, soweit die Priorität das zulässt. Nenne den Zeitraum nur als sieben Tage. JSON-Schema exakt: {\"weekly_time\":\"...\",\"priority_type\":\"...\",\"steps\":[{\"title\":\"...\",\"action\":\"...\",\"minutes\":30,\"goal\":\"...\"}],\"success_metrics\":[\"...\"]}.\n\nFAKTEN:\n"+facts+"\n\nDIAGNOSE:\n"+JSON.stringify(diagData);
   callJSONChecked(SYS,prompt,function(data){
     if(!Array.isArray(data.steps)||data.steps.length!==3){dTask="Fehler: Der Wochenplan war unvollständig. Bitte erneut versuchen.";renderMain();return;}
     planData=data;dTask=planText(data);renderMain();
   },function(e){dTask="Fehler: "+e;renderMain();});
 }
 
-function planText(p){
+function planText(p){return fixText(planRaw(p));}
+function planRaw(p){
   var out="Dein Plan für die nächsten 7 Tage\nVerfügbare Zeit: "+(p.weekly_time||"laut deiner Angabe")+"\nArt: "+typeLabel(p.priority_type||diagData.priority_type);
   p.steps.forEach(function(s,i){out+="\n\n"+(i+1)+". "+s.title+"\n"+s.action+"\nZeit: "+s.minutes+" Minuten\nZiel: "+s.goal;});
   if(p.success_metrics&&p.success_metrics.length)out+="\n\nErfolg nach 7 Tagen prüfen\n- "+p.success_metrics.join("\n- ");
@@ -524,23 +494,23 @@ function visibilityAreas(){
   function has(list,arr){return list.some(function(x){return arr.indexOf(x)>=0;});}
   var NOPATH=["Es gibt noch keinen klaren nächsten Schritt","Ich weiß es nicht"];
   return [
-    {k:"Auffindbarkeit",ok:has(["Website","Landingpage / Angebotsseite","Google-Unternehmensprofil","Blog"],ch),basis:"Website, Landingpage, Google-Unternehmensprofil oder Blog"},
-    {k:"Aufmerksamkeit",ok:has(["Facebook","Instagram","LinkedIn","TikTok","YouTube","Veranstaltungen oder Märkte","Empfehlungen","Flyer","Printwerbung","Lokale Werbung","Bezahlte Online-Werbung","Kooperationspartner","Tierärzte / andere Tierberufler"],ch),basis:"Social Media, Veranstaltungen, Empfehlungen, Flyer oder Kooperationen"},
-    {k:"Vertrauen",ok:has(["YouTube","Blog","Newsletter / E-Mail-Liste","Community (z. B. Skool)"],ch)||has(["Fachwissen","Erklärbeiträge","Videos","Fallbeispiele"],ct),basis:"Fachbeiträge, Videos, Community, Newsletter oder Fallbeispiele"},
-    {k:"Angebot",ok:ch.indexOf("Landingpage / Angebotsseite")>=0||pc.some(function(x){return /Angebotsseite/.test(x);})||offer.action==="Angebotsseite öffnen",basis:"eine klare Angebotsseite"},
+    {k:"Auffindbarkeit",ok:has(["Website oder Blog","Angebotsseite (eigene Seite für ein Angebot)","Google-Unternehmensprofil"],ch),basis:"Website, Landingpage, Google-Unternehmensprofil oder Blog"},
+    {k:"Aufmerksamkeit",ok:has(["Facebook","Instagram","LinkedIn","TikTok","YouTube","Veranstaltungen oder Märkte","Empfehlungen","Flyer / Printwerbung","Bezahlte Werbung","Kooperationen / Tierärzte"],ch),basis:"Social Media, Veranstaltungen, Empfehlungen, Flyer oder Kooperationen"},
+    {k:"Vertrauen",ok:has(["YouTube","Website oder Blog","Newsletter / E-Mail-Liste","Community (z. B. Skool)"],ch)||has(["Fachwissen","Erklärbeiträge","Videos","Fallbeispiele"],ct),basis:"Fachbeiträge, Videos, Community, Newsletter oder Fallbeispiele"},
+    {k:"Angebot",ok:ch.indexOf("Angebotsseite (eigene Seite für ein Angebot)")>=0||pc.some(function(x){return /Angebotsseite/.test(x);})||offer.action==="Angebotsseite öffnen",basis:"eine Angebotsseite mit Leistung, Ablauf und nächstem Schritt"},
     {k:"Beweis",ok:has(["Fallbeispiele","Kundenstimmen"],ct),basis:"Erfahrungen, Arbeitsbeispiele oder Kundenstimmen"},
     {k:"Handlungsweg",ok:pc.some(function(x){return NOPATH.indexOf(x)<0;}),basis:"Kontakt, Terminbuchung, Kauf oder Anmeldung"}
   ];
 }
 function visibilityFacts(){
-  var ch=channelList(),out=visibilityAreas().map(function(r){return r.k+": "+(r.ok?"laut Angaben erkennbar":"laut Angaben nicht erkennbar")+" ("+r.basis+")";});
+  var ch=channelList(),out=visibilityAreas().map(function(r){return r.k+": "+(r.ok?"in den Angaben erkennbar":"in den Angaben nicht genannt (das heißt nicht, dass es fehlt)")+" ("+r.basis+")";});
   if(ch.length===1)out.push("NUR EIN KANAL: Die gesamte Sichtbarkeit steht laut Angaben auf "+ch[0]+".");
   else if(!ch.length)out.push("Es wird bisher kein Sichtbarkeitsweg genutzt.");
   else out.push("Genutzte Wege: "+ch.join(", ")+".");
   return out.join("\n");
 }
 function renderVisibilityPanel(){
-  return '<div class="vis"><div class="rl" style="color:#2D4A3E">Dein Sichtbarkeitssystem – nach deinen Angaben</div>'+visibilityAreas().map(function(r){return '<div class="vis-row '+(r.ok?'ok':'no')+'"><span class="vis-ic">'+(r.ok?'&#10003;':'&#8212;')+'</span><span><strong>'+r.k+'</strong> – '+(r.ok?'erkennbar':'noch nicht erkennbar')+'<br><small>'+r.basis+'</small></span></div>';}).join('')+'<p class="field-help">Das ist keine Bewertung deiner Arbeit, sondern eine Übersicht aus deinen Antworten. Du brauchst nicht überall gleichzeitig aktiv zu sein, sondern mehrere sinnvoll verbundene Wege.</p></div>';
+  return '<div class="vis"><div class="rl" style="color:#2D4A3E">Dein Sichtbarkeitssystem – nach deinen Angaben</div>'+visibilityAreas().map(function(r){return '<div class="vis-row '+(r.ok?'ok':'no')+'"><span class="vis-ic">'+(r.ok?'&#10003;':'&#8212;')+'</span><span><strong>'+r.k+'</strong> – '+(r.ok?'in deinen Angaben erkennbar':'in deinen Angaben nicht genannt')+'<br><small>'+r.basis+'</small></span></div>';}).join('')+'<p class="field-help">Das ist keine Bewertung deiner Arbeit, sondern eine Übersicht aus deinen Antworten. Du brauchst nicht überall gleichzeitig aktiv zu sein, sondern mehrere sinnvoll verbundene Wege.</p></div>';
 }
 function normalizedMix(m){
   var keys=["erkennen","verstehen","vertrauen","beweis","angebot"],labels=["Erkennen","Verstehen","Vertrauen","Beweis","Angebot"];
@@ -562,7 +532,10 @@ function retryBox(fn){
 function renderDiagResult(){
   var html=renderStepBar();
   if(dStep===1&&!dDiag)return html+'<div class="spin-w"><div class="spin"></div></div><div class="status">Analysiere deine Antworten...</div>';
-  if(dDiag)html+='<div class="rbox d"><div class="rl">&#129517; Kompass-Diagnose</div><p>'+formatAI(dDiag)+'</p></div>';
+  if(dDiag&&diagData&&diagData.summary&&dDiag.indexOf("Fehler:")!==0){
+    html+='<div class="rbox d"><div class="rl">&#129517; Kurz gesagt</div><p>'+formatAI(fixText(diagData.summary))+'</p></div>'+
+      '<details class="full"><summary>Ganze Auswertung anzeigen</summary><div class="rbox d"><div class="rl">&#129517; Kompass-Diagnose</div><p>'+formatAI(dDiag)+'</p></div></details>';
+  } else if(dDiag)html+='<div class="rbox d"><div class="rl">&#129517; Kompass-Diagnose</div><p>'+formatAI(dDiag)+'</p></div>';
   if(dDiag&&dDiag.indexOf("Fehler:")!==0&&diagData)html+=renderVisibilityPanel()+renderMixPanel();
   if(dDiag&&dDiag.indexOf("Fehler:")===0)html+=retryBox("runStructuredDiagnosis()");
   if(dTask&&dTask.indexOf("Fehler:")===0)html+=retryBox("runStructuredDiagnosis()");
@@ -635,7 +608,7 @@ function sendChat(){
 function genCont(){
   dStep=3;dCont="";renderMain();
   var facts=profileContext()+"\n\nANTWORTEN:\n"+answersSummary()+"\n\nDIAGNOSE:\n"+JSON.stringify(diagData)+"\n\nPLAN:\n"+JSON.stringify(planData);
-  var prompt="Erstelle genau ein direkt verwendbares Ergebnis passend zur festgelegten Priorität. Wiederhole weder Diagnose noch Wochenplan. Wähle ein Format: antwortvorlage (Antwort auf eine Anfrage), beitrag (ein Beitrag für genau einen Kanal), flyertext oder gespraechsablauf (Ablauf eines Erstgesprächs). Bei den Prioritäten klaerung und uebergang passt meist antwortvorlage oder gespraechsablauf; bei marketingkanal beitrag oder flyertext, und zwar nur für einen Kanal, für den die Person offen ist. content ist der fertige Text, den die Person kopieren und mit wenig Anpassung nutzen kann, höchstens 180 Wörter, mit [Platzhaltern] für fehlende Angaben wie Preis, Link oder Termin. Im content stehen keine Erklärungen, Pläne oder Erfolgskennzahlen. adjust_notes: höchstens 3 kurze Hinweise, was die Person vor der Nutzung anpassen oder prüfen soll. Keine ungefragte Direktnachricht an fremde Personen. Bei bestehenden Kontakten nur, wenn laut Angaben das Gespräch noch offen ist, eine Fortsetzung vereinbart wurde oder die Person eine erneute Nachricht für passend hält. Der Call-to-Action entspricht exakt den Nutzerangaben. Keine Garantien. Bei Beschwerden eines Tieres tierärztliche Abklärung nennen, keine Ursachen oder Diagnosen. JSON-Schema exakt: {\"measure_type\":\"uebergang|marketingkanal|bindung|angebotsklaerung|klaerung\",\"format\":\"antwortvorlage|beitrag|flyertext|gespraechsablauf\",\"title\":\"...\",\"content\":\"...\",\"adjust_notes\":[\"...\"]}.\n\n"+facts;
+  var prompt="Erstelle genau ein direkt verwendbares Ergebnis passend zur festgelegten Priorität. Wiederhole weder Diagnose noch Wochenplan. Wähle ein Format: antwortvorlage (Antwort auf eine Anfrage), beitrag (ein Beitrag für genau einen Kanal), flyertext oder gespraechsablauf (Ablauf eines Erstgesprächs). Bei den Prioritäten klaerung und uebergang passt meist antwortvorlage oder gespraechsablauf; bei marketingkanal beitrag oder flyertext, und zwar nur für einen Kanal, für den die Person offen ist. content ist der fertige Text, den die Person kopieren und mit wenig Anpassung nutzen kann, höchstens 180 Wörter, mit [Platzhaltern] für fehlende Angaben wie Preis, Link oder Termin. Im content stehen keine Erklärungen, Pläne oder Erfolgskennzahlen. adjust_notes: höchstens 3 kurze Hinweise, was die Person vor der Nutzung anpassen oder prüfen soll. Keine Direktnachricht an fremde Personen und keine Nachfass-Nachricht an frühere Interessenten. Bei der Priorität klaerung wähle bevorzugt eine antwortvorlage für eine eingehende Anfrage oder einen beitrag zu einer Themenidee aus der Diagnose. Der Call-to-Action entspricht exakt den Nutzerangaben. Keine Garantien. Bei Beschwerden eines Tieres tierärztliche Abklärung nennen, keine Ursachen oder Diagnosen. JSON-Schema exakt: {\"measure_type\":\"uebergang|marketingkanal|bindung|angebotsklaerung|klaerung\",\"format\":\"antwortvorlage|beitrag|flyertext|gespraechsablauf\",\"title\":\"...\",\"content\":\"...\",\"adjust_notes\":[\"...\"]}.\n\n"+facts;
   callJSONChecked(SYS,prompt,function(c){
     if(c&&Array.isArray(c.content))c.content=c.content.join("\n");
     if(!c||!c.title||!c.content){dCont="Fehler: Die Maßnahme war unvollständig. Bitte erneut versuchen.";renderMain();return;}
@@ -677,6 +650,7 @@ document.addEventListener("input",function(e){
     if(x)x.className=((a&&num(a.value)>0)||(t&&num(t.value)>0))?"":"hidden";
   }
 });
+window.addEventListener("beforeprint",function(){Array.prototype.forEach.call(document.querySelectorAll("details"),function(d){d.open=true;});});
 render();
 </script>
 <script>
