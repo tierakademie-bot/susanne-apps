@@ -766,12 +766,17 @@ function runCase(c,cb){
   });
 }
 function renderTestlauf(){
-  var opts='<option value="">Alle 19 Berufe (dauert lange)</option>'+Object.keys(GROUP_NAMES).map(function(k){return '<option value="'+k+'">Nur Gruppe: '+GROUP_NAMES[k]+'</option>';}).join('');
+  var opts='<option value="">Alle 19 Berufe (dauert lange)</option>'+Object.keys(GROUP_NAMES).map(function(k){return '<option value="'+k+'">Nur Gruppe: '+GROUP_NAMES[k]+'</option>';}).join('')+'<option value="__multi">Kanal-Übertragung (Hundetraining, Instagram + Facebook)</option>';
   $("card").innerHTML='<div class="card-hdr"><div class="e">Nur für dich</div><h2>Testlauf</h2><p>Prüft Berufe mit Musterangaben gegen die Fachgrenzen-Regeln.</p></div><div class="body"><select id="tgroup">'+opts+'</select><select id="tanimal" style="margin-top:10px">'+'<option value="">Tierart: Hunde</option>'+ANIMALS.slice(1).map(function(a){return '<option>'+a+'</option>';}).join('')+'</select><button class="btn-p" onclick="startTest()" style="margin-top:12px">Testlauf starten</button><p class="field-help">Tipp: erst nur eine Gruppe testen. Mit einer anderen Tierart laufen alle Berufe, die zu dieser Tierart passen, mit allgemeinen Musterangaben. Die App wartet zwischen den Anfragen, damit dein KI-Zugang nicht überlastet wird.</p><div id="tprog" class="status"></div><div id="tout"></div></div>';
 }
 function startTest(){
   if(window.testRun)return;
-  var g=$("tgroup").value;window.testAnimal=$("tanimal")?$("tanimal").value:"";var cs=TESTCASES.filter(function(c){return (!g||GROUP_OF[c[0]]===g)&&(!window.testAnimal||!(/hund/i.test(c[0])||(window.testAnimal.indexOf("Pferde")!==0&&/pferd|reit/i.test(c[0]))));}),i=0;testResults=[];window.testRun=true;
+  var g=$("tgroup").value;
+  if(g==="__multi"){window.testAnimal="";var mc=TESTCASES.filter(function(c){return /Hundetraining/.test(c[0]);})[0];window.testRun=true;$("tout").innerHTML="";$("tprog").textContent="Kanal-Übertragung läuft …";testResults=[];
+    applyCase(mc);dAnswers[qIdx("channels")]=["Instagram","Facebook"];cTopic="Welpen und Leinenführigkeit: Was in der ersten Trainingsstunde passiert";cMulti="";genMulti();
+    pollUntil(function(){return cMulti;},300000,function(){window.testRun=false;testResults.push({name:"Kanal-Übertragung (Hundetraining)",groups:"Instagram + Facebook",hits:cMulti.indexOf("Fehler:")===0?["Fehler bei der Übertragung"]:violations(cMulti),text:cMulti});showTestReport(true);});
+    return;}
+  window.testAnimal=$("tanimal")?$("tanimal").value:"";var cs=TESTCASES.filter(function(c){return (!g||GROUP_OF[c[0]]===g)&&(!window.testAnimal||!(/hund/i.test(c[0])||(window.testAnimal.indexOf("Pferde")!==0&&/pferd|reit/i.test(c[0]))));}),i=0;testResults=[];window.testRun=true;
   $("tout").innerHTML="";
   (function next(){
     if(i>=cs.length){window.testRun=false;showTestReport(true);return;}
