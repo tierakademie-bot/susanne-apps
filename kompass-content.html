@@ -194,7 +194,7 @@ function callAI(sys,user,history,cb,errcb,model,jsonMode,attempt){
   function go(){
     fetch("https://tierakademie-proxy.tierakademie.workers.dev",{
       method:"POST",headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({model:model,max_tokens:jsonMode?4096:1800,system:system,messages:msgs})
+      body:JSON.stringify({model:model,max_tokens:jsonMode?8000:2500,system:system,messages:msgs})
     }).then(function(r){
       if(!r.ok){
         var e=new Error("Fehler "+r.status);
@@ -230,7 +230,7 @@ function callCheckedAI(sys,user,history,cb,errcb){
   callAI(sys,user,history,function(first){
     if(!needsReview(first)){cb(first);return;}
     var review="Prüfe den folgenden Entwurf streng gegen alle Qualitätsregeln. Korrigiere insbesondere medizinische Kausalbehauptungen, erfundene Qualifikationen oder Gratisangebote, falsche Gleichstellung mit Tierärzten, pauschale Massenansprache und respektlosen Ton. Sprich durchgehend in der Du-Form (nie 'die Person'), schreibe 'in deinen Angaben nicht genannt' statt 'fehlt' oder 'ohne', entferne Nachfass-Nachrichten an frühere Interessenten und korrigiere Rechtschreibung und Rohlabels. Symptome nie als Diagnose bezeichnen; bei Beschwerden tierärztliche Abklärung vor ergänzender Beratung nennen. Erhalte die hilfreiche Marketingaussage, aber ändere riskante Stellen. Gib nur die vollständig korrigierte Endfassung in Klartext aus."+reviewHint(violations(first))+"\n\nVERIFIZIERTE ANGABEN:\n"+user+"\n\nENTWURF:\n"+first;
-    callAI(SYS,review,null,cb,function(){errcb("Die Sicherheitsprüfung konnte nicht abgeschlossen werden. Bitte erneut versuchen.");});
+    callAI(SYS,review,null,cb,function(m){errcb("Die Sicherheitsprüfung konnte nicht abgeschlossen werden. Bitte erneut versuchen."+(m?" ("+m+")":""));});
   },errcb);
 }
 
@@ -279,7 +279,7 @@ function callJSONChecked(sys,user,cb,errcb){
     var raw=JSON.stringify(data);
     if(!needsReview(raw)){cb(data);return;}
     var review="Prüfe dieses JSON streng gegen alle Qualitätsregeln. Sprich durchgehend in der Du-Form (nie 'die Person'), schreibe 'in deinen Angaben nicht genannt' statt 'fehlt' oder 'ohne', entferne Nachfass-Nachrichten an frühere Interessenten, korrigiere Rechtschreibung und Rohlabels. Entferne Garantien, Kaltakquise an Fremde, erfundene Fakten, medizinische Behauptungen und unzulässige Schlussfolgerungen. Bewahre exakt dieselben JSON-Schlüssel und Datentypen. Gib nur das korrigierte JSON zurück."+reviewHint(violations(raw))+"\n\nVERIFIZIERTE ANGABEN:\n"+user+"\n\nJSON:\n"+raw;
-    callJSON(SYS,review,cb,function(){errcb("Die Sicherheitsprüfung konnte nicht abgeschlossen werden. Bitte erneut versuchen.");});
+    callJSON(SYS,review,cb,function(m){errcb("Die Sicherheitsprüfung konnte nicht abgeschlossen werden. Bitte erneut versuchen."+(m?" ("+m+")":""));});
   },errcb);
 }
 
