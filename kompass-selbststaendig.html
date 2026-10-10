@@ -162,7 +162,7 @@ var FILTERS={
 };
 function violations(t){
   t=String(t||"");var out=[];
-  ["all"].concat(activeGroups()).forEach(function(g){(FILTERS[g]||[]).forEach(function(f){var re=new RegExp(f[0].source,"gi"),m,n=0;while((m=re.exec(t))&&n<3){if(m[0].length===0)re.lastIndex++;if(/\b(?:kein\w*|nicht|ohne|nie|niemals|weder|ob)\b/i.test(t.slice(Math.max(0,m.index-45),m.index).split(/[.!?:;\n]/).pop())||/^[^.!?]{0,120}nicht genannt/i.test(t.slice(m.index+m[0].length)))continue;n++;var i=m.index;out.push(f[1]+": «"+t.slice(Math.max(0,i-30),i+m[0].length+30).replace(/\s+/g," ")+"»");}});});
+  ["all"].concat(activeGroups()).forEach(function(g){(FILTERS[g]||[]).forEach(function(f){var re=new RegExp(f[0].source,"gi"),m,n=0;while((m=re.exec(t))&&n<3){if(m[0].length===0)re.lastIndex++;if(/\[Platzhalter[^\]]*$/.test(t.slice(Math.max(0,m.index-240),m.index))||/\b(?:kein\w*|nicht|ohne|nie|niemals|weder|ob)\b/i.test(t.slice(Math.max(0,m.index-45),m.index).split(/[.!?:;\n]/).pop())||/^[^.!?]{0,120}nicht genannt/i.test(t.slice(m.index+m[0].length)))continue;n++;var i=m.index;out.push(f[1]+": «"+t.slice(Math.max(0,i-30),i+m[0].length+30).replace(/\s+/g," ")+"»");}});});
   return out;
 }
 function reviewHint(hits){var r=groupRules();return (r?"\n\nFACHGRENZEN-REGELN FÜR DIESEN BERUF: "+r:"")+(hits.length?"\n\nDIESE STELLEN SIND UNZULÄSSIG UND MÜSSEN UMFORMULIERT WERDEN: "+hits.join(" | "):"");}
