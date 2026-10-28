@@ -132,7 +132,9 @@ textarea:focus { border-color:var(--forest); }
 <script>
   const MEMBER_ACCESS_END = Date.parse('2026-10-29T11:00:00Z');
   const MEMBER_PASSWORD_SHA256 = 'e20126b83e5769176af6b7d7ceda3bd430c88fc66e5400996d0366b9f20baab5';
+  const ADMIN_PASSWORD_SHA256 = 'c32592d511a78e967e53bbf68eda44b5ecb57e6d7fb6d02f7e9ec38dc81eae0a';
   const MEMBER_SESSION_KEY = 'zuerst-ich-member-access';
+  const ADMIN_SESSION_KEY = 'zuerst-ich-admin-access';
 
   async function memberDigest(value) {
     const bytes = new TextEncoder().encode(value);
@@ -141,6 +143,7 @@ textarea:focus { border-color:var(--forest); }
   }
   function expireMemberAccess() {
     sessionStorage.removeItem(MEMBER_SESSION_KEY);
+    if (sessionStorage.getItem(ADMIN_SESSION_KEY) === 'granted') return;
     document.body.classList.add('member-locked');
     document.getElementById('member-gate').style.display = 'flex';
     document.getElementById('gate-message').textContent = 'Der Zugang ist am 29. Oktober um 12 Uhr abgelaufen.';
@@ -150,20 +153,33 @@ textarea:focus { border-color:var(--forest); }
     document.getElementById('member-gate').style.display = 'none';
   }
   async function initialiseMemberAccess() {
-    if (Date.now() >= MEMBER_ACCESS_END) { expireMemberAccess(); return; }
     document.body.classList.add('member-locked');
-    if (sessionStorage.getItem(MEMBER_SESSION_KEY) === 'granted') unlockMemberAccess();
+    const afterDeadline = Date.now() >= MEMBER_ACCESS_END;
+    const hasAdminAccess = sessionStorage.getItem(ADMIN_SESSION_KEY) === 'granted';
+    const hasMemberAccess = sessionStorage.getItem(MEMBER_SESSION_KEY) === 'granted';
+    if (hasAdminAccess || (!afterDeadline && hasMemberAccess)) {
+      unlockMemberAccess();
+    } else if (afterDeadline) {
+      expireMemberAccess();
+    }
     setTimeout(expireMemberAccess, Math.max(0, MEMBER_ACCESS_END - Date.now()));
     document.getElementById('member-form').addEventListener('submit', async event => {
       event.preventDefault();
       const input = document.getElementById('member-password');
       const message = document.getElementById('gate-message');
-      if (await memberDigest(input.value) === MEMBER_PASSWORD_SHA256) {
+      const digest = await memberDigest(input.value);
+      if (digest === ADMIN_PASSWORD_SHA256) {
+        sessionStorage.setItem(ADMIN_SESSION_KEY, 'granted');
+        unlockMemberAccess();
+        input.value = '';
+      } else if (Date.now() < MEMBER_ACCESS_END && digest === MEMBER_PASSWORD_SHA256) {
         sessionStorage.setItem(MEMBER_SESSION_KEY, 'granted');
         unlockMemberAccess();
         input.value = '';
       } else {
-        message.textContent = 'Das Kennwort stimmt nicht.';
+        message.textContent = Date.now() >= MEMBER_ACCESS_END
+          ? 'Der Mitgliederzugang ist abgelaufen.'
+          : 'Das Kennwort stimmt nicht.';
         input.focus();
       }
     });
