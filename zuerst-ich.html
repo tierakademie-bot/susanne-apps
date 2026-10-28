@@ -195,7 +195,7 @@ function init() {
     new Date().toLocaleDateString('de-DE',{weekday:'long',day:'numeric',month:'long'});
   document.getElementById('tip-text').textContent = TIPS[Math.floor(Math.random()*TIPS.length)];
   buildQuestions();
-  checkTodayDone();
+
 }
 
 function buildQuestions() {
@@ -230,7 +230,7 @@ async function doSubmit() {
       <div class="ai-lbl">Deine Einschätzung für heute</div>\n      <div class="ai-text" id="ai-out">\n        <div class="dl-wrap"><div class="dl"></div><div class="dl"></div><div class="dl"></div></div>\n      </div>
     </div>\n    <div class="card" style="padding:16px;">\n      <div style="font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--soft);margin-bottom:8px;font-weight:700;">Meine Beobachtung heute</div>
       <textarea id="notes" rows="3" placeholder="Wie hat mein Hund auf mich reagiert?" onblur="autoSave(${total})"></textarea>\n    </div>
-    <div class="saved-note" id="saved-note" style="display:none;">✓ Automatisch gespeichert</div>\n    <button class="btn outline" onclick="go('home', document.querySelector('.nav button:nth-child(1)'))">Zurück zur Übersicht</button>
+    <div class="saved-note" id="saved-note" style="display:none;">✓ Im Tagebuch gespeichert</div>\n    <button class="btn outline" onclick="endApp()">App beenden</button>
   `;
 
   const txt = await getAI(total);
@@ -250,7 +250,7 @@ function autoSave(total) {
     const note = document.getElementById('saved-note');
     if (note) note.style.display = 'block';
   } catch(e){}
-  checkTodayDone();
+
 }
 
 async function getAI(total) {
@@ -283,21 +283,18 @@ Kein Druck. Heute ist ein guter Tag zum Beobachten.`;
 Genieß die Verbindung heute. Sie trägt euch beide.`;
 }
 
-function checkTodayDone() {
-  try {
-    const entries = JSON.parse(localStorage.getItem('mf-entries')||'[]');
-    const today = entries.find(e=>e.date===todayKey);
-    const card = document.getElementById('home-card');
-    if (today && card) {
-      card.className='card accent';
-      card.innerHTML=`
-        <div class="card-title">Check erledigt ✓</div>
-        <div class="card-text">Heute: <strong style="color:var(--forest)">${today.total}/30</strong> · ${today.status}</div>
-        <button class="btn" onclick='openEntry(${JSON.stringify(today).replace(/'/g,"&#39;")})'>Auswertung ansehen</button>
-        <button class="btn outline" onclick="go('journal',document.querySelector('.nav button:nth-child(3)'))">Tagebuch öffnen</button>
-      `;
-    }
-  } catch(e){}
+function resetCheck() {
+  answers = {};
+  currentAI = '';
+  buildQuestions();
+  document.getElementById('prog').style.width = '0%';
+  document.getElementById('submit-btn').disabled = true;
+  document.getElementById('result-wrap').innerHTML = '';
+}
+
+function endApp() {
+  resetCheck();
+  go('home', document.querySelector('.nav button:nth-child(1)'));
 }
 
 function renderJournal() {
