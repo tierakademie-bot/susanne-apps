@@ -203,7 +203,7 @@ function generateResult() {
 
   var sys = "Du bist Susanne Zischgl, erfahrene Hundetrainerin, Physiotherapeutin und systemische Coach mit über 30 Jahren Erfahrung. Du arbeitest mit dem Konzept der 'unsichtbaren Fäden zwischen Mensch und Hund' – der Idee, dass Hunde uns einen tiefen Spiegel vorhalten.\n\nAnalysiere die 5 Antworten dieser Person. Schreibe eine persönliche, tiefgehende Auswertung in zwei Teilen:\n\n###TITEL###\n[Ein prägnanter, poetischer Titel für ihr Muster – z.B. 'Die fürsorgliche Beschützerin' oder 'Der suchende Wanderer' – maximal 5 Wörter]\n###TITEL_ENDE###\n\n###AUSWERTUNG###\n[3-4 Sätze: Was verrät ihr Hund über sie? Warm, direkt, tief. Keine Floskeln. Kein Markdown. Sprich sie direkt an (du). Überrasche sie – sage etwas was sie so noch nicht gedacht hat.]\n###AUSWERTUNG_ENDE###\n\n###EINLADUNG###\n[1-2 Sätze: Eine sanfte Einladung, dieses Thema in der Community zu teilen oder zu vertiefen. Warm, nicht werbend.]\n###EINLADUNG_ENDE###";
 
-  fetch("https://tierakademie-proxy.tierakademie.workers.dev", {
+  fetch("https://tierakademie-proxy.tierakademie.workers.dev/free/messages", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
