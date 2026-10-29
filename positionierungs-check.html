@@ -139,7 +139,7 @@ function generate(){
   showLoading();
   var msg="";
   for(var i=0;i<5;i++) msg+=QS[i].lbl+": "+(ANS[i]||"keine Antwort")+"\n";
-  fetch("https://tierakademie-proxy.tierakademie.workers.dev",{
+  fetch("https://tierakademie-proxy.tierakademie.workers.dev/legacy/messages",{
     method:"POST",
     headers:{"Content-Type":"application/json"},
     body:JSON.stringify({
