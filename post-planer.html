@@ -165,7 +165,7 @@ function generate(){
   if(thema) userMsg += "Schwerpunkt-Thema: "+thema+"\n";
   userMsg += "\nAbwechslungsreich in Ton und Thema, gut ueber die Wochen verteilt.";
 
-  fetch("https://tierakademie-proxy.tierakademie.workers.dev",{
+  fetch("https://tierakademie-proxy.tierakademie.workers.dev/legacy/messages",{
     method:"POST",
     headers:{"Content-Type":"application/json"},
     body:JSON.stringify({
