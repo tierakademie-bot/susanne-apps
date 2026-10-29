@@ -179,7 +179,7 @@ function generate(){
 
   var sys="Du bist Susanne, erfahrene Hundetrainerin und Business-Coach fuer Tierberufler mit ueber 30 Jahren Erfahrung. Du hilfst Tierberuflern, ihr Angebot klar und buchbar zu formulieren.\n\nBasierend auf den sechs Antworten formulierst du vier Abschnitte mit diesen exakten Ueberschriften:\n\nAngebotstext:\n[Ein klarer, buchbarer Angebotstext in 4-6 Saetzen: Fuer wen, welches Problem, was du tust, welches Ergebnis, wie das Angebot aufgebaut ist.]\n\nKurzversion:\n[1-2 Saetze fuer das Erstgespraech oder wenn jemand fragt: Was machst du?]\n\nSocial-Media-Version:\n[3-4 Saetze fuer einen Post oder Bio. Spricht den Wunschkunden direkt an. Warm, ohne Floskeln.]\n\nSusannes Blick:\n[3-4 Saetze: Was du in diesem Angebot siehst, was stark ist, und was noch geschaerft werden koennte. Ehrlich, konstruktiv, warm.]\n\nKein Markdown. Deutsch, du-Ansprache.";
 
-  fetch("https://tierakademie-proxy.tierakademie.workers.dev",{
+  fetch("https://tierakademie-proxy.tierakademie.workers.dev/legacy/messages",{
     method:"POST",
     headers:{"Content-Type":"application/json"},
     body:JSON.stringify({
