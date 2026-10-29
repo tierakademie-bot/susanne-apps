@@ -192,7 +192,7 @@ function callAI(sys,user,history,cb,errcb,model,jsonMode,attempt){
   var system=sys+"\n\n"+GUARDRAILS+(jsonMode?"\n\nAUSGABEFORMAT (hat Vorrang vor allen Formatregeln oben): Antworte ausschließlich mit einem gültigen JSON-Objekt, das mit { beginnt und mit } endet. Kein Text davor oder danach, keine Codeblöcke. Die Regeln zu Klartext, Überschriften und Leerzeilen gelten nur für die Textwerte innerhalb des JSON.":"");
   if(system.length+KANALTXT.length+2<=11000)system+="\n\n"+KANALTXT;else msgs[msgs.length-1]={role:"user",content:msgs[msgs.length-1].content+"\n\nVERBINDLICHE KANALREGELN:\n"+KANALTXT};
   function go(){
-    fetch("https://tierakademie-proxy.tierakademie.workers.dev",{
+    fetch("https://tierakademie-proxy.tierakademie.workers.dev/legacy/messages",{
       method:"POST",headers:{"Content-Type":"application/json"},
       body:JSON.stringify({model:model,max_tokens:jsonMode?8000:2500,system:system,messages:msgs})
     }).then(function(r){
