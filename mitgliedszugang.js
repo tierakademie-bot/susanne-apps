@@ -71,9 +71,9 @@
         document.getElementById('ta-member-bar')?.remove();
         renderLogin('Du kannst jetzt einen anderen Code eingeben.');
       };
-    } catch (_) {
+    } catch (error) {
       localStorage.removeItem(TOKEN_KEY);
-      renderLogin();
+      renderLogin(error.message || 'Der Zugang konnte nicht bestätigt werden.');
     }
   }
 
