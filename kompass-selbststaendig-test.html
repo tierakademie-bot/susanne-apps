@@ -186,10 +186,22 @@ function smallSample(){var r=dAnswers[qIdx("results")];return !r||!!r.unknown;}
 var screen="welcome",tab=0,dStep=0,dAnswers=[],dCurQ=0,dDiag="",dTask="",dChat=[],dCont="",cCat=CATS[0],cTopic="",cResult="",professions=[],professionOther="",animalFocus="",animalPick=[],animalText="",businessReach="",qualification="",clarifyMode=false,clarifyItems=[],clarifySource="form",aiClarificationText="",clarificationRounds=0,diagData=null,planData=null,measureData=null,evaluationLoading={diagnosis:false,plan:false,measure:false},testRetryCounts={diagnosis:0,plan:0,measure:0};
 
 function isTestPage(){return /kompass-selbststaendig-test\.html$/i.test(location.pathname);}
-function recordRetry(kind){if(isTestPage()){testRetryCounts[kind]=(testRetryCounts[kind]||0)+1;window.__kompassTestProtocol={retries:testRetryCounts};}}
+function publishTestRetries(){if(isTestPage()){window.__kompassTestProtocol={retries:testRetryCounts};document.documentElement.setAttribute("data-kompass-retries",JSON.stringify(testRetryCounts));}}
+function recordRetry(kind){if(isTestPage()){testRetryCounts[kind]=(testRetryCounts[kind]||0)+1;publishTestRetries();}}
 function diagnosisFacts(){return profileContext()+"\nANGEBOT: "+answerText(qIdx("offer"),dAnswers[qIdx("offer")])+"\nANGEBOTSART: "+answerText(qIdx("offerType"),dAnswers[qIdx("offerType")])+"\nKANÄLE: "+answerText(qIdx("channels"),dAnswers[qIdx("channels")])+"\nZAHLEN: "+answerText(qIdx("results"),dAnswers[qIdx("results")])+"\nKAUFWEG: "+answerText(qIdx("path"),dAnswers[qIdx("path")])+"\nEIGENE SEITE: "+answerText(qIdx("opennessPage"),dAnswers[qIdx("opennessPage")]);}
 function planFacts(){return profileContext()+"\nANGEBOT: "+answerText(qIdx("offer"),dAnswers[qIdx("offer")])+"\nKANÄLE: "+answerText(qIdx("channels"),dAnswers[qIdx("channels")])+"\nZAHLEN: "+answerText(qIdx("results"),dAnswers[qIdx("results")])+"\nZEIT: "+answerText(qIdx("capacity"),dAnswers[qIdx("capacity")]);}
-function measureFacts(contract){return profileContext()+"\nANGEBOT: "+answerText(qIdx("offer"),dAnswers[qIdx("offer")])+"\nANGEBOTSART: "+answerText(qIdx("offerType"),dAnswers[qIdx("offerType")])+"\nKONTAKTWEG: "+answerText(qIdx("path"),dAnswers[qIdx("path")])+"\nPRIORITÄT: "+contract.diagnosis;}
+function measureDecision(){
+  var r=dAnswers[qIdx("results")]||{},offer=dAnswers[qIdx("offer")]||{},path=dAnswers[qIdx("path")]||{};
+  var sources=Array.isArray(r.quelleAnfragen)?r.quelleAnfragen:[],choices=Array.isArray(path.choices)?path.choices:[];
+  var talks=num(r.talks),salesText=String(r.sales==null?"":r.sales).trim(),sales=num(r.sales);
+  var conversationsWithoutPurchase=talks>0&&(!salesText||sales<talks);
+  var social=["Instagram","Facebook","LinkedIn","TikTok","YouTube"],socialSource=sources.filter(function(x){return social.indexOf(x)>=0;})[0];
+  var wantsMessage=choices.some(function(x){return /Nachricht/.test(x);})||/Nachricht schreiben/.test(String(offer.action||""));
+  if(conversationsWithoutPurchase)return {format:"antwortvorlage",title:"Antwort auf eine Anfrage",kind:"reply"};
+  if(socialSource&&wantsMessage)return {format:"beitrag",title:"Beitrag für "+socialSource,kind:"post"};
+  return {format:"beitrag",title:"Beitrag",kind:"post"};
+}
+function measureFacts(contract){var decision=measureDecision();return profileContext()+"\nANGEBOT: "+answerText(qIdx("offer"),dAnswers[qIdx("offer")])+"\nANGEBOTSART: "+answerText(qIdx("offerType"),dAnswers[qIdx("offerType")])+"\nKONTAKTWEG: "+answerText(qIdx("path"),dAnswers[qIdx("path")])+"\nPRIORITÄT: "+contract.diagnosis+"\nFESTE FORM DER MASSNAHME: "+decision.title;}
 
 function $(id){return document.getElementById(id);}
 function esc(s){return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;");}
@@ -617,7 +629,7 @@ function saveAndStartDiag(){
 function startEvaluation(){
   dStep=1;dDiag="";dTask="";dCont="";diagData=null;planData=null;measureData=null;
   evaluationLoading={diagnosis:true,plan:true,measure:true};testRetryCounts={diagnosis:0,plan:0,measure:0};
-  if(isTestPage())window.__kompassTestProtocol={retries:testRetryCounts};
+  publishTestRetries();
   var contract=evaluationContract(evaluationLogic());renderMain();
   runStructuredDiagnosis(false);
   generateStructuredPlan(planFacts(),contract,0);
@@ -716,9 +728,18 @@ function normalizedMix(m){
   out[out.indexOf(Math.max.apply(null,out))]+=diff;
   return keys.map(function(k,i){return {label:labels[i],v:out[i]};});
 }
+function contentMixExplanation(){
+  var r=dAnswers[qIdx("results")]||{},sources=Array.isArray(r.quelleAnfragen)?r.quelleAnfragen.filter(Boolean):[];
+  var parts=[];
+  if(sources.length)parts.push("Du hast "+sources.join(" und ")+" als Anfragequelle angegeben. Deshalb setzt der Mix dort zuerst auf verständliche, sichtbare Inhalte.");
+  if(num(r.inquiries)<=5)parts.push("Weil bisher nur wenige Anfragen eingetragen sind, bekommt Erkennen mehr Raum: So verstehen passende Menschen schneller, worum es bei deinem Angebot geht.");
+  else if((r.kaufhindernisAuswahl||[]).indexOf("Preis war zu hoch")>=0)parts.push("Weil Preis als Kaufhindernis genannt wurde, enthält der Mix auch Angebot: Preis und Ablauf dürfen nachvollziehbar sichtbar werden.");
+  else parts.push("Der Mix verbindet Erkennen, Vertrauen und Angebot, damit Interessierte dein Thema verstehen und den nächsten Schritt einordnen können.");
+  return parts.slice(0,3).join(" ");
+}
 function renderMixPanel(){
   var m=diagData&&normalizedMix(diagData.content_mix);if(!m)return '';
-  return '<div class="vis"><div class="rl" style="color:#2D4A3E">Dein persönlicher Content-Mix – Richtwert</div>'+m.map(function(x){return '<div class="mix-row"><span class="mix-lbl">'+x.label+'</span><span class="mix-bar"><span class="mix-fill" style="display:block;width:'+x.v+'%"></span></span><span class="mix-val">'+x.v+' %</span></div>';}).join('')+(diagData.content_mix_note?'<p class="field-help">'+esc(diagData.content_mix_note)+'</p>':'')+'</div>';
+  return '<div class="vis"><div class="rl" style="color:#2D4A3E">Dein persönlicher Content-Mix – Richtwert</div>'+m.map(function(x){return '<div class="mix-row"><span class="mix-lbl">'+x.label+'</span><span class="mix-bar"><span class="mix-fill" style="display:block;width:'+x.v+'%"></span></span><span class="mix-val">'+x.v+' %</span></div>';}).join('')+(diagData.content_mix_note?'<p class="field-help">'+esc(diagData.content_mix_note)+'</p>':'')+'<p class="field-help">'+esc(contentMixExplanation())+'</p></div>';
 }
 
 function retryBox(fn){
@@ -844,9 +865,12 @@ function validMeasure(c){var first=String(c&&c.content||"").trim().split(/\n+/)[
 function generateStructuredMeasure(facts,contract,retry){
   if(retry){recordRetry("measure");evaluationLoading.measure=true;renderMain();}
   var target=animalFocus.trim()||"Menschen mit Tier";
-  var prompt="Erstelle eine kurze, direkt nutzbare Marketing-Maßnahme als JSON. Beginne nie mit einer Frage. Nenne die Zielgruppe nur genau als '"+target+"'; wenn keine Zielgruppe genannt ist, verwende neutral 'Menschen mit Tier'. Höchstens drei Platzhalter. Nur einen Call-to-Action. Keine Diagnose, keine erfundenen Details. Bei Tierberufen steht der tierärztliche Hinweis direkt nach der Begrüßung. JSON: {\"measure_type\":\"uebergang|marketingkanal|bindung|angebotsklaerung|klaerung\",\"format\":\"antwortvorlage|beitrag|flyertext|gespraechsablauf\",\"title\":\"...\",\"content\":\"...\",\"adjust_notes\":[\"...\"]}.\n\n"+facts;
+  var decision=measureDecision();
+  var structure=decision.kind==="reply"?"Antworte auf eine Anfrage: Beginne mit 'Hallo [Name],'. Direkt danach steht der kurze Hinweis, dass Beschwerden zuerst tierärztlich abgeklärt werden und die Beratung keine Diagnose oder Behandlung ersetzt. Danach folgen Angebot und Ablauf; zum Schluss ein klarer, freiwilliger nächster Schritt.":"Erstelle einen öffentlichen Beitrag: Beginne mit einem kurzen, nicht fragenden Einstieg, der das Anliegen der Zielgruppe aufgreift. Danach folgen Angebot und Ablauf. Erst danach steht der kurze Hinweis, dass Beschwerden zuerst tierärztlich abgeklärt werden und die Beratung keine Diagnose oder Behandlung ersetzt. Zum Schluss steht ein klarer nächster Schritt.";
+  var prompt="Erstelle eine kurze, direkt nutzbare Marketing-Maßnahme als JSON. "+structure+" Beginne nie mit einer Frage. Nenne die Zielgruppe nur genau als '"+target+"'; verwende keine andere Geschlechtsform und ergänze keine Zielgruppe. Höchstens drei Platzhalter. Nur einen Call-to-Action. Keine Diagnose, keine erfundenen Details. Verwende als Format '"+decision.format+"' und als Titel exakt '"+decision.title+"'. JSON: {\"measure_type\":\"uebergang|marketingkanal|bindung|angebotsklaerung|klaerung\",\"format\":\"antwortvorlage|beitrag\",\"title\":\"...\",\"content\":\"...\",\"adjust_notes\":[\"...\"]}.\n\n"+facts;
   callJSONChecked(SYS,prompt,function(c){
     if(c&&Array.isArray(c.content))c.content=c.content.join("\n");
+    if(c){c.format=decision.format;c.title=decision.title;}
     if(!validMeasure(c)){
       if(!retry){generateStructuredMeasure(facts,contract,true);return;}
       dCont="Fehler: Die Maßnahme war unvollständig. Bitte erneut versuchen.";evaluationLoading.measure=false;renderMain();return;
