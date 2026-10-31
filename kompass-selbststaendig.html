@@ -561,7 +561,13 @@ function validateDiagnosisContract(d,contract){
 function validatePlanContract(p,contract){
   if(!p||!Array.isArray(p.steps)||p.steps.length!==3)return false;
   var first=[p.steps[0].title,p.steps[0].action,p.steps[0].goal].join(" ");
-  if(!includesAny(first,contract.planKeywords.slice(0,contract.blindSpot?contract.planKeywords.length-1:contract.planKeywords.length)))return false;
+  if(contract.keywords.indexOf("vorläufig")>=0){
+    if(!includesAny(first,["verkauf","zahl"])||!includesAny(first,["freiwillig","nachfrage"]))return false;
+  } else if(contract.keywords.indexOf("anfragen")>=0){
+    if(!includesAny(first,["sichtbarkeit","kontakt"]))return false;
+  } else if(contract.keywords.indexOf("kaufweg")>=0){
+    if(!includesAny(first,["kaufweg","nächsten schritt"]))return false;
+  }
   var all=p.steps.map(function(s){return [s.title,s.action,s.goal].join(" ");}).join(" ");
   if(contract.blindSpot&&!includesAny(all,[contract.blindSpot.open==="Nein"?"google":"angebot","website","webseite","seite"]))return false;
   return true;
