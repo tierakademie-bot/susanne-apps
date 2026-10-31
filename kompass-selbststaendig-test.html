@@ -727,20 +727,19 @@ function retryBox(fn){
 
 function renderDiagResult(){
   var html=renderStepBar();
-  if(evaluationLoading.diagnosis||evaluationLoading.plan||evaluationLoading.measure)html+='<div class="status">Die Auswertung läuft. Das dauert etwa eine bis zwei Minuten. Fertige Teile erscheinen sofort.</div>';
-  if(dStep===1&&!dDiag&&!dTask&&!dCont)return html+'<div class="spin-w"><div class="spin"></div></div>';
-  if(dDiag&&diagData&&diagData.summary&&dDiag.indexOf("Fehler:")!==0){
-    html+='<div class="rbox d"><div class="rl">&#129517; Kurz gesagt</div><p>'+formatAI(fixText(diagData.summary))+'</p></div>'+
-      '<details class="full"><summary>Ganze Auswertung anzeigen</summary><div class="rbox d"><div class="rl">&#129517; Kompass-Diagnose</div><p>'+formatAI(dDiag)+'</p></div></details>';
-  } else if(dDiag)html+='<div class="rbox d"><div class="rl">&#129517; Kompass-Diagnose</div><p>'+formatAI(dDiag)+'</p></div>';
-  if(dDiag&&dDiag.indexOf("Fehler:")!==0&&diagData)html+=renderVisibilityPanel()+renderMixPanel();
+  if(evaluationLoading.diagnosis||evaluationLoading.plan||evaluationLoading.measure)html+='<div class="status">Die Auswertung läuft. Das dauert etwa eine bis zwei Minuten.</div>';
+  if(dDiag&&diagData&&diagData.summary&&dDiag.indexOf("Fehler:")!==0)html+='<div class="rbox d"><div class="rl">&#129517; Kurz gesagt</div><p>'+formatAI(fixText(diagData.summary))+'</p></div>';
+  else html+='<div class="rbox d"><div class="rl">&#129517; Kurz gesagt</div><p class="status">Wird erstellt …</p></div>';
+  if(dDiag&&dDiag.indexOf("Fehler:")!==0&&diagData){html+='<details class="full"><summary>Ganze Auswertung anzeigen</summary><div class="rbox d"><div class="rl">&#129517; Kompass-Diagnose</div><p>'+formatAI(dDiag)+'</p></div></details>'+renderVisibilityPanel()+renderMixPanel();}
+  else if(dDiag)html+='<div class="rbox d"><div class="rl">&#129517; Kompass-Diagnose</div><p>'+formatAI(dDiag)+'</p></div>';
+  else html+='<div class="rbox d"><div class="rl">&#129517; Kompass-Diagnose</div><p class="status">Wird erstellt …</p></div>';
   if(dDiag&&dDiag.indexOf("Fehler:")===0)html+=retryBox("runStructuredDiagnosis()");
   if(dTask&&dTask.indexOf("Fehler:")===0)html+=retryBox("runStructuredDiagnosis()");
-  if(evaluationLoading.plan&&!dTask)html+='<div class="spin-w"><div class="spin"></div></div><div class="status">Erstelle Wochenplan...</div>';
   if(dTask)html+='<div class="rbox"><div class="rl"><span class="screen-only">&#9989; </span>Deine nächsten drei Schritte (7 Tage)</div><p>'+formatAI(dTask)+'</p></div>';
+  else html+='<div class="rbox"><div class="rl">&#9989; Deine nächsten drei Schritte (7 Tage)</div><p class="status">Wird erstellt …</p></div>';
   if(dStep===2)html+=renderChat();
-  if(dCont||evaluationLoading.measure||dStep===3)html+=renderContArea();
-  if(dTask)html+='<div class="btn-row"><button class="btn-o" onclick="endApp()">App beenden</button></div>';
+  html+=renderContArea();
+  if(dTask&&dCont)html+='<div class="btn-row"><button class="btn-o" onclick="endApp()">App beenden</button></div>';
     return html;
 }
 
