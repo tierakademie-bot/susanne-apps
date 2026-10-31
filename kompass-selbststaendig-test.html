@@ -606,6 +606,7 @@ function addUnique(list,text){list=Array.isArray(list)?list:[];if(text&&list.ind
 function removeConversion(text,conversion){return conversion?String(text||"").split(conversion).join("").replace(/\s{2,}/g," ").trim():String(text||"");}
 function withoutConversion(list,conversion){return (Array.isArray(list)?list:[]).filter(function(x){return !conversion||String(x).indexOf(conversion)<0;});}
 function limitMissingPhrases(text,max){var count=0;return String(text||"").replace(/(?:in deinen Angaben nicht genannt|Dazu hast du nichts angegeben(?:\. Wenn es das gibt, ergänze es bitte\.)?|nichts angegeben)/gi,function(hit){count++;return count<=max?hit:"";}).replace(/\n[ \t]*[-–]\s*(?=\n|$)/g,"").replace(/\n{3,}/g,"\n\n").replace(/[ \t]{2,}/g," ").trim();}
+function limitMissingPhrasesAcrossEvaluation(){var count=0;function trim(text){return String(text||"").replace(/(?:in deinen Angaben nicht genannt|Dazu hast du nichts angegeben(?:\. Wenn es das gibt, ergänze es bitte\.)?|nichts angegeben)/gi,function(hit){count++;return count<=3?hit:"";}).replace(/[ \t]{2,}/g," ").replace(/\n{3,}/g,"\n\n").trim();}dDiag=trim(dDiag);dTask=trim(dTask);dCont=trim(dCont);}
 
 function saveAndStartDiag(){
   var err=saveCurrentAnswer();if(err){$("qerror").textContent=err;return;}
@@ -632,7 +633,7 @@ function runStructuredDiagnosis(retry){
       if(!retry){runStructuredDiagnosis(true);return;}
       dDiag="Die Auswertung ist nicht gelungen, bitte noch einmal versuchen.";diagData=null;evaluationLoading.diagnosis=false;renderMain();return;
     }
-    diagData=applyEvaluationRules(data.diagnosis,logic,contract);if(smallSample())diagData.confidence="niedrig";dDiag=diagnosisText(diagData);evaluationLoading.diagnosis=false;renderMain();
+    diagData=applyEvaluationRules(data.diagnosis,logic,contract);if(smallSample())diagData.confidence="niedrig";dDiag=diagnosisText(diagData);evaluationLoading.diagnosis=false;limitMissingPhrasesAcrossEvaluation();renderMain();
   },function(e){dDiag="Fehler: "+e;evaluationLoading.diagnosis=false;renderMain();});
 }
 
@@ -671,7 +672,7 @@ function generateStructuredPlan(facts,contract,retry){
       dTask="Die Auswertung ist nicht gelungen, bitte noch einmal versuchen.";evaluationLoading.plan=false;renderMain();return;
     }
     var cap=dAnswers[qIdx("capacity")]||{};data.weekly_time=(cap.time&&cap.time!=="Weiß ich noch nicht")?cap.time+" pro Woche":"nicht angegeben (der Plan bleibt bewusst klein)";data=addFriendlyFollowup(data);
-    planData=data;dTask=planText(data);evaluationLoading.plan=false;renderMain();
+    planData=data;dTask=planText(data);evaluationLoading.plan=false;limitMissingPhrasesAcrossEvaluation();renderMain();
   },function(e){dTask="Fehler: "+e;evaluationLoading.plan=false;renderMain();});
 }
 
@@ -851,7 +852,7 @@ function generateStructuredMeasure(facts,contract,retry){
       if(!retry){generateStructuredMeasure(facts,contract,true);return;}
       dCont="Fehler: Die Maßnahme war unvollständig. Bitte erneut versuchen.";evaluationLoading.measure=false;renderMain();return;
     }
-    measureData=c;dCont=measureText(c);evaluationLoading.measure=false;renderMain();
+    measureData=c;dCont=measureText(c);evaluationLoading.measure=false;limitMissingPhrasesAcrossEvaluation();renderMain();
   },function(e){dCont="Fehler: "+e;evaluationLoading.measure=false;renderMain();});
 }
 function genCont(){dStep=3;dCont="";evaluationLoading.measure=true;renderMain();generateStructuredMeasure(measureFacts(evaluationContract(evaluationLogic())),evaluationContract(evaluationLogic()),0);}
