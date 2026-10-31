@@ -579,6 +579,7 @@ function validateDiagnosisContract(d,contract){
 }
 function validatePlanContract(p,contract){
   if(!p||!Array.isArray(p.steps)||p.steps.length!==3)return false;
+  if(p.steps.some(function(s){return !s||!String(s.title||"").trim()||!String(s.action||"").trim()||!String(s.goal||"").trim()||!Number(s.minutes);}))return false;
   var first=[p.steps[0].title,p.steps[0].action,p.steps[0].goal].join(" ");
   if(contract.keywords.indexOf("vorläufig")>=0){
     if(!includesAny(first,["verkauf","zahl"])||!includesAny(first,["freiwillig","nachfrage"]))return false;
@@ -606,6 +607,7 @@ function applyEvaluationRules(d,logic,contract){
   if(d.business_type_reason)d.business_type_reason=removeConversion(d.business_type_reason,logic.conversionText);
   var obstacle=((dAnswers[qIdx("results")]||{}).kaufhindernisAuswahl||[]).join(", ");
   if(obstacle){
+    d.evidence=d.evidence.filter(function(x){return !/(?:kaufhindernis|grund gegen eine buchung|preis genannt|preis.*hindernis)/i.test(String(x));});
     d.missing_info=(Array.isArray(d.missing_info)?d.missing_info:[]).filter(function(x){return !/kaufhindernis.*preis|eindruck.*preis/i.test(String(x));});
     d.uncertainties=(Array.isArray(d.uncertainties)?d.uncertainties:[]).filter(function(x){return !/kaufhindernis.*preis|eindruck.*preis/i.test(String(x));});
     d.evidence=addUnique(d.evidence,obstacle.indexOf("Weiß ich nicht")>=0?"Das Kaufhindernis ist noch unbekannt.":"Als möglicher Grund gegen eine Buchung wurde genannt: "+obstacle+".");
@@ -1005,3 +1007,4 @@ if(!/[?&]test(=|&|$)/.test(location.search))render();
 </footer>
 </body>
 </html>
+
