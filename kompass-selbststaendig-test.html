@@ -704,6 +704,15 @@ function generateStructuredPlan(facts,contract,retry){
 }
 
 function planText(p){return fixText(planRaw(p));}
+function safePlanAction(step,index){
+  var action=String(step&&step.action||"").trim();
+  if(!action||/\b(?:ist|sind|war|waren|bleibt|stehen)\s*\.$/i.test(action)||/^aktion\s*:?$/i.test(action)){
+    if(index===0)return "Halte den ersten nächsten Schritt schriftlich fest und nutze nur Angaben, die bei dir bereits feststehen.";
+    if(index===1)return "Nutze zuerst deinen vorhandenen Kontaktweg und prüfe offene Nachrichten sowie den klaren Hinweis auf Angebot und nächsten Schritt.";
+    return "Setze den vorgesehenen Angebotsort mit Kontaktweg um und ergänze nur Angaben, die bereits feststehen.";
+  }
+  return action;
+}
 function safePlanGoal(step,index){
   var goal=String(step&&step.goal||"").trim();
   if(!goal||/\b(?:ist|sind|war|waren|bleibt|stehen)\s*\.$/i.test(goal)||/^ziel\s*:?$/i.test(goal)){
@@ -713,7 +722,7 @@ function safePlanGoal(step,index){
 }
 function planRaw(p){
   var out="Dein Plan für die nächsten 7 Tage\nVerfügbare Zeit: "+(p.weekly_time||"laut deiner Angabe")+"\nArt: "+typeLabel(p.priority_type||diagData.priority_type);
-  p.steps.forEach(function(s,i){out+="\n\n"+(i+1)+". "+String(s.title||"").replace(/^\s*(?:Schritt\s*)?\d+\s*[:.\-–]\s*/i,"")+"\n"+s.action+"\nZeit: "+s.minutes+" Minuten\nZiel: "+safePlanGoal(s,i);});
+  p.steps.forEach(function(s,i){out+="\n\n"+(i+1)+". "+String(s.title||"").replace(/^\s*(?:Schritt\s*)?\d+\s*[:.\-–]\s*/i,"")+"\n"+safePlanAction(s,i)+"\nZeit: "+s.minutes+" Minuten\nZiel: "+safePlanGoal(s,i);});
   if(p.success_metrics&&p.success_metrics.length)out+="\n\nErfolg nach 7 Tagen prüfen\n- "+p.success_metrics.join("\n- ");
   return out;
 }
