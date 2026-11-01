@@ -612,6 +612,12 @@ function applyEvaluationRules(d,logic,contract){
     d.uncertainties=(Array.isArray(d.uncertainties)?d.uncertainties:[]).filter(function(x){return !/kaufhindernis.*preis|eindruck.*preis/i.test(String(x));});
     d.evidence=addUnique(d.evidence,obstacle.indexOf("Weiß ich nicht")>=0?"Das Kaufhindernis ist noch unbekannt.":"Als möglicher Grund gegen eine Buchung wurde genannt: "+obstacle+".");
   }
+  if(logic.sources&&logic.sources.length){
+    var sourceWords=logic.sources.map(function(s){return String(s).replace(/[.*+?^${}()|[\]\\]/g,"\\$&");}).join("|");
+    var sourceFact=new RegExp("(?:anfragen|anfragequelle).*(?:"+sourceWords+")|(?:"+sourceWords+").*(?:anfragen|anfragequelle)","i");
+    d.evidence=d.evidence.filter(function(x){return !sourceFact.test(String(x));});
+    d.evidence=addUnique(d.evidence,"Die meisten Anfragen kamen laut Angabe über: "+logic.sources.join(", ")+".");
+  }
   if((logic.reactions===0)||(logic.inquiries!==null&&logic.inquiries<=5)){d.content_mix=d.content_mix||{};d.content_mix.erkennen=Math.max(35,Number(d.content_mix.erkennen)||0);d.content_mix_note="Der Anteil Erkennen ist höher, weil deine Angaben bisher keine oder nur wenige Anfragen zeigen.";}
   if(d.content_mix_note)d.content_mix_note=d.content_mix_note.replace(/wegen der Fachgrenzen[^.]*\.?/ig,"").replace(/\s{2,}/g," ").trim();
   d.missing_info=uniqueFacts(d.missing_info,{});var seen={};d.missing_info=uniqueFacts(d.missing_info,seen);d.evidence=uniqueFacts(d.evidence,seen);d.uncertainties=uniqueFacts(d.uncertainties,seen);
