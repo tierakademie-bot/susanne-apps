@@ -619,6 +619,7 @@ function applyEvaluationRules(d,logic,contract){
     d.evidence=addUnique(d.evidence,"Die meisten Anfragen kamen laut Angabe über: "+logic.sources.join(", ")+".");
   }
   if((logic.reactions===0)||(logic.inquiries!==null&&logic.inquiries<=5)){d.content_mix=d.content_mix||{};d.content_mix.erkennen=Math.max(35,Number(d.content_mix.erkennen)||0);d.content_mix_note="Der Anteil Erkennen ist höher, weil deine Angaben bisher keine oder nur wenige Anfragen zeigen.";}
+  if(logic.kind==="missing_sales")d.uncertainties=d.uncertainties.filter(function(x){return !/zu den verkäufen fehlt|zahl der verkäufe fehlt/i.test(String(x));});
   if(d.content_mix_note)d.content_mix_note=d.content_mix_note.replace(/wegen der Fachgrenzen[^.]*\.?/ig,"").replace(/\s{2,}/g," ").trim();
   d.missing_info=uniqueFacts(d.missing_info,{});var seen={};d.missing_info=uniqueFacts(d.missing_info,seen);d.evidence=uniqueFacts(d.evidence,seen);d.uncertainties=uniqueFacts(d.uncertainties,seen);
   return d;
@@ -703,9 +704,16 @@ function generateStructuredPlan(facts,contract,retry){
 }
 
 function planText(p){return fixText(planRaw(p));}
+function safePlanGoal(step,index){
+  var goal=String(step&&step.goal||"").trim();
+  if(!goal||/\b(?:ist|sind|war|waren|bleibt|stehen)\s*\.$/i.test(goal)||/^ziel\s*:?$/i.test(goal)){
+    return index===0&&evaluationLogic().kind==="missing_sales"?"Die fehlende Verkaufszahl und der Stand der bekannten Gespräche sind festgehalten.":"Der nächste eigene Schritt ist schriftlich festgehalten.";
+  }
+  return goal;
+}
 function planRaw(p){
   var out="Dein Plan für die nächsten 7 Tage\nVerfügbare Zeit: "+(p.weekly_time||"laut deiner Angabe")+"\nArt: "+typeLabel(p.priority_type||diagData.priority_type);
-  p.steps.forEach(function(s,i){out+="\n\n"+(i+1)+". "+String(s.title||"").replace(/^\s*(?:Schritt\s*)?\d+\s*[:.\-–]\s*/i,"")+"\n"+s.action+"\nZeit: "+s.minutes+" Minuten\nZiel: "+s.goal;});
+  p.steps.forEach(function(s,i){out+="\n\n"+(i+1)+". "+String(s.title||"").replace(/^\s*(?:Schritt\s*)?\d+\s*[:.\-–]\s*/i,"")+"\n"+s.action+"\nZeit: "+s.minutes+" Minuten\nZiel: "+safePlanGoal(s,i);});
   if(p.success_metrics&&p.success_metrics.length)out+="\n\nErfolg nach 7 Tagen prüfen\n- "+p.success_metrics.join("\n- ");
   return out;
 }
