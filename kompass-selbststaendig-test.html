@@ -625,7 +625,7 @@ function applyEvaluationRules(d,logic,contract){
   return d;
 }
 function addUnique(list,text){list=Array.isArray(list)?list:[];if(text&&list.indexOf(text)<0)list.push(text);return list;}
-function factKey(text){text=String(text||"").toLowerCase();if(/gespräch.*anfrag|anfrag.*gespräch/.test(text))return "overlap";if(/wer .*angefragt|art der anfrag/.test(text))return "who";if(/zahl der verkäufe|zu den verkäufen|verkaufszahl/.test(text))return "sales";if(/kaufhindernis.*unbekannt/.test(text))return "obstacle_unknown";return text.replace(/[^a-zäöüß0-9]+/g," ").trim();}
+function factKey(text){text=String(text||"").toLowerCase().trim();if(/gespräch.*anfrag|anfrag.*gespräch/.test(text))return "overlap";if(/wer .*angefragt|art der anfrag/.test(text))return "who";if(/^verkäufe?$/i.test(text)||(/verk[aä]uf/.test(text)&&/(?:nicht angegeben|offen|fehl|gespräch)/.test(text)))return "sales";if(/kaufhindernis.*unbekannt/.test(text))return "obstacle_unknown";return text.replace(/[^a-zäöüß0-9]+/g," ").trim();}
 function uniqueFacts(list,seen){seen=seen||{};return (Array.isArray(list)?list:[]).filter(function(item){var key=factKey(item);if(!key||seen[key])return false;seen[key]=true;return true;});}
 function removeConversion(text,conversion){return conversion?String(text||"").split(conversion).join("").replace(/\s{2,}/g," ").trim():String(text||"");}
 function withoutConversion(list,conversion){return (Array.isArray(list)?list:[]).filter(function(x){return !conversion||String(x).indexOf(conversion)<0;});}
