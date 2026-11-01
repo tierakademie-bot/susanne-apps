@@ -597,14 +597,14 @@ function applyEvaluationRules(d,logic,contract){
   d.central_problem=contract.diagnosis;
   if(logic.kind==="missing_sales"){d.confidence="niedrig";d.priority_type="klaerung";d.priority="Klär zuerst die Zahl der Verkäufe aus den letzten vier Wochen.";d.rationale="Ohne die Verkaufszahl lässt sich der Übergang vom Gespräch zum Verkauf nicht berechnen.";d.bottleneck={type:"noch nicht sicher bestimmbar",explanation:""};d.display_problem="Für eine sichere Einschätzung fehlt die Zahl der Verkäufe.";d.summary=contract.diagnosis+" Als Nächstes klärst du die Zahlen und den Stand der bekannten Gespräche.";d.uncertainties=addUnique(d.uncertainties,"Zu den Verkäufen fehlt noch eine Angabe.");}
   else if(logic.kind==="reach"){d.confidence=d.confidence||"mittel";d.priority_type="marketingkanal";d.priority="Erhöhe zuerst die Auffindbarkeit und Reichweite über sichtbare Kontaktpunkte.";d.rationale="Der Übergang vom Gespräch zum Verkauf wirkt nach diesem ersten Bild nicht als nächster Prüfpunkt.";d.bottleneck={type:"zu wenig reichweite",explanation:"Es kommen noch zu wenige Anfragen."};d.summary=(logic.conversionText?logic.conversionText+" ":"")+"Es kommen noch zu wenige Anfragen. Als Nächstes stärkst du Sichtbarkeit und Kontakt."; }
-  else if(logic.kind==="purchase_path"){d.confidence=d.confidence||"mittel";d.priority_type="uebergang";d.priority="Mach den Kaufweg nach einem Gespräch klarer.";d.rationale="Klär zuerst, wie der nächste Schritt nach einem Gespräch aussieht.";d.bottleneck={type:"kein klarer kaufweg",explanation:""};d.display_problem="Im Kaufweg nach Gesprächen gibt es einen offenen Punkt.";d.summary=(logic.conversionText?logic.conversionText+" ":"")+logic.text[0]+" Als Nächstes machst du den Kaufweg verständlicher.";}
+  else if(logic.kind==="purchase_path"){d.confidence=d.confidence||"mittel";d.priority_type="uebergang";d.priority="Mach den Kaufweg nach einem Gespräch klarer.";d.rationale="Klär zuerst, wie der nächste Schritt nach einem Gespräch aussieht.";d.bottleneck={type:"kein klarer kaufweg",explanation:""};d.display_problem="Nach dem Gespräch kommt es selten zum Kauf.";d.summary=(logic.conversionText?logic.conversionText+" ":"")+d.display_problem+" Als Nächstes machst du den Kaufweg verständlicher.";}
   if(logic.text.length)logic.text.forEach(function(t){if(t!==contract.diagnosis)d.evidence=addUnique(d.evidence,t);});
   d.topic_ideas=Array.isArray(d.topic_ideas)?d.topic_ideas.slice(0,3):[];
   d.evidence=withoutConversion(d.evidence,logic.conversionText);
   d.uncertainties=withoutConversion(d.uncertainties,logic.conversionText);
   d.rationale=removeConversion(d.rationale,logic.conversionText);
   if(d.bottleneck&&d.bottleneck.explanation)d.bottleneck.explanation=removeConversion(d.bottleneck.explanation,logic.conversionText);
-  if(d.business_type_reason)d.business_type_reason=removeConversion(d.business_type_reason,logic.conversionText);
+  if(d.business_type_reason)d.business_type_reason=removeConversion(d.business_type_reason,logic.conversionText).replace(/Ein belegtes Suchverhalten liegt nicht vor\.?/ig,"").replace(/\s{2,}/g," ").trim();
   var obstacle=((dAnswers[qIdx("results")]||{}).kaufhindernisAuswahl||[]).join(", ");
   if(obstacle){
     d.evidence=d.evidence.filter(function(x){return !/(?:kaufhindernis|grund gegen eine buchung|preis genannt|preis.*hindernis)/i.test(String(x));});
@@ -629,7 +629,7 @@ function factKey(text){text=String(text||"").toLowerCase().trim();if(/gespräch.
 function uniqueFacts(list,seen){seen=seen||{};return (Array.isArray(list)?list:[]).filter(function(item){var key=factKey(item);if(!key||seen[key])return false;seen[key]=true;return true;});}
 function removeConversion(text,conversion){return conversion?String(text||"").split(conversion).join("").replace(/\s{2,}/g," ").trim():String(text||"");}
 function withoutConversion(list,conversion){return (Array.isArray(list)?list:[]).filter(function(x){return !conversion||String(x).indexOf(conversion)<0;});}
-function cleanOutputText(text){var seen={},lines=String(text||"").split("\n").map(function(line){return line.replace(/[ \t]{2,}/g," ").replace(/Eine eigene Seite[^.\n]*hast du,\s*aber offen dafür\./ig,"Eine eigene Seite hast du noch nicht.").trim();}).filter(function(line){if(!line)return true;if(/\b(?:ist|sind|war|waren|bleibt|stehen)\s*\.$/i.test(line))return false;if(/\bweil\s+(?:Details|Angaben|Informationen)[^.]*\b(?:ist|sind)\.$/i.test(line))return false;if(/^[-–]\s*[^\n]*:\s*$/i.test(line))return false;var key=line.replace(/^[-–]\s*/,"").toLowerCase().replace(/[^a-zäöüß0-9]+/g," ").trim();if(/^[-–]\s/.test(line)&&key&&seen[key])return false;if(/^[-–]\s/.test(line)&&key)seen[key]=true;return true;});return lines.join("\n").replace(/\n{3,}/g,"\n\n").trim();}
+function cleanOutputText(text){var seen={},lines=String(text||"").replace(/verständlicher,\s*druckfreier nächster Schritt/ig,"verständlicher Schritt ohne Druck").replace(/druckfreier nächster Schritt/ig,"Schritt ohne Druck").replace(/druckfreien nächsten Schritt/ig,"einen Schritt ohne Druck").split("\n").map(function(line){return line.replace(/[ \t]{2,}/g," ").replace(/Eine eigene Seite[^.\n]*hast du,\s*aber offen dafür\./ig,"Eine eigene Seite hast du noch nicht.").trim();}).filter(function(line){if(!line)return true;if(/\b(?:ist|sind|war|waren|bleibt|stehen)\s*\.$/i.test(line))return false;if(/\bweil\s+(?:Details|Angaben|Informationen)[^.]*\b(?:ist|sind)\.$/i.test(line))return false;if(/^[-–]\s*[^\n]*:\s*$/i.test(line))return false;var key=line.replace(/^[-–]\s*/,"").toLowerCase().replace(/[^a-zäöüß0-9]+/g," ").trim();if(/^[-–]\s/.test(line)&&key&&seen[key])return false;if(/^[-–]\s/.test(line)&&key)seen[key]=true;return true;});return lines.join("\n").replace(/\n{3,}/g,"\n\n").trim();}
 function limitMissingPhrases(text,max){var count=0;var lines=String(text||"").split("\n").filter(function(line){if(/(?:in deinen Angaben nicht genannt|Dazu hast du nichts angegeben|nichts angegeben)/i.test(line)){count++;return count<=max;}return true;});return cleanOutputText(lines.join("\n"));}
 function limitMissingPhrasesAcrossEvaluation(){var count=0;function trim(text){var lines=String(text||"").split("\n").filter(function(line){if(/(?:in deinen Angaben nicht genannt|Dazu hast du nichts angegeben|nichts angegeben)/i.test(line)){count++;return count<=3;}return true;});return cleanOutputText(lines.join("\n"));}dDiag=trim(dDiag);dTask=trim(dTask);dCont=trim(dCont);}
 
@@ -639,11 +639,19 @@ function saveAndStartDiag(){
   clarifyMode=false;aiClarificationText="";clarificationRounds=0;startEvaluation();
 }
 
+function immediateDiagnosisData(logic,contract){
+  var d={confidence:logic.kind==="missing_sales"?"niedrig":"mittel",display_problem:"",summary:"",content_mix:null,content_mix_note:""};
+  if(logic.kind==="reach"){d.display_problem="Es kommen noch zu wenige Anfragen.";d.summary=(logic.conversionText?logic.conversionText+" ":"")+d.display_problem+" Als Nächstes stärkst du Sichtbarkeit und Kontakt.";d.content_mix={erkennen:35,verstehen:20,vertrauen:20,beweis:10,angebot:15};}
+  else if(logic.kind==="purchase_path"){d.display_problem="Nach dem Gespräch kommt es selten zum Kauf.";d.summary=(logic.conversionText?logic.conversionText+" ":"")+d.display_problem+" Als Nächstes machst du den Kaufweg verständlicher.";d.content_mix={erkennen:20,verstehen:20,vertrauen:25,beweis:10,angebot:25};}
+  else if(logic.kind==="missing_sales"){d.display_problem="Für eine sichere Einschätzung fehlt die Zahl der Verkäufe.";d.summary=contract.diagnosis+" Als Nächstes klärst du die Zahlen und den Stand der bekannten Gespräche.";d.content_mix={erkennen:30,verstehen:20,vertrauen:20,beweis:10,angebot:20};}
+  else {d.display_problem=contract.diagnosis;d.summary=contract.diagnosis;d.content_mix={erkennen:35,verstehen:20,vertrauen:20,beweis:10,angebot:15};}
+  return d;
+}
 function startEvaluation(){
-  dStep=1;dDiag="";dTask="";dCont="";diagData=null;planData=null;measureData=null;
+  dStep=1;dDiag="";dTask="";dCont="";planData=null;measureData=null;
   evaluationLoading={diagnosis:true,plan:true,measure:true};testRetryCounts={diagnosis:0,plan:0,measure:0};
   publishTestRetries();
-  var contract=evaluationContract(evaluationLogic());renderMain();
+  var logic=evaluationLogic(),contract=evaluationContract(logic);diagData=immediateDiagnosisData(logic,contract);renderMain();
   runStructuredDiagnosis(false);
   generateStructuredPlan(planFacts(),contract,0);
   generateStructuredMeasure(measureFacts(contract),contract,0);
@@ -659,7 +667,7 @@ function runStructuredDiagnosis(retry){
       if(!retry){runStructuredDiagnosis(true);return;}
       dDiag="Die Auswertung ist nicht gelungen, bitte noch einmal versuchen.";diagData=null;evaluationLoading.diagnosis=false;renderMain();return;
     }
-    diagData=applyEvaluationRules(data.diagnosis,logic,contract);if(smallSample())diagData.confidence="niedrig";dDiag=diagnosisText(diagData);evaluationLoading.diagnosis=false;limitMissingPhrasesAcrossEvaluation();renderMain();
+    var immediateMix=diagData&&diagData.content_mix;diagData=applyEvaluationRules(data.diagnosis,logic,contract);if(immediateMix)diagData.content_mix=immediateMix;if(smallSample())diagData.confidence="niedrig";dDiag=diagnosisText(diagData);evaluationLoading.diagnosis=false;limitMissingPhrasesAcrossEvaluation();renderMain();
   },function(e){dDiag="Fehler: "+e;evaluationLoading.diagnosis=false;renderMain();});
 }
 
@@ -770,7 +778,8 @@ function contentMixExplanation(){
 }
 function renderMixPanel(){
   var m=diagData&&normalizedMix(diagData.content_mix);if(!m)return '';
-  return '<div class="vis"><div class="rl" style="color:#2D4A3E">Dein persönlicher Content-Mix – Richtwert</div>'+m.map(function(x){return '<div class="mix-row"><span class="mix-lbl">'+x.label+'</span><span class="mix-bar"><span class="mix-fill" style="display:block;width:'+x.v+'%"></span></span><span class="mix-val">'+x.v+' %</span></div>';}).join('')+(diagData.content_mix_note?'<p class="field-help">'+esc(diagData.content_mix_note)+'</p>':'')+'<p class="field-help">'+esc(contentMixExplanation())+'</p></div>';
+  var ready=!!(dDiag&&dDiag.indexOf("Fehler:")!==0);
+  return '<div class="vis"><div class="rl" style="color:#2D4A3E">Dein persönlicher Content-Mix – Richtwert</div>'+m.map(function(x){return '<div class="mix-row"><span class="mix-lbl">'+x.label+'</span><span class="mix-bar"><span class="mix-fill" style="display:block;width:'+x.v+'%"></span></span><span class="mix-val">'+x.v+' %</span></div>';}).join('')+(ready&&diagData.content_mix_note?'<p class="field-help">'+esc(diagData.content_mix_note)+'</p>':ready?'<p class="field-help">'+esc(contentMixExplanation())+'</p>':'<p class="field-help status">Wird erstellt …</p>')+'</div>';
 }
 
 function retryBox(fn){
@@ -780,10 +789,11 @@ function retryBox(fn){
 function renderDiagResult(){
   var html=renderStepBar();
   if(evaluationLoading.diagnosis||evaluationLoading.plan||evaluationLoading.measure)html+='<div class="status">Die Auswertung läuft. Das dauert etwa eine bis zwei Minuten.</div>';
-  if(dDiag&&diagData&&diagData.summary&&dDiag.indexOf("Fehler:")!==0)html+='<div class="rbox d"><div class="rl">&#129517; Kurz gesagt</div><p>'+formatAI(fixText(diagData.summary))+'</p></div>';
+  if(diagData&&diagData.summary&&dDiag.indexOf("Fehler:")!==0)html+='<div class="rbox d"><div class="rl">&#129517; Kurz gesagt</div><p>'+formatAI(fixText(diagData.summary))+'</p></div>';
   else html+='<div class="rbox d"><div class="rl">&#129517; Kurz gesagt</div><p class="status">Wird erstellt …</p></div>';
   if(dDiag&&dDiag.indexOf("Fehler:")!==0&&diagData){html+='<details class="full"><summary>Ganze Auswertung anzeigen</summary><div class="rbox d"><div class="rl">&#129517; Kompass-Diagnose</div><p>'+formatAI(dDiag)+'</p></div></details>'+renderVisibilityPanel()+renderMixPanel();}
   else if(dDiag)html+='<div class="rbox d"><div class="rl">&#129517; Kompass-Diagnose</div><p>'+formatAI(dDiag)+'</p></div>';
+  else if(diagData)html+='<div class="rbox d"><div class="rl">&#129517; Kompass-Diagnose</div><p><strong>'+esc(diagData.display_problem||diagData.central_problem||"")+'</strong></p><p class="status">Wird erstellt …</p></div>'+renderVisibilityPanel()+renderMixPanel();
   else html+='<div class="rbox d"><div class="rl">&#129517; Kompass-Diagnose</div><p class="status">Wird erstellt …</p></div>';
   if(dDiag&&dDiag.indexOf("Fehler:")===0)html+=retryBox("runStructuredDiagnosis()");
   if(dTask&&dTask.indexOf("Fehler:")===0)html+=retryBox("runStructuredDiagnosis()");
