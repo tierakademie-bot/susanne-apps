@@ -756,6 +756,7 @@ function setOneSuccessMetricPerStep(p){
   p.success_metrics=p.steps.slice(0,3).map(function(step,i){
     var metric=Array.isArray(p.success_metrics)?String(p.success_metrics[i]||"").trim():"";
     if(!metric||/\b(?:ist|sind|war|waren|bleibt|stehen)\s*\.$/i.test(metric))metric="Schritt "+(i+1)+": "+safePlanGoal(step,i);
+    else if(!new RegExp("^Schritt\\s*"+(i+1)+"\\s*:","i").test(metric))metric="Schritt "+(i+1)+": "+metric;
     return metric;
   });
   return p;
