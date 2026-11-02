@@ -611,6 +611,31 @@ function evaluationContract(logic){
   return c;
 }
 function includesAny(text,words){text=String(text||"").toLowerCase();return words.some(function(w){return text.indexOf(String(w).toLowerCase())>=0;});}
+function planStepText(step){return String(step&&step.title||"")+" "+String(step&&step.action||"");}
+function planStepKind(action){
+  action=String(action||"");
+  if(/kaufweg|ablauf|preisrahmen|gespräch|verkauf|buchung/i.test(action))return "purchase";
+  if(/angebotsseite|google-unternehmensprofil|google-eintrag|angebot(?:s| )/i.test(action))return "offer";
+  if(/zahlen|anfragen.*notier|notiere.*anfragen|gespräche.*notier|notiere.*gespräche/i.test(action))return "numbers";
+  if(/instagram|beitrag|bio|kontaktweg|kontaktpunkt/i.test(action))return "contact";
+  return "";
+}
+function standardPlanGoal(step){
+  var kind=planStepKind(planStepText(step));
+  if(kind==="purchase")return "Interessierte wissen, wie es nach dem Gespräch weitergeht und was der nächste Schritt ist.";
+  if(kind==="offer")return "Das Angebot, der Preis und der Kontaktweg sind an einem klaren Ort sichtbar.";
+  if(kind==="numbers")return "Die Zahlen und offenen Punkte sind so festgehalten, dass du sie vergleichen kannst.";
+  if(kind==="contact")return "Beitrag und Bio nennen den Kontaktweg klar.";
+  return "";
+}
+function planGoalMatchesAction(step){
+  var kind=planStepKind(planStepText(step)),goal=String(step&&step.goal||"");
+  if(!kind)return true;
+  if(kind==="purchase")return !/beitrag|bio|kontaktweg/i.test(goal)&&/gespräch|ablauf|nächsten schritt|kauf/i.test(goal);
+  if(kind==="offer")return /angebot|preis|kontaktweg|sichtbar|seite|eintrag/i.test(goal);
+  if(kind==="numbers")return /zahl|notier|festgehalten|vergleichen/i.test(goal);
+  return /beitrag|bio|kontaktweg|anfrage|sichtbar/i.test(goal);
+}
 function validateDiagnosisContract(d,contract){
   var text=[d&&d.central_problem,d&&d.summary,d&&d.bottleneck&&d.bottleneck.explanation,d&&d.rationale].join(" ");
   return includesAny(text,contract.keywords);
@@ -618,6 +643,7 @@ function validateDiagnosisContract(d,contract){
 function validatePlanContract(p,contract){
   if(!p||!Array.isArray(p.steps)||p.steps.length!==3)return false;
   if(p.steps.some(function(s){return !s||!String(s.title||"").trim()||!String(s.action||"").trim()||!String(s.goal||"").trim()||!Number(s.minutes);}))return false;
+  if(p.steps.some(function(s){return !planGoalMatchesAction(s);}))return false;
   var first=[p.steps[0].title,p.steps[0].action,p.steps[0].goal].join(" ");
   if(contract.keywords.indexOf("vorläufig")>=0){
     if(!includesAny(first,["verkauf","zahl"])||!includesAny(first,["freiwillig","nachfrage"]))return false;
@@ -750,7 +776,7 @@ function addFriendlyFollowup(p){
 function generateStructuredPlan(facts,contract,retry){
   if(retry){recordRetry("plan");evaluationLoading.plan=true;renderMain();}
   var followupRule=needsFriendlyFollowup()?"Es gibt Gespräche ohne Kauf oder das Kaufhindernis ist unbekannt. Erwähne nur: Für eine freiwillige Nachfrage nutze die Vorlage unten. Schreibe die Vorlage nicht aus.":"Es gibt keinen Anlass für eine Nachfrage-Vorlage. Erwähne weder freiwillige Nachfrage noch Vorlage.";
-  var prompt="Erstelle genau drei kurze Schritte für sieben Tage als JSON. Schritt 1 übernimmt den vorgegebenen ersten Schritt. Nutze die vorhandene Anfragequelle zuerst. Blinder Fleck muss vorkommen. "+followupRule+" Jeder Schritt höchstens drei Sätze. success_metrics enthält genau drei Punkte, je einen für Schritt 1, 2 und 3. JSON: {\"weekly_time\":\"...\",\"priority_type\":\"...\",\"steps\":[{\"title\":\"...\",\"action\":\"...\",\"minutes\":30,\"goal\":\"...\"}],\"success_metrics\":[\"...\",\"...\",\"...\"]}.\n\n"+facts+"\nVorgaben: Engpass: "+contract.diagnosis+". Erster Schritt: "+contract.firstStep.title+" — "+contract.firstStep.action+(contract.blindSpot?". Blinder Fleck: "+contract.blindSpot.required:"")+(retry?"\nDie vorige Antwort widersprach der Vorgabe. Schreibe sie neu.":"");
+  var prompt="Erstelle genau drei kurze Schritte für sieben Tage als JSON. Schritt 1 übernimmt den vorgegebenen ersten Schritt. Nutze die vorhandene Anfragequelle zuerst. Blinder Fleck muss vorkommen. "+followupRule+" Ziel und Handlung jedes einzelnen Schritts müssen dasselbe Thema haben: Bei Kaufweg, Ablauf, Preisrahmen oder Gesprächen beschreibt das Ziel den nächsten Schritt zum Kauf; bei Beitrag, Bio oder Kontaktweg beschreibt es die Sichtbarkeit; bei Angebotsseite beschreibt es Angebot, Preis und Kontaktweg; bei Zahlen beschreibt es das Festhalten oder Vergleichen der Zahlen. Jeder Schritt höchstens drei Sätze. success_metrics enthält genau drei Punkte, je einen für Schritt 1, 2 und 3. JSON: {\"weekly_time\":\"...\",\"priority_type\":\"...\",\"steps\":[{\"title\":\"...\",\"action\":\"...\",\"minutes\":30,\"goal\":\"...\"}],\"success_metrics\":[\"...\",\"...\",\"...\"]}.\n\n"+facts+"\nVorgaben: Engpass: "+contract.diagnosis+". Erster Schritt: "+contract.firstStep.title+" — "+contract.firstStep.action+(contract.blindSpot?". Blinder Fleck: "+contract.blindSpot.required:"")+(retry?"\nDie vorige Antwort widersprach der Vorgabe. Schreibe sie neu.":"");
   callJSONChecked(SYS,prompt,function(data){
     if(!validatePlanContract(data,contract)){
       if(!retry){generateStructuredPlan(facts,contract,1);return;}
@@ -773,18 +799,17 @@ function safePlanAction(step,index){
 }
 function safePlanGoal(step,index){
   var goal=String(step&&step.goal||"").trim();
-  if(index===0&&/instagram|bio/i.test(String(step&&step.action||"")))return "Beitrag und Bio nennen den Kontaktweg klar.";
+  var standard=standardPlanGoal(step);
+  if(standard)return standard;
   if(!goal||/\b(?:ist|sind|war|waren|bleibt|stehen)\s*\.$/i.test(goal)||/^ziel\s*:?$/i.test(goal)){
     if(index===0&&evaluationLogic().kind==="missing_sales")return "Die fehlende Verkaufszahl und der Stand der bekannten Gespräche sind festgehalten.";
-    if(index===0)return "Beitrag und Bio nennen den Kontaktweg klar.";
-    if(index===2)return "Der Link ist in der Instagram-Bio gesetzt, und der Beitrag verweist auf den Angebotsort.";
-    return "Der nächste eigene Schritt ist klar festgehalten.";
+    return "";
   }
   return goal;
 }
 function planRaw(p){
   var out="Dein Plan für die nächsten 7 Tage\nVerfügbare Zeit: "+(p.weekly_time||"laut deiner Angabe")+"\nArt: "+typeLabel(p.priority_type||diagData.priority_type);
-  p.steps.forEach(function(s,i){out+="\n\n"+(i+1)+". "+String(s.title||"").replace(/^\s*(?:Schritt\s*)?\d+\s*[:.\-–]\s*/i,"")+"\n"+safePlanAction(s,i)+"\nZeit: "+s.minutes+" Minuten\nZiel: "+safePlanGoal(s,i);});
+  p.steps.forEach(function(s,i){var goal=safePlanGoal(s,i);out+="\n\n"+(i+1)+". "+String(s.title||"").replace(/^\s*(?:Schritt\s*)?\d+\s*[:.\-–]\s*/i,"")+"\n"+safePlanAction(s,i)+"\nZeit: "+s.minutes+" Minuten"+(goal?"\nZiel: "+goal:"");});
   if(p.success_metrics&&p.success_metrics.length)out+="\n\nErfolg nach 7 Tagen prüfen\n- "+p.success_metrics.slice(0,3).join("\n- ");
   return out;
 }
@@ -793,7 +818,7 @@ function setOneSuccessMetricPerStep(p){
   if(!p||!Array.isArray(p.steps))return p;
   p.success_metrics=p.steps.slice(0,3).map(function(step,i){
     var metric=Array.isArray(p.success_metrics)?String(p.success_metrics[i]||"").trim():"";
-    if(!metric||/\b(?:ist|sind|war|waren|bleibt|stehen)\s*\.$/i.test(metric))metric="Schritt "+(i+1)+": "+safePlanGoal(step,i);
+    var goal=safePlanGoal(step,i);if(goal)metric="Schritt "+(i+1)+": "+goal;else if(!metric||/\b(?:ist|sind|war|waren|bleibt|stehen)\s*\.$/i.test(metric))metric="";
     else if(!new RegExp("^Schritt\\s*"+(i+1)+"\\s*:","i").test(metric))metric="Schritt "+(i+1)+": "+metric;
     return metric;
   });
@@ -1063,6 +1088,7 @@ function pollUntil(fn,ms,done){var t0=Date.now();(function tick(){var r=fn();if(
 function caseResult(c,err){
   var text=[dDiag,dTask,dCont,measureData&&measureData.content?measureData.content:"",cResult].join("\n");
   var hits=violations(text);
+  if(planData&&Array.isArray(planData.steps)&&planData.steps.some(function(s){return !planGoalMatchesAction(s);})){hits.unshift("Plan-Schritt: Ziel passt nicht zur Handlung");}
   if(err)hits.unshift(err);
   [["Diagnose",dDiag],["Plan",dTask],["Maßnahme",dCont],["Ideen",cResult]].forEach(function(x){if(String(x[1]).indexOf("Fehler:")===0)hits.push(x[0]+" nicht erstellt: "+x[1]);});
   return {name:c[0],groups:activeGroups().map(function(k){return GROUP_NAMES[k];}).join(", "),hits:hits,text:text};
