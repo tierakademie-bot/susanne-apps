@@ -97,7 +97,7 @@ details.full>summary{cursor:pointer;font:600 13px system-ui;color:#2D4A3E;margin
 @media print{
   body{background:white;padding:0;display:block}.hdr,.tabs,.profile-note,.sbar,.copy-hint,.copy-field,.footer,footer,.btn-row,.ci-row,.chat-w,.card-hdr{display:none!important}
   .card{max-width:none;box-shadow:none;border-radius:0;overflow:visible}.body{padding:0}.rbox{background:white;border:0;border-left:0;padding:12px 0;margin:0 0 18px;break-inside:auto}.rl{font-size:12px}.rbox p{font-size:12pt;line-height:1.5}
-  details.full>summary,.screen-only,.vis-ic,.measure-summary{display:none!important}.print-status,.print-measure{display:block!important}.print-status{font:700 11pt Georgia,serif;min-width:110px}.print-measure{background:white;border:0;padding:12px 0;margin:0 0 18px}.print-measure p{font-size:12pt;line-height:1.5}
+  details.full>summary,.screen-only,.vis-ic,.measure-summary,.sln{display:none!important}.print-status,.print-measure{display:block!important}.print-status{font:700 11pt Georgia,serif;min-width:110px}.print-measure{background:white;border:0;padding:12px 0;margin:0 0 18px}.print-measure p{font-size:12pt;line-height:1.5}
 }
 </style>
 </head>
@@ -204,8 +204,8 @@ function measureDecision(){
 function firstInterestStep(){var offer=dAnswers[qIdx("offer")]||{},flow=Array.isArray(offer.ablaufNachAnfrage)?offer.ablaufNachAnfrage:[];return flow[0]||offer.action||"";}
 function hasIndividualPrice(){var offer=dAnswers[qIdx("offer")]||{},price=String(offer.price||"");return /individuell/i.test(price)||offer.preisentstehung==="Nach Angaben zum Kunden oder Tier"||offer.preisentstehung==="Nach Aufwand";}
 function measureEnding(){
-  var first=firstInterestStep(),offer=dAnswers[qIdx("offer")]||{},target=normalizeUserText(animalFocus),isFutter=/futter|ernährung/i.test(String(offer.offer||""));
-  if(/nachricht/i.test(first))return "Schreib mir gern eine Nachricht"+(isFutter?" mit der Tierart und der aktuellen Fütterung, wenn du diese Angaben teilen möchtest.":target?" mit ein paar Angaben zu "+target+", wenn du magst.":" mit den Angaben, die du teilen möchtest.");
+  var first=firstInterestStep(),offer=dAnswers[qIdx("offer")]||{},isFutter=/futter|ernährung/i.test(String(offer.offer||""));
+  if(/nachricht/i.test(first))return "Schreib mir gern eine Nachricht"+(isFutter?" mit der Tierart und der aktuellen Fütterung, wenn du diese Angaben teilen möchtest.":" mit ein paar Angaben zu dir und deinem Tier, wenn du magst.");
   if(/telefon/i.test(first))return "Melde dich gern, damit wir einen passenden Termin zum Telefonieren vereinbaren können.";
   if(/formular/i.test(first))return "Nutze gern das Formular für deine Anfrage.";
   if(/termin/i.test(first))return "Buche gern einen Termin, wenn dieser Weg für dich passt.";
@@ -538,6 +538,15 @@ function buildClarifications(){
   return items;
 }
 
+function setInquiryConversion(logic,inquiries,sales){
+  logic.inquiryToSale=sales/inquiries;
+  logic.conversionBasis="Anfrage";
+  var inquiryRate=Math.round(logic.inquiryToSale*100);
+  logic.conversionText="Aus "+inquiries+" Anfragen wurden "+sales+" zu Verkäufen ("+inquiryRate+" %).";
+  logic.kind="reach";
+  logic.usesInquiryConversion=true;
+  logic.firstStep={title:"Sichtbarkeit und Kontakt erhöhen",action:"Veröffentliche einen kurzen, konkreten Hinweis, wie Interessierte dich erreichen können, und nenne den kleinen ersten Schritt.",goal:"Ein sichtbarer Kontaktpunkt bringt neue Anfragen näher."};
+}
 function evaluationLogic(){
   var r=dAnswers[qIdx("results")]||{};
   function givenNumber(value){var raw=String(value===undefined||value===null?"":value).trim();if(raw==="")return null;var parsed=Number(raw.replace(",","."));return isFinite(parsed)&&parsed>=0?parsed:null;}
@@ -549,29 +558,29 @@ function evaluationLogic(){
     logic.firstStep={title:"Zahlen zu Verkäufen klären",action:"Notiere die Zahl der Verkäufe aus den letzten vier Wochen. Halte bei den bekannten Gesprächen kurz fest, was zuletzt gesagt oder geschrieben wurde.",goal:"Die Verkaufszahl und der Stand der Gespräche sind geklärt."};
     if(talks!==null&&talks>0)logic.firstStep.action+=" Falls es sich passend anfühlt, kannst du bekannten Gesprächspersonen freiwillig die Vorlage unten schicken.";
   } else if(talks!==null&&talks>0){
-    logic.conversationToSale=sales/talks;
-    logic.conversionBasis="Gespräch";
-    var rate=Math.round(logic.conversationToSale*100);
-    logic.conversionText="Von "+talks+" "+(talks===1?"Gespräch":"Gesprächen")+" "+(sales===1?"wurde 1 zu einem Verkauf":"wurden "+sales+" zu Verkäufen")+" ("+rate+" %).";
-    if(logic.conversationToSale>=0.5){
+    if(sales>talks){
+      logic.countsNote="Es gab "+sales+" Verkäufe bei "+talks+" "+(talks===1?"Gespräch":"Gesprächen")+". Einige kauften direkt, oder die Zahlen passen nicht zusammen.";
+      if(inquiries!==null&&inquiries>0&&sales<=inquiries){setInquiryConversion(logic,inquiries,sales);}
+      else {logic.kind="inconsistent_counts";logic.firstStep={title:"Zahlen zu Anfragen und Verkäufen prüfen",action:"Notiere getrennt, wie viele Anfragen, Gespräche und Verkäufe es gab.",goal:"Die Zahlen lassen sich ohne Doppelzählung vergleichen."};}
+    } else {
+      logic.conversationToSale=sales/talks;
+      logic.conversionBasis="Gespräch";
+      var rate=Math.round(logic.conversationToSale*100);
+      logic.conversionText="Von "+talks+" "+(talks===1?"Gespräch":"Gesprächen")+" "+(sales===1?"wurde 1 zu einem Verkauf":"wurden "+sales+" zu Verkäufen")+" ("+rate+" %).";
+      if(logic.conversationToSale>=0.5){
       logic.kind="reach";
       logic.text.push("Der Weg zum Kauf funktioniert nach diesem ersten Bild. Es kommen noch zu wenige Anfragen.");
       logic.firstStep={title:"Sichtbarkeit und Kontakt erhöhen",action:"Veröffentliche einen kurzen, konkreten Hinweis, wie Interessierte dich erreichen können, und nenne den kleinen ersten Schritt.",goal:"Ein sichtbarer Kontaktpunkt bringt neue Anfragen näher."};
-    } else {
+      } else {
       logic.kind="purchase_path";
       logic.text.push("Der Kaufweg vom Gespräch zum Verkauf ist der wichtigste nächste Prüfpunkt.");
       logic.firstStep={title:"Kaufweg verständlich machen",action:"Formuliere nach einem Gespräch einen kleinen, klaren nächsten Schritt mit Ablauf und Preisrahmen.",goal:"Interessierte wissen, wie es nach dem Gespräch weitergeht."};
       if(talks>sales)logic.firstStep.action+=" Falls es sich passend anfühlt, kannst du bekannten Gesprächspersonen freiwillig die Vorlage unten schicken.";
+      }
     }
   } else if(inquiries!==null&&inquiries>0&&sales>0){
-    logic.inquiryToSale=sales/inquiries;
-    logic.conversionBasis="Anfrage";
-    var inquiryRate=Math.round(logic.inquiryToSale*100);
-    logic.conversionText="Aus "+inquiries+" Anfragen wurden "+sales+" zu Verkäufen ("+inquiryRate+" %).";
-    logic.kind="reach";
-    logic.usesInquiryConversion=true;
-    logic.text.push("Der Weg zum Kauf scheint zu funktionieren. Es kommen noch zu wenige Anfragen.");
-    logic.firstStep={title:"Sichtbarkeit und Kontakt erhöhen",action:"Veröffentliche einen kurzen, konkreten Hinweis, wie Interessierte dich erreichen können, und nenne den kleinen ersten Schritt.",goal:"Ein sichtbarer Kontaktpunkt bringt neue Anfragen näher."};
+    if(sales<=inquiries)setInquiryConversion(logic,inquiries,sales);
+    else {logic.kind="inconsistent_counts";logic.countsNote="Es gab "+sales+" Verkäufe bei "+inquiries+" Anfragen. Die Zahlen passen nicht zusammen.";logic.firstStep={title:"Zahlen zu Anfragen und Verkäufen prüfen",action:"Notiere getrennt, wie viele Anfragen, Gespräche und Verkäufe es gab.",goal:"Die Zahlen lassen sich ohne Doppelzählung vergleichen."};}
   } else if(inquiries!==null){logic.kind="no_talks_yet";logic.missingConversationNote="Es gibt noch keine Gesprächszahl, aus der sich der Übergang zum Verkauf berechnen lässt.";}
   if(logic.small)logic.smallNote="Die Zahlen sind klein und geben nur ein erstes Bild.";
   var sources=Array.isArray(r.quelleAnfragen)?r.quelleAnfragen.filter(Boolean):[];
@@ -593,9 +602,10 @@ function ownPageBlindSpot(){
 }
 function evaluationContract(logic){
   var c={diagnosis:"",keywords:[],firstStep:logic.firstStep,planKeywords:[],blindSpot:ownPageBlindSpot()};
-  if(logic.kind==="missing_sales"){c.diagnosis="Zu den Verkäufen fehlt noch eine Angabe, deshalb ist die Einschätzung vorläufig.";c.keywords=["vorläufig"];c.planKeywords=["verkauf","zahl"];if(logic.talks!==null&&logic.talks>0)c.planKeywords.push("freiwillig");}
+  if(logic.kind==="missing_sales"){c.diagnosis="Zu den Verkäufen fehlt noch eine Angabe, deshalb ist die Einschätzung vorläufig.";c.keywords=["vorläufig"];c.planKeywords=["verkauf","zahl"];if(needsFriendlyFollowup())c.planKeywords.push("freiwillig");}
   else if(logic.kind==="reach"){c.diagnosis="Es kommen noch zu wenige Anfragen.";c.keywords=["anfragen"];c.planKeywords=["sichtbarkeit","kontakt"];}
   else if(logic.kind==="purchase_path"){c.diagnosis="Der Kaufweg vom Gespräch zum Verkauf ist der wichtigste nächste Prüfpunkt.";c.keywords=["kaufweg"];c.planKeywords=["kaufweg","nächsten schritt"];}
+  else if(logic.kind==="inconsistent_counts"){c.diagnosis="Die Zahlen zu Anfragen, Gesprächen und Verkäufen passen noch nicht zusammen.";c.keywords=["zahlen"];c.planKeywords=["zahlen","anfragen"];}
   else {c.diagnosis="Der Übergang zum Verkauf bleibt noch offen.";c.keywords=["übergang"];c.planKeywords=["sichtbarkeit","kontakt"];}
   if(c.blindSpot)c.planKeywords.push(c.blindSpot.open==="Nein"?"google":"angebot");
   return c;
@@ -624,9 +634,10 @@ function applyEvaluationRules(d,logic,contract){
   d=d||{};d.evidence=Array.isArray(d.evidence)?d.evidence:[];d.uncertainties=Array.isArray(d.uncertainties)?d.uncertainties:[];
   d.central_problem=contract.diagnosis;
   if(logic.kind==="missing_sales"){d.confidence="niedrig";d.priority_type="klaerung";d.priority="Klär zuerst die Zahl der Verkäufe aus den letzten vier Wochen.";d.rationale="Ohne die Verkaufszahl lässt sich der Übergang vom Gespräch zum Verkauf nicht berechnen.";d.bottleneck={type:"noch nicht sicher bestimmbar",explanation:""};d.display_problem="Für eine sichere Einschätzung fehlt die Zahl der Verkäufe.";d.summary=contract.diagnosis+" Als Nächstes klärst du die Zahlen und den Stand der bekannten Gespräche.";d.uncertainties=addUnique(d.uncertainties,"Zu den Verkäufen fehlt noch eine Angabe.");}
-  else if(logic.kind==="reach"){d.confidence=d.confidence||"mittel";d.priority_type="marketingkanal";d.priority="Erhöhe zuerst die Auffindbarkeit und Reichweite über sichtbare Kontaktpunkte.";d.rationale=logic.conversionBasis==="Anfrage"?"Der Weg von der Anfrage zum Verkauf wirkt nach diesem ersten Bild nicht als nächster Prüfpunkt.":"Der Übergang vom Gespräch zum Verkauf wirkt nach diesem ersten Bild nicht als nächster Prüfpunkt.";d.bottleneck={type:"zu wenig reichweite",explanation:"Es kommen noch zu wenige Anfragen."};d.summary=(logic.conversionText?logic.conversionText+" ":"")+(logic.usesInquiryConversion?"Der Weg zum Kauf scheint zu funktionieren. ":"")+"Es kommen noch zu wenige Anfragen."+(logic.smallNote?" "+logic.smallNote:"")+" Als Nächstes stärkst du Sichtbarkeit und Kontakt."; }
+  else if(logic.kind==="reach"){d.confidence=d.confidence||"mittel";d.priority_type="marketingkanal";d.priority="Erhöhe zuerst die Auffindbarkeit und Reichweite über sichtbare Kontaktpunkte.";d.rationale=logic.conversionBasis==="Anfrage"?"Der Weg von der Anfrage zum Verkauf wirkt nach diesem ersten Bild nicht als nächster Prüfpunkt.":"Der Übergang vom Gespräch zum Verkauf wirkt nach diesem ersten Bild nicht als nächster Prüfpunkt.";d.bottleneck={type:"zu wenig reichweite",explanation:""};d.display_problem="Der nächste Engpass liegt bei der Auffindbarkeit.";d.summary=(logic.countsNote?logic.countsNote+" ":"")+(logic.conversionText?logic.conversionText+" ":"")+(logic.usesInquiryConversion?"Der Weg zum Kauf scheint zu funktionieren. ":"")+(logic.countsNote?"Die Rechnung über Anfragen und Verkäufe ist deshalb nur ein vorsichtiger Hinweis. ":"")+"Es kommen noch zu wenige Anfragen."+(logic.smallNote?" "+logic.smallNote:"")+" Als Nächstes stärkst du Sichtbarkeit und Kontakt."; }
   else if(logic.kind==="purchase_path"){d.confidence=d.confidence||"mittel";d.priority_type="uebergang";d.priority="Mach den Kaufweg nach einem Gespräch klarer.";d.rationale="Klär zuerst, wie der nächste Schritt nach einem Gespräch aussieht.";d.bottleneck={type:"kein klarer kaufweg",explanation:""};d.display_problem="Nach dem Gespräch kommt es selten zum Kauf.";d.summary=(logic.conversionText?logic.conversionText+" ":"")+d.display_problem+" Als Nächstes machst du den Kaufweg verständlicher.";}
   else if(logic.kind==="no_talks_yet"){d.confidence=d.confidence||"niedrig";d.priority_type="klaerung";d.priority="Halte als Nächstes die Gespräche und ihren nächsten Schritt fest.";d.rationale="So wird der Weg von der Anfrage bis zum Verkauf greifbar.";d.bottleneck={type:"noch nicht sicher bestimmbar",explanation:""};d.display_problem=contract.diagnosis;d.summary=(logic.missingConversationNote?logic.missingConversationNote+" ":"")+"Als Nächstes hältst du Gespräche und ihren nächsten Schritt fest.";d.uncertainties=addUnique(d.uncertainties,"Die Gesprächszahl fehlt noch.");}
+  else if(logic.kind==="inconsistent_counts"){d.confidence="niedrig";d.priority_type="klaerung";d.priority="Prüfe zuerst die Zahlen zu Anfragen, Gesprächen und Verkäufen.";d.rationale="Erst mit getrennt notierten Zahlen lässt sich der nächste Marketing-Schritt sicher einordnen.";d.bottleneck={type:"noch nicht sicher bestimmbar",explanation:""};d.display_problem=contract.diagnosis;d.summary=(logic.countsNote?logic.countsNote+" ":"")+contract.diagnosis+" Als Nächstes prüfst du die Zahlen.";}
   if(logic.text.length)logic.text.forEach(function(t){if(t!==contract.diagnosis)d.evidence=addUnique(d.evidence,t);});
   d.topic_ideas=Array.isArray(d.topic_ideas)?d.topic_ideas.slice(0,3).map(cleanTopicIdea):[];
   d.evidence=withoutConversion(d.evidence,logic.conversionText);
@@ -656,14 +667,14 @@ function applyEvaluationRules(d,logic,contract){
   return d;
 }
 function addUnique(list,text){list=Array.isArray(list)?list:[];if(text&&list.indexOf(text)<0)list.push(text);return list;}
-function cleanTopicIdea(item){item=item||{};var title=String(item.title||"").trim();var match=title.match(/^Welche Fragen zu\s+(.+?)\s+hörst du[^?]*\??$/i)||title.match(/^Welche Fragen rund um\s+(.+?)\s+hörst du[^?]*\??$/i);if(match)title="Die häufigsten Fragen zu "+match[1].trim()+" aus meinen Nachrichten";if(/\b(?:hörst du|bekommst du|erhältst du|stellst du)\b/i.test(title)&&/\?$/.test(title))title=title.replace(/\?+$/,"").replace(/\b(?:hörst du|bekommst du|erhältst du|stellst du)\b.*$/i,"").trim();item.title=title;return item;}
+function cleanTopicIdea(item){item=item||{};var title=String(item.title||"").trim();var match=title.match(/^Welche Fragen?\s+(?:zu|zur|rund um)\s+(.+?)\s+(?:hörst du|beschäftigt dich|bekommst du|erhältst du)[^?]*\??$/i)||title.match(/^Welche Fragen rund um\s+(.+?)\s+(?:hörst du|beschäftigt dich|bekommst du|erhältst du)[^?]*\??$/i);if(match)title="Die häufigsten Fragen zu "+match[1].trim().replace(/^der\s+/i,"")+" aus meinen Nachrichten";if(/^Welche Frage/i.test(title)&&/\b(?:dich|du)\b/i.test(title)){var about=title.match(/\b(?:zu|zur|rund um)\s+(.+?)(?:\s+(?:beschäftigt|hörst|bekommst|erhältst)|\?|$)/i);title=about?"Die häufigsten Fragen zu "+about[1].trim()+" aus meinen Nachrichten":"Ein Thema aus deinen Nachrichten";}if(/\b(?:hörst du|bekommst du|erhältst du|stellst du)\b/i.test(title)&&/\?$/.test(title))title=title.replace(/\?+$/,"").replace(/\b(?:hörst du|bekommst du|erhältst du|stellst du)\b.*$/i,"").trim();item.title=title;return item;}
 function factKey(text){text=String(text||"").toLowerCase().trim();if(/gespräch.*anfrag|anfrag.*gespräch/.test(text))return "overlap";if(/wer .*angefragt|art der anfrag/.test(text))return "who";if(/^verkäufe?$/i.test(text)||(/verk[aä]uf/.test(text)&&/(?:nicht angegeben|offen|fehl|gespräch)/.test(text)))return "sales";if(/kaufhindernis.*unbekannt/.test(text))return "obstacle_unknown";return text.replace(/[^a-zäöüß0-9]+/g," ").trim();}
 function uniqueFacts(list,seen){seen=seen||{};return (Array.isArray(list)?list:[]).filter(function(item){var key=factKey(item);if(!key||seen[key])return false;seen[key]=true;return true;});}
 function removeConversion(text,conversion){return conversion?String(text||"").split(conversion).join("").replace(/\s{2,}/g," ").trim():String(text||"");}
 function withoutConversion(list,conversion){return (Array.isArray(list)?list:[]).filter(function(x){return !conversion||String(x).indexOf(conversion)<0;});}
 function cleanOutputText(text){var seen={},lines=String(text||"").replace(/druckfreier nächster Schritt/ig,"ein Schritt ohne Druck").replace(/druckfreien nächsten Schritt/ig,"einen Schritt ohne Druck").replace(/Die Offenheit dafür heißt nicht, dass schon eine besteht\.?/ig,"").split("\n").map(function(line){return line.replace(/[ \t]{2,}/g," ").replace(/Eine eigene Seite[^.\n]*hast du,\s*aber offen dafür\./ig,"Eine eigene Seite hast du noch nicht.").trim();}).filter(function(line){if(!line)return true;if(/\b(?:ist|sind|war|waren|bleibt|stehen)\s*\.$/i.test(line))return false;if(/\bweil\s+(?:Details|Angaben|Informationen)[^.]*\b(?:ist|sind)\.$/i.test(line))return false;if(/^[-–]\s*[^\n]*:\s*$/i.test(line))return false;var key=line.replace(/^[-–]\s*/,"").toLowerCase().replace(/[^a-zäöüß0-9]+/g," ").trim();if(/^[-–]\s/.test(line)&&key&&seen[key])return false;if(/^[-–]\s/.test(line)&&key)seen[key]=true;return true;});return lines.join("\n").replace(/\n{3,}/g,"\n\n").trim();}
 function limitMissingPhrases(text,max){var count=0;var lines=String(text||"").split("\n").filter(function(line){if(/(?:in deinen Angaben nicht genannt|Dazu hast du nichts angegeben|nichts angegeben)/i.test(line)){count++;return count<=max;}return true;});return cleanOutputText(lines.join("\n"));}
-function limitMissingPhrasesAcrossEvaluation(){var count=0;function trim(text){var lines=String(text||"").split("\n").filter(function(line){if(/(?:in deinen Angaben nicht genannt|Dazu hast du nichts angegeben|nichts angegeben)/i.test(line)){count++;return count<=3;}return true;});return cleanOutputText(lines.join("\n"));}dDiag=trim(dDiag);dTask=trim(dTask);dCont=trim(dCont);}
+function limitMissingPhrasesAcrossEvaluation(){var count=0;function trim(text){var lines=String(text||"").split("\n").filter(function(line){if(/(?:in deinen Angaben nicht genannt|Dazu hast du nichts angegeben|nichts angegeben)/i.test(line)){count++;return count<=3;}if(/Es kommen noch zu wenige Anfragen\.|(?:Die|Sehr|Wegen der) klein\w* Zahlen[^.]*\./i.test(line))return false;return true;});return cleanOutputText(lines.join("\n"));}dDiag=trim(dDiag);dTask=trim(dTask);dCont=trim(dCont);}
 
 function saveAndStartDiag(){
   var err=saveCurrentAnswer();if(err){$("qerror").textContent=err;return;}
@@ -673,7 +684,7 @@ function saveAndStartDiag(){
 
 function immediateDiagnosisData(logic,contract){
   var d={confidence:logic.kind==="missing_sales"?"niedrig":"mittel",display_problem:"",summary:"",content_mix:null,content_mix_note:""};
-  if(logic.kind==="reach"){d.display_problem="Es kommen noch zu wenige Anfragen.";d.summary=(logic.conversionText?logic.conversionText+" ":"")+(logic.usesInquiryConversion?"Der Weg zum Kauf scheint zu funktionieren. ":"")+d.display_problem+(logic.smallNote?" "+logic.smallNote:"")+" Als Nächstes stärkst du Sichtbarkeit und Kontakt.";d.content_mix={erkennen:35,verstehen:20,vertrauen:20,beweis:10,angebot:15};}
+  if(logic.kind==="reach"){d.display_problem="Der nächste Engpass liegt bei der Auffindbarkeit.";d.summary=(logic.countsNote?logic.countsNote+" ":"")+(logic.conversionText?logic.conversionText+" ":"")+(logic.usesInquiryConversion?"Der Weg zum Kauf scheint zu funktionieren. ":"")+(logic.countsNote?"Die Rechnung über Anfragen und Verkäufe ist deshalb nur ein vorsichtiger Hinweis. ":"")+"Es kommen noch zu wenige Anfragen."+(logic.smallNote?" "+logic.smallNote:"")+" Als Nächstes stärkst du Sichtbarkeit und Kontakt.";d.content_mix={erkennen:35,verstehen:20,vertrauen:20,beweis:10,angebot:15};}
   else if(logic.kind==="purchase_path"){d.display_problem="Nach dem Gespräch kommt es selten zum Kauf.";d.summary=(logic.conversionText?logic.conversionText+" ":"")+d.display_problem+" Als Nächstes machst du den Kaufweg verständlicher.";d.content_mix={erkennen:20,verstehen:20,vertrauen:25,beweis:10,angebot:25};}
   else if(logic.kind==="missing_sales"){d.display_problem="Für eine sichere Einschätzung fehlt die Zahl der Verkäufe.";d.summary=contract.diagnosis+" Als Nächstes klärst du die Zahlen und den Stand der bekannten Gespräche.";d.content_mix={erkennen:30,verstehen:20,vertrauen:20,beweis:10,angebot:20};}
   else {d.display_problem=contract.diagnosis;d.summary=contract.diagnosis;d.content_mix={erkennen:35,verstehen:20,vertrauen:20,beweis:10,angebot:15};}
@@ -721,7 +732,7 @@ function diagnosisRaw(d){
   return out;
 }
 
-function needsFriendlyFollowup(){var r=dAnswers[qIdx("results")]||{},talks=num(r.talks),sales=String(r.sales||"").trim(),obstacles=r.kaufhindernisAuswahl||[];return (talks>0&&(sales===""||num(r.sales)<talks))||!obstacles.length||obstacles.indexOf("Weiß ich nicht")>=0;}
+function needsFriendlyFollowup(){var r=dAnswers[qIdx("results")]||{},talks=num(r.talks),sales=String(r.sales||"").trim(),obstacles=r.kaufhindernisAuswahl||[];return talks>0&&((sales===""||num(r.sales)<talks)||obstacles.indexOf("Weiß ich nicht")>=0);}
 function friendlyFollowupTemplate(){return "Hallo [Name], ich wollte mich kurz melden und fragen, ob zu unserem Gespräch noch etwas offen ist. Wenn du keine Rückmeldung geben möchtest, ist das völlig in Ordnung.";}
 function addFriendlyFollowup(p){
   if(!needsFriendlyFollowup()||!p||!Array.isArray(p.steps)||!p.steps.length)return p;
@@ -733,7 +744,8 @@ function addFriendlyFollowup(p){
 }
 function generateStructuredPlan(facts,contract,retry){
   if(retry){recordRetry("plan");evaluationLoading.plan=true;renderMain();}
-  var prompt="Erstelle genau drei kurze Schritte für sieben Tage als JSON. Schritt 1 übernimmt den vorgegebenen ersten Schritt. Nutze die vorhandene Anfragequelle zuerst. Blinder Fleck muss vorkommen. Bei offenen Verkäufen oder Gesprächen ohne Kauf: nur bekannte Gesprächspersonen freiwillig und ohne Druck nachfragen. Jeder Schritt höchstens drei Sätze. success_metrics enthält genau drei Punkte, je einen für Schritt 1, 2 und 3. JSON: {\"weekly_time\":\"...\",\"priority_type\":\"...\",\"steps\":[{\"title\":\"...\",\"action\":\"...\",\"minutes\":30,\"goal\":\"...\"}],\"success_metrics\":[\"...\",\"...\",\"...\"]}.\n\n"+facts+"\nVorgaben: Engpass: "+contract.diagnosis+". Erster Schritt: "+contract.firstStep.title+" — "+contract.firstStep.action+(contract.blindSpot?". Blinder Fleck: "+contract.blindSpot.required:"")+(retry?"\nDie vorige Antwort widersprach der Vorgabe. Schreibe sie neu.":"");
+  var followupRule=needsFriendlyFollowup()?"Es gibt Gespräche ohne Kauf oder das Kaufhindernis ist unbekannt. Erwähne nur: Für eine freiwillige Nachfrage nutze die Vorlage unten. Schreibe die Vorlage nicht aus.":"Es gibt keinen Anlass für eine Nachfrage-Vorlage. Erwähne weder freiwillige Nachfrage noch Vorlage.";
+  var prompt="Erstelle genau drei kurze Schritte für sieben Tage als JSON. Schritt 1 übernimmt den vorgegebenen ersten Schritt. Nutze die vorhandene Anfragequelle zuerst. Blinder Fleck muss vorkommen. "+followupRule+" Jeder Schritt höchstens drei Sätze. success_metrics enthält genau drei Punkte, je einen für Schritt 1, 2 und 3. JSON: {\"weekly_time\":\"...\",\"priority_type\":\"...\",\"steps\":[{\"title\":\"...\",\"action\":\"...\",\"minutes\":30,\"goal\":\"...\"}],\"success_metrics\":[\"...\",\"...\",\"...\"]}.\n\n"+facts+"\nVorgaben: Engpass: "+contract.diagnosis+". Erster Schritt: "+contract.firstStep.title+" — "+contract.firstStep.action+(contract.blindSpot?". Blinder Fleck: "+contract.blindSpot.required:"")+(retry?"\nDie vorige Antwort widersprach der Vorgabe. Schreibe sie neu.":"");
   callJSONChecked(SYS,prompt,function(data){
     if(!validatePlanContract(data,contract)){
       if(!retry){generateStructuredPlan(facts,contract,1);return;}
@@ -801,7 +813,7 @@ function visibilityFacts(){
   return out.join("\n");
 }
 function renderVisibilityPanel(){
-  return '<div class="vis"><div class="rl" style="color:#2D4A3E">Dein Sichtbarkeitssystem – nach deinen Angaben</div>'+visibilityAreas().map(function(r){return '<div class="vis-row '+(r.ok?'ok':'no')+'"><span class="vis-ic">'+(r.ok?'&#10003;':'&#8212;')+'</span><span class="print-status">'+(r.ok?'vorhanden':'nicht angegeben')+'</span><span><strong>'+r.k+'</strong> – '+(r.ok?'in deinen Angaben erkennbar':'noch offen')+'<br><small>'+r.basis+'</small></span></div>';}).join('')+'<p class="field-help">Das ist keine Bewertung deiner Arbeit, sondern eine Übersicht aus deinen Antworten. Du brauchst nicht überall gleichzeitig aktiv zu sein, sondern mehrere sinnvoll verbundene Wege.</p></div>';
+  return '<div class="vis"><div class="rl" style="color:#2D4A3E">Dein Sichtbarkeitssystem – nach deinen Angaben</div>'+visibilityAreas().map(function(r){return '<div class="vis-row '+(r.ok?'ok':'no')+'"><span class="vis-ic">'+(r.ok?'&#10003;':'&#8212;')+'</span><span class="print-status">'+(r.ok?'vorhanden':'noch offen')+'</span><span><strong>'+r.k+'</strong> – '+(r.ok?'in deinen Angaben erkennbar':'noch offen')+'<br><small>'+r.basis+'</small></span></div>';}).join('')+'<p class="field-help">Das ist keine Bewertung deiner Arbeit, sondern eine Übersicht aus deinen Antworten. Du brauchst nicht überall gleichzeitig aktiv zu sein, sondern mehrere sinnvoll verbundene Wege.</p></div>';
 }
 function normalizedMix(m){
   var keys=["erkennen","verstehen","vertrauen","beweis","angebot"],labels=["Erkennen","Verstehen","Vertrauen","Beweis","Angebot"];
@@ -879,8 +891,9 @@ function renderContArea(){
     html+='<p class="copy-hint">&#128070; Klick ins Feld &#8594; nur der fertige Text ist markiert &#8594; Strg+C</p>'+
       '<textarea class="copy-field" readonly rows="'+Math.min(14,Math.max(5,String(measureData.content).split("\n").length+2))+'" onclick="this.select()">'+esc(measureData.content)+'</textarea>';
   }
-  if(measureData&&measureData.content)html+='<div class="print-measure"><div class="rl">Deine fertige Marketing-Maßnahme</div><p>'+formatAI(measureData.content)+'</p></div>';
-  return html+'</div>';
+  html+='</div>';
+  if(measureData&&measureData.content){html+='<div class="print-measure"><div class="rl">Deine fertige Marketing-Maßnahme</div>'+(measureData.title?'<p><strong>'+esc(measureData.title)+'</strong></p>':'')+'<p>'+formatAI(measureData.content)+'</p>'+(measureData.adjust_notes&&measureData.adjust_notes.length?'<p><strong>Vor dem Einsatz anpassen</strong><br>'+measureData.adjust_notes.map(esc).join('<br>')+'</p>':'')+'</div>';}
+  return html;
 }
 
 var CHANNEL_ROLES=[["Instagram","ZEIGEN","Schau, was ich mache.","Reels, Karussells, kurze Impulse, Alltagseinblicke"],["Facebook","ERZÄHLEN","Das habe ich erlebt.","Geschichten, Fragen an die Gruppe, Veranstaltungen, regionale Angebote"],["LinkedIn","POSITIONIEREN","Dafür stehe ich.","Fachwissen, Haltung, Erfahrung, Preisgestaltung"],["TikTok","AUFMERKSAMKEIT","Das solltest du wissen.","kurze Videos, Aha-Momente, Humor"],["YouTube","ERKLÄREN","So funktioniert es.","Tutorials, Fachvideos, Fallbesprechungen"],["Pinterest","GEFUNDEN WERDEN","Speichere dir das.","Checklisten, Ratgeber, Infografiken"],["Skool Community","AUSTAUSCHEN","Wie erlebt ihr das?","Fragen, Feedback, Umfragen, Erfahrungen"],["Skool Classroom","LERNEN","Hier findest du die Anleitung.","Kurse, Leitfäden, Videos, Vorlagen"]];
