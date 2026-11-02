@@ -732,7 +732,7 @@ function diagnosisRaw(d){
   return out;
 }
 
-function needsFriendlyFollowup(){var r=dAnswers[qIdx("results")]||{},talks=num(r.talks),sales=String(r.sales||"").trim(),obstacles=r.kaufhindernisAuswahl||[];return talks>0&&((sales===""||num(r.sales)<talks)||obstacles.indexOf("Weiß ich nicht")>=0);}
+function needsFriendlyFollowup(){var r=dAnswers[qIdx("results")]||{},talks=num(r.talks),sales=String(r.sales||"").trim(),obstacles=r.kaufhindernisAuswahl||[];return talks>0&&((sales!==""&&num(r.sales)<talks)||obstacles.indexOf("Weiß ich nicht")>=0);}
 function friendlyFollowupTemplate(){return "Hallo [Name], ich wollte mich kurz melden und fragen, ob zu unserem Gespräch noch etwas offen ist. Wenn du keine Rückmeldung geben möchtest, ist das völlig in Ordnung.";}
 function addFriendlyFollowup(p){
   if(!needsFriendlyFollowup()||!p||!Array.isArray(p.steps)||!p.steps.length)return p;
