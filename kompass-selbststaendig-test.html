@@ -559,7 +559,7 @@ function evaluationLogic(){
     if(talks!==null&&talks>0)logic.firstStep.action+=" Falls es sich passend anfühlt, kannst du bekannten Gesprächspersonen freiwillig die Vorlage unten schicken.";
   } else if(talks!==null&&talks>0){
     if(sales>talks){
-      logic.countsNote="Es gab "+sales+" Verkäufe bei "+talks+" "+(talks===1?"Gespräch":"Gesprächen")+". Einige kauften direkt, oder die Zahlen passen nicht zusammen.";
+      logic.countsNote="Es gab mehr Verkäufe als Gespräche. Vermutlich kamen einige Käufe ohne Gespräch zustande.";
       if(inquiries!==null&&inquiries>0&&sales<=inquiries){setInquiryConversion(logic,inquiries,sales);}
       else {logic.kind="inconsistent_counts";logic.firstStep={title:"Zahlen zu Anfragen und Verkäufen prüfen",action:"Notiere getrennt, wie viele Anfragen, Gespräche und Verkäufe es gab.",goal:"Die Zahlen lassen sich ohne Doppelzählung vergleichen."};}
     } else {
@@ -587,7 +587,7 @@ function evaluationLogic(){
   logic.sources=sources;
   if(sources.length)logic.text.push("Die meisten Anfragen kamen laut Angabe über: "+sources.join(", ")+". Das wird zuerst verstärkt.");
   if(reactions===0&&inquiries!==null&&inquiries>0)logic.text.push("Deine Anfragen kamen offenbar nicht über Beiträge.");
-  if(reactions!==null&&inquiries!==null&&reactions>=10&&inquiries>0&&reactions/inquiries>=5)logic.text.push("Deine Beiträge werden gesehen, führen aber noch selten zu Anfragen. Plane einen klaren Hinweis, wie Menschen dich erreichen.");
+  if(reactions!==null&&inquiries!==null&&reactions>=10&&inquiries>0&&reactions/inquiries>=5)logic.text.push("Deine Anfragen kamen bisher über "+(sources.length?sources.join(", "):"deinen angegebenen Kontaktweg")+". Plane dort einen klaren Hinweis, wie Menschen dich erreichen.");
   return logic;
 }
 function offerPriceHint(){return hasIndividualPrice()?"einen Hinweis, dass der Preis individuell ist":"einen Preisrahmen";}
@@ -720,11 +720,12 @@ function diagnosisText(d){return fixText(limitMissingPhrases(diagnosisRaw(d),3))
 function cleanPriorityText(value){var text=String(value||"").trim(),labels=Object.keys(TYPE_LABELS).map(function(key){return TYPE_LABELS[key].replace(/[.*+?^${}()|[\]\\]/g,"\\$&");});return text.replace(new RegExp("^\\s*(?:"+labels.join("|")+")\\s*:\\s*","i"),"").trim();}
 function missingInfoSummary(items){
   var labels=(items||[]).map(function(item){var t=String(item||"").replace(/:\s*in deinen Angaben nicht genannt\.?/ig,"").trim();if(/^Leistungsumfang/i.test(t))return "Leistungsumfang";if(/^Ablauf/i.test(t))return "Ablauf bis Zahlung";if(/^Zeitraum/i.test(t))return "Zeitraum";return t;}).filter(Boolean).filter(function(item,i,all){return all.indexOf(item)===i;});
-  return labels.length?"Dazu fehlen noch Angaben zu: "+labels.join(", ")+".":"";
+  if(!labels.length){var r=dAnswers[qIdx("results")]||{},offer=dAnswers[qIdx("offer")]||{};if(String(r.talks||"").trim()==="")labels.push("Gespräche");if(String(r.sales||"").trim()==="")labels.push("Verkäufe");if(!String(offer.offer||"").trim())labels.push("Leistungsumfang");if(!(offer.ablaufNachAnfrage||[]).length)labels.push("Ablauf bis Zahlung");if(!labels.length)labels=["Leistungsumfang","Ablauf bis Zahlung","Zeitraum"];}
+  return "Dazu fehlen noch Angaben zu: "+labels.join(", ")+".";
 }
 function diagnosisRaw(d){
   var out=(d.confidence==="niedrig"?"Deine vorläufige Einschätzung":"Deine Diagnose")+"\n"+(d.display_problem||d.central_problem)+"\n\nSicherheit der Einschätzung: "+(d.confidence||"nicht angegeben");
-  if(d.completeness_note||(d.missing_info&&d.missing_info.length)){out+="\n\nWas noch offen ist";var note=String(d.completeness_note||"").replace(/Alle Pflichtfragen sind beantwortet, daher steht eine Arbeitsdiagnose\.?/ig,"").trim(),missing=missingInfoSummary(d.missing_info);if(note)out+="\n"+note;if(missing)out+="\n"+missing;}
+  if(d.completeness_note||(d.missing_info&&d.missing_info.length)){out+="\n\nWas noch offen ist";var note=String(d.completeness_note||"").replace(/Alle Pflichtfragen sind beantwortet, daher steht eine Arbeitsdiagnose\.?/ig,"").trim();if(note&&!/(einige|drei|mehrere)\s+(zahlen|angaben)\s+fehl/i.test(note))out+="\n"+note;out+="\n"+missingInfoSummary(d.missing_info);}
   if(d.business_type&&BTYPES[d.business_type])out+="\n\nGeschäftsart (Einschätzung)\n"+BTYPES[d.business_type]+(d.business_type_reason?"\n"+d.business_type_reason:"");
   if(d.blind_spot)out+="\n\nDein blinder Fleck\n"+d.blind_spot;
   if(d.bottleneck&&d.bottleneck.type)out+="\n\nDein größter Engpass\n"+(BN_LABELS[String(d.bottleneck.type).toLowerCase()]||d.bottleneck.type)+(d.bottleneck.explanation?": "+d.bottleneck.explanation:"");
@@ -766,14 +767,17 @@ function safePlanAction(step,index){
   if(!action||/\b(?:ist|sind|war|waren|bleibt|stehen)\s*\.$/i.test(action)||/^aktion\s*:?$/i.test(action)){
     if(index===0)return "Halte den ersten nächsten Schritt schriftlich fest und nutze nur Angaben, die bei dir bereits feststehen.";
     if(index===1)return "Nutze zuerst deinen vorhandenen Kontaktweg und prüfe offene Nachrichten sowie den klaren Hinweis auf Angebot und nächsten Schritt.";
-    return "Setze den vorgesehenen Angebotsort mit Kontaktweg um und ergänze nur Angaben, die bereits feststehen.";
+    return "Setze den Link zur Angebotsseite oder zum Google-Eintrag in deine Instagram-Bio und weise in einem kurzen Beitrag auf den neuen Ort hin.";
   }
   return action;
 }
 function safePlanGoal(step,index){
   var goal=String(step&&step.goal||"").trim();
   if(!goal||/\b(?:ist|sind|war|waren|bleibt|stehen)\s*\.$/i.test(goal)||/^ziel\s*:?$/i.test(goal)){
-    return index===0&&evaluationLogic().kind==="missing_sales"?"Die fehlende Verkaufszahl und der Stand der bekannten Gespräche sind festgehalten.":"Der nächste eigene Schritt ist schriftlich festgehalten.";
+    if(index===0&&evaluationLogic().kind==="missing_sales")return "Die fehlende Verkaufszahl und der Stand der bekannten Gespräche sind festgehalten.";
+    if(index===0)return "Beitrag und Bio nennen den Kontaktweg klar.";
+    if(index===2)return "Der Link ist in der Instagram-Bio gesetzt, und der Beitrag verweist auf den Angebotsort.";
+    return "Der nächste eigene Schritt ist klar festgehalten.";
   }
   return goal;
 }
@@ -973,6 +977,7 @@ function sendChat(){
 
 function placeholderCount(text){return (String(text||"").match(/\[[^\]]+\]/g)||[]).length;}
 function validMeasure(c){var first=String(c&&c.content||"").trim().split(/\n+/)[0]||"";return !!(c&&c.title&&c.content)&&first.indexOf("?")<0&&placeholderCount(c.content)<=3;}
+function hasUnenteredProfessionalTitle(content){var profile=(String(qualification||"")+" "+(professions||[]).join(" ")).toLowerCase();var titles=["tierernährungsberaterin","tierernährungsberater","hundetrainerin","hundetrainer","tierheilpraktikerin","tierheilpraktiker","tierphysiotherapeutin","tierphysiotherapeut","coachin","coach","beraterin","berater","therapeutin","therapeut"];return titles.some(function(title){return new RegExp("\\b"+title+"\\b","i").test(String(content||""))&&profile.indexOf(title)<0;});}
 function stripTrailingCallToAction(text){
   var parts=String(text||"").trim().split(/\n\s*\n/),last=parts[parts.length-1]||"";
   if(/(?:^|\s)(?:schreib|melde|bestell|buche|klick|nutze|vereinbare)\w*/i.test(last)&&last.length<230)parts.pop();
@@ -989,7 +994,7 @@ function enforceMeasureContract(c){
   if(hasIndividualPrice())content=content.replace(/\b(?:Bestell(?:e|en)?|Kauf(?:e|en)?)(?:[^.!?]*)([.!?])/gi,"");
   content=stripTrailingCallToAction(content);
   content=(content?content+"\n\n":"")+measureEnding();
-  c.content=cleanOutputText(content.replace(/\[Ablauf nach deiner Nachricht,[^\]]+\]/g,"[Ablauf in 1–2 Sätzen]"));
+  c.content=cleanOutputText(content.replace(/\[Ablauf nach deiner Nachricht,[^\]]+\]/g,"[Ablauf in 1–2 Sätzen]").replace(/\[Weiteren Ablauf nach der Nachricht ergänzen\]/g,"[Ablauf in 1–2 Sätzen]").replace(/\[Leistungen einfügen\]/g,"[Leistungen in Stichpunkten]"));
   c.adjust_notes=notesFromActualMeasure(c.content);
   return c;
 }
@@ -998,11 +1003,11 @@ function generateStructuredMeasure(facts,contract,retry){
   var target=animalFocus.trim()||"Menschen mit Tier";
   var decision=measureDecision();
   var structure=decision.kind==="reply"?"Antworte auf eine Anfrage: Beginne mit 'Hallo [Name],'. Danach steht ein kurzer Dank, zum Beispiel 'Schön, dass du dich bei mir meldest, und danke für deine Nachricht.' Erst danach steht der kurze Hinweis, dass Beschwerden zuerst tierärztlich abgeklärt werden und die Beratung keine Diagnose oder Behandlung ersetzt. Danach folgen Angebot und Ablauf; zum Schluss ein klarer, freiwilliger nächster Schritt.":"Erstelle einen öffentlichen Beitrag: Beginne mit einem kurzen, nicht fragenden Einstieg, der das Anliegen der Zielgruppe aufgreift. Danach folgen Angebot und Ablauf. Erst danach steht der kurze Hinweis, dass Beschwerden zuerst tierärztlich abgeklärt werden und die Beratung keine Diagnose oder Behandlung ersetzt. Zum Schluss steht ein klarer nächster Schritt.";
-  var prompt="Erstelle eine kurze, direkt nutzbare Marketing-Maßnahme als JSON. "+structure+" Beginne nie mit einer Frage. Nenne die Zielgruppe nur genau als '"+target+"'; verwende keine andere Geschlechtsform und ergänze keine Zielgruppe. Höchstens drei Platzhalter. Nur einen Call-to-Action. Der letzte Satz muss zu diesem ersten Schritt passen: '"+firstInterestStep()+"'. Bei individuellem Preis nie direkt zur Bestellung auffordern. Keine Diagnose, keine erfundenen Details. Verwende als Format '"+decision.format+"' und als Titel exakt '"+decision.title+"'. JSON: {\"measure_type\":\"uebergang|marketingkanal|bindung|angebotsklaerung|klaerung\",\"format\":\"antwortvorlage|beitrag\",\"title\":\"...\",\"content\":\"...\",\"adjust_notes\":[\"...\"]}.\n\n"+facts;
+  var prompt="Erstelle eine kurze, direkt nutzbare Marketing-Maßnahme als JSON. "+structure+" Beginne nie mit einer Frage. Nenne die Zielgruppe nur genau als '"+target+"'; verwende keine andere Geschlechtsform und ergänze keine Zielgruppe. Eine Berufsbezeichnung darfst du nur verwenden, wenn sie exakt in den Eingaben steht; sonst nenne keine Berufsbezeichnung. Höchstens drei Platzhalter. Nur einen Call-to-Action. Der letzte Satz muss zu diesem ersten Schritt passen: '"+firstInterestStep()+"'. Bei individuellem Preis nie direkt zur Bestellung auffordern. Keine Diagnose, keine erfundenen Details. Verwende als Format '"+decision.format+"' und als Titel exakt '"+decision.title+"'. JSON: {\"measure_type\":\"uebergang|marketingkanal|bindung|angebotsklaerung|klaerung\",\"format\":\"antwortvorlage|beitrag\",\"title\":\"...\",\"content\":\"...\",\"adjust_notes\":[\"...\"]}.\n\n"+facts;
   callJSONChecked(SYS,prompt,function(c){
     if(c&&Array.isArray(c.content))c.content=c.content.join("\n");
     if(c){c.format=decision.format;c.title=decision.title;c=enforceMeasureContract(c);}
-    if(!validMeasure(c)){
+    if(!validMeasure(c)||hasUnenteredProfessionalTitle(c&&c.content)){
       if(!retry){generateStructuredMeasure(facts,contract,true);return;}
       dCont="Fehler: Die Maßnahme war unvollständig. Bitte erneut versuchen.";evaluationLoading.measure=false;renderMain();return;
     }
