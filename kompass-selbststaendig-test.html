@@ -1,5 +1,5 @@
-Warning: truncated output (original token count: 38217)
-Total output lines: 1120
+Warning: truncated output (original token count: 38541)
+Total output lines: 1133
 
 <!DOCTYPE html>
 <html lang="de">
@@ -73,7 +73,7 @@ textarea:focus,input:focus,select:focus{border-color:#C4923A}
 .profile-note button{float:right;background:none;border:0;color:#2D4A3E;text-decoration:underline;cursor:pointer;font:inherit}
 .field-help{font:12px/1.5 system-ui;color:#6B8A7E;margin-top:5px}
 .hidden{display:none}
-.print-status,.print-measure,.print-label{display:none}
+.print-status,.print-measure,.print-label,.print-export-header{display:none}
 .choices{display:grid;gap:8px;margin:8px 0 12px}
 .choice{display:flex;align-items:flex-start;gap:9px;background:#F5F0E8;border:1.5px solid #D8CDBB;border-radius:9px;padding:10px 12px;font:13px/1.45 system-ui;color:#1E2E28;cursor:pointer}
 .choice:has(input:checked){border-color:#C4923A;background:#FFF8EC}
@@ -100,7 +100,7 @@ details.full>summary{cursor:pointer;font:600 13px system-ui;color:#2D4A3E;margin
 @media print{
   body{background:white;padding:0;display:block}.hdr,.tabs,.profile-note,.sbar,.copy-hint,.copy-field,.footer,footer,.btn-row,.ci-row,.chat-w,.card-hdr{display:none!important}
   .card{max-width:none;box-shadow:none;border-radius:0;overflow:visible}.body{padding:0}.rbox{background:white;border:0;border-left:0;padding:12px 0;margin:0 0 18px;break-inside:auto}.rl{font-size:12px}.rbox p{font-size:12pt;line-height:1.5}
-  details.full>summary,.screen-only,.vis-ic,.measure-summary,.sln,.screen-status{display:none!important}.print-status,.print-measure,.print-label{display:block!important}.print-status{font:700 11pt Georgia,serif;min-width:110px}.print-label{margin-top:2px}.print-measure{background:white;border:0;padding:12px 0;margin:0 0 18px}.print-measure p{font-size:12pt;line-height:1.5}
+  details.full>summary,.screen-only,.vis-ic,.measure-summary,.sln,.screen-status{display:none!important}.print-status,.print-measure,.print-label,.print-export-header{display:block!important}.print-export-header{border-bottom:1px solid #8FAF9F;padding:0 0 10px;margin:0 0 16px;font:10pt/1.5 system-ui;color:#2D4A3E}.print-status{font:700 11pt Georgia,serif;min-width:110px}.print-label{margin-top:2px}.print-measure{background:white;border:0;padding:12px 0;margin:0 0 18px}.print-measure p{font-size:12pt;line-height:1.5}
 }
 </style>
 </head>
@@ -174,11 +174,7 @@ var FILTERS={
 };
 function violations(t){
   t=String(t||"");var out=[];
-  ["all"].concat(activeGroups()).forEach(function(g){(FILTERS[g]||[]).forEach(function(f){var re=new RegExp(f[0].source,"gi"),m,n=0;while((m=re.exec(t))&&n<3){if(m[0].length===0)re.lastIndex++;if(/\[Platzhalter[^\]]*$/.test(t.slice(Math.max(0,m.index-240),m.index))||/\([^)]{0,80}…[^)]*$/.test(t.slice(Math.max(0,m.index-120),m.index))||/\b(?:kein\w*|nicht|ohne|nie|niemals|weder|ob)\b/i.test(t.slice(Math.max(0,m.index-45),m.index).split(/[.!?:;\n]/).pop())||/^[^.!?]{0,120}nicht genannt/i.test(t.slice(m.index+m[0].length)))continue;n++;var i=m.index;out.push(f[1]+": «"+t.slice(Ma…18217 tokens truncated…/span><span class="screen-status"><strong>'+r.k+'</strong> – '+(r.ok?'in deinen Angaben erkennbar':'noch offen')+'<br><small>'+r.basis+'</small></span><span class="print-label"><strong>'+r.k+'</strong><br><small>'+r.basis+'</small></span></div>';}).join('')+'<p class="field-help">Das ist keine Bewertung deiner Arbeit, sondern eine Übersicht aus deinen Antworten. Du brauchst nicht überall gleichzeitig aktiv zu sein, sondern mehrere sinnvoll verbundene Wege.</p></div>';
-}
-function normalizedMix(m){
-  var keys=["erkennen","verstehen","vertrauen","beweis","angebot"],labels=["Erkennen","Verstehen","Vertrauen","Beweis","Angebot"];
-  var vals=keys.map(function(k){return m?num(m[k]):0;}),sum=vals.reduce(function(a,b){return a+b;},0);
+  ["all"].concat(activeGroups()).forEach(function(g){(FILTERS[g]||[]).forEach(function(f){var re=new RegExp(f[0].source,"gi"),m,n=0;while((m=re.exec(t))&&n<3){if(m[0].length===0)re.lastIndex++;if(/\[Platzhalter[^\]]*$/.test(t.slice(Math.max(0,m.index-240),m.index))||/\([^)]{0,80}…[^)]*$/.test(t.slice(Math.max(0,m.index-120),m.index))||/\b(?:kein\w*|nicht|ohne|nie|niemals|weder|ob)\b/i.test(t.slice(Math.max(0,m.inde…18541 tokens truncated…return m?num(m[k]):0;}),sum=vals.reduce(function(a,b){return a+b;},0);
   if(!sum)return null;
   var out=vals.map(function(v){return Math.round(v*100/sum);}),diff=100-out.reduce(function(a,b){return a+b;},0);
   out[out.indexOf(Math.max.apply(null,out))]+=diff;
@@ -204,7 +200,7 @@ function retryBox(fn){
 }
 
 function renderDiagResult(){
-  var html=renderStepBar();
+  var html=renderPrintExportHeader()+renderStepBar();
   if(evaluationLoading.diagnosis||evaluationLoading.plan||evaluationLoading.measure)html+='<div class="status">Die Auswertung läuft. Das dauert etwa eine bis zwei Minuten.</div>';
   if(diagData&&diagData.summary&&dDiag.indexOf("Fehler:")!==0)html+='<div class="rbox d"><div class="rl">&#129517; Kurz gesagt</div><p>'+formatAI(fixText(diagData.summary))+'</p></div>';
   else html+='<div class="rbox d"><div class="rl">&#129517; Kurz gesagt</div><p class="status">Wird erstellt …</p></div>';
@@ -220,6 +216,15 @@ function renderDiagResult(){
   html+=renderContArea();
   if(dTask&&dCont)html+='<div class="btn-row"><button class="btn-o" onclick="endApp()">App beenden</button></div>';
     return html;
+}
+
+function renderPrintExportHeader(){
+  var r=dAnswers[qIdx("results")]||{},offer=dAnswers[qIdx("offerType")]||{},date=new Date().toLocaleDateString("de-DE"),facts=[];
+  if(String(r.inquiries||"").trim()!=="")facts.push(r.inquiries+" Anfragen");
+  if(String(r.talks||"").trim()!=="")facts.push(r.talks+" Gespräche");
+  if(String(r.sales||"").trim()!=="")facts.push(r.sales+" Verkäufe");
+  if(offer.angebotsart)facts.push(offer.angebotsart);
+  return '<div class="print-export-header">'+esc(date)+(facts.length?' · '+esc(facts.join(' · ')):"")+'</div>';
 }
 
 function renderStepBar(){
@@ -337,7 +342,7 @@ function enforceMeasureContract(c){
   if(hasIndividualPrice())content=content.replace(/\b(?:Bestell(?:e|en)?|Kauf(?:e|en)?)(?:[^.!?]*)([.!?])/gi,"");
   content=stripTrailingCallToAction(content);
   content=(content?content+"\n\n":"")+measureEnding();
-  c.content=cleanOutputText(content);
+  c.content=cleanOutputText(content.replace(/\[Ablauf nach deiner Nachricht,[^\]]+\]/g,"[Ablauf in 1–2 Sätzen]"));
   c.adjust_notes=notesFromActualMeasure(c.content);
   return c;
 }
