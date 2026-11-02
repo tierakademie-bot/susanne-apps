@@ -672,7 +672,7 @@ function factKey(text){text=String(text||"").toLowerCase().trim();if(/gespräch.
 function uniqueFacts(list,seen){seen=seen||{};return (Array.isArray(list)?list:[]).filter(function(item){var key=factKey(item);if(!key||seen[key])return false;seen[key]=true;return true;});}
 function removeConversion(text,conversion){return conversion?String(text||"").split(conversion).join("").replace(/\s{2,}/g," ").trim():String(text||"");}
 function withoutConversion(list,conversion){return (Array.isArray(list)?list:[]).filter(function(x){return !conversion||String(x).indexOf(conversion)<0;});}
-function cleanOutputText(text){var seen={},lines=String(text||"").replace(/druckfreier nächster Schritt/ig,"ein Schritt ohne Druck").replace(/druckfreien nächsten Schritt/ig,"einen Schritt ohne Druck").replace(/Die Offenheit dafür heißt nicht, dass schon eine besteht\.?/ig,"").split("\n").map(function(line){return line.replace(/[ \t]{2,}/g," ").replace(/Eine eigene Seite[^.\n]*hast du,\s*aber offen dafür\./ig,"Eine eigene Seite hast du noch nicht.").trim();}).filter(function(line){if(!line)return true;if(/\b(?:ist|sind|war|waren|bleibt|stehen)\s*\.$/i.test(line))return false;if(/\bweil\s+(?:Details|Angaben|Informationen)[^.]*\b(?:ist|sind)\.$/i.test(line))return false;if(/^[-–]\s*[^\n]*:\s*$/i.test(line))return false;var key=line.replace(/^[-–]\s*/,"").toLowerCase().replace(/[^a-zäöüß0-9]+/g," ").trim();if(/^[-–]\s/.test(line)&&key&&seen[key])return false;if(/^[-–]\s/.test(line)&&key)seen[key]=true;return true;});return lines.join("\n").replace(/\n{3,}/g,"\n\n").trim();}
+function cleanOutputText(text){var seen={},lines=String(text||"").replace(/druckfreier nächster Schritt/ig,"ein Schritt ohne Druck").replace(/druckfreien nächsten Schritt/ig,"einen Schritt ohne Druck").replace(/Die Offenheit dafür heißt nicht, dass schon eine besteht\.?/ig,"").replace(/\[Weiteren Ablauf nach der Nachricht ergänzen\]/g,"[Ablauf in 1–2 Sätzen]").replace(/\[Leistungen einfügen\]/g,"[Leistungen in Stichpunkten]").split("\n").map(function(line){return line.replace(/[ \t]{2,}/g," ").replace(/Eine eigene Seite[^.\n]*hast du,\s*aber offen dafür\./ig,"Eine eigene Seite hast du noch nicht.").trim();}).filter(function(line){if(!line)return true;if(/\b(?:ist|sind|war|waren|bleibt|stehen)\s*\.$/i.test(line))return false;if(/\bweil\s+(?:Details|Angaben|Informationen)[^.]*\b(?:ist|sind)\.$/i.test(line))return false;if(/^[-–]\s*[^\n]*:\s*$/i.test(line))return false;var key=line.replace(/^[-–]\s*/,"").toLowerCase().replace(/[^a-zäöüß0-9]+/g," ").trim();if(/^[-–]\s/.test(line)&&key&&seen[key])return false;if(/^[-–]\s/.test(line)&&key)seen[key]=true;return true;});return lines.join("\n").replace(/\n{3,}/g,"\n\n").trim();}
 function limitMissingPhrases(text,max){var count=0;var lines=String(text||"").split("\n").filter(function(line){if(/(?:in deinen Angaben nicht genannt|Dazu hast du nichts angegeben|nichts angegeben)/i.test(line)){count++;return count<=max;}return true;});return cleanOutputText(lines.join("\n"));}
 function limitMissingPhrasesAcrossEvaluation(){var count=0;function trim(text){var lines=String(text||"").split("\n").filter(function(line){if(/(?:in deinen Angaben nicht genannt|Dazu hast du nichts angegeben|nichts angegeben)/i.test(line)){count++;return count<=3;}if(/Es kommen noch zu wenige Anfragen\.|(?:Die|Sehr|Wegen der) klein\w* Zahlen[^.]*\./i.test(line))return false;return true;});return cleanOutputText(lines.join("\n"));}dDiag=trim(dDiag);dTask=trim(dTask);dCont=trim(dCont);}
 
@@ -764,7 +764,7 @@ function generateStructuredPlan(facts,contract,retry){
 function planText(p){return fixText(planRaw(p));}
 function safePlanAction(step,index){
   var action=String(step&&step.action||"").trim();
-  if(!action||/\b(?:ist|sind|war|waren|bleibt|stehen)\s*\.$/i.test(action)||/^aktion\s*:?$/i.test(action)){
+  if(!action||/\b(?:ist|sind|war|waren|bleibt|stehen)\s*\.$/i.test(action)||/^aktion\s*:?$/i.test(action)||/setze den vorgesehenen angebotsort|ergänze nur angaben, die bereits feststehen/i.test(action)){
     if(index===0)return "Halte den ersten nächsten Schritt schriftlich fest und nutze nur Angaben, die bei dir bereits feststehen.";
     if(index===1)return "Nutze zuerst deinen vorhandenen Kontaktweg und prüfe offene Nachrichten sowie den klaren Hinweis auf Angebot und nächsten Schritt.";
     return "Setze den Link zur Angebotsseite oder zum Google-Eintrag in deine Instagram-Bio und weise in einem kurzen Beitrag auf den neuen Ort hin.";
@@ -773,6 +773,7 @@ function safePlanAction(step,index){
 }
 function safePlanGoal(step,index){
   var goal=String(step&&step.goal||"").trim();
+  if(index===0&&/instagram|bio/i.test(String(step&&step.action||"")))return "Beitrag und Bio nennen den Kontaktweg klar.";
   if(!goal||/\b(?:ist|sind|war|waren|bleibt|stehen)\s*\.$/i.test(goal)||/^ziel\s*:?$/i.test(goal)){
     if(index===0&&evaluationLogic().kind==="missing_sales")return "Die fehlende Verkaufszahl und der Stand der bekannten Gespräche sind festgehalten.";
     if(index===0)return "Beitrag und Bio nennen den Kontaktweg klar.";
