@@ -650,7 +650,7 @@ function validatePlanContract(p,contract){
   if(p.steps.some(function(s){return !planGoalMatchesAction(s);}))return false;
   var first=[p.steps[0].title,p.steps[0].action,p.steps[0].goal].join(" ");
   if(contract.keywords.indexOf("vorläufig")>=0){
-    if(!includesAny(first,["verkauf","zahl"])||!includesAny(first,["freiwillig","nachfrage"]))return false;
+    if(!includesAny(first,["verkauf","zahl"]))return false;
   } else if(contract.keywords.indexOf("anfragen")>=0){
     if(!includesAny(first,["sichtbarkeit","kontakt"]))return false;
   } else if(contract.keywords.indexOf("kaufweg")>=0){
