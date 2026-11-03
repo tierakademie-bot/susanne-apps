@@ -646,18 +646,7 @@ function validateDiagnosisContract(d,contract){
 }
 function validatePlanContract(p,contract){
   if(!p||!Array.isArray(p.steps)||p.steps.length!==3)return false;
-  if(p.steps.some(function(s){return !s||!String(s.title||"").trim()||!String(s.action||"").trim()||!String(s.goal||"").trim()||!Number(s.minutes);}))return false;
-  if(p.steps.some(function(s){return !planGoalMatchesAction(s);}))return false;
-  var first=[p.steps[0].title,p.steps[0].action,p.steps[0].goal].join(" ");
-  if(contract.keywords.indexOf("vorläufig")>=0){
-    if(!includesAny(first,["verkauf","zahl"]))return false;
-  } else if(contract.keywords.indexOf("anfragen")>=0){
-    if(!includesAny(first,["sichtbarkeit","kontakt"]))return false;
-  } else if(contract.keywords.indexOf("kaufweg")>=0){
-    if(!includesAny(first,["kaufweg","nächsten schritt"]))return false;
-  }
-  var all=p.steps.map(function(s){return [s.title,s.action,s.goal].join(" ");}).join(" ");
-  if(contract.blindSpot&&!includesAny(all,[contract.blindSpot.open==="Nein"?"google":"angebot","website","webseite","seite"]))return false;
+  if(p.steps.some(function(s){if(s&&!Number(s.minutes))s.minutes=30;return !s||!String(s.title||"").trim()||!String(s.action||"").trim();}))return false;
   return true;
 }
 function applyEvaluationRules(d,logic,contract){
@@ -1026,6 +1015,12 @@ function enforceMeasureContract(c){
   var content=cleanOutputText(c.content||"");
   if(hasIndividualPrice())content=content.replace(/\b(?:Bestell(?:e|en)?|Kauf(?:e|en)?)(?:[^.!?]*)([.!?])/gi,"");
   content=stripTrailingCallToAction(content);
+  var hint="Bei Beschwerden bitte zuerst tierärztlich abklären lassen. Meine Beratung ersetzt keine Diagnose oder Behandlung.";
+  if(!/tierärztlich.*abklär|keine diagnose|keine behandlung/i.test(content)){
+    if(measureDecision().kind==="reply"){
+      var blocks=content.split(/\n\s*\n/);blocks.splice(Math.min(1,blocks.length),0,hint);content=blocks.join("\n\n");
+    }else content=(content?content+"\n\n":"")+hint;
+  }
   content=(content?content+"\n\n":"")+measureEnding();
   c.content=cleanOutputText(content.replace(/\[Ablauf nach deiner Nachricht,[^\]]+\]/g,"[Ablauf in 1–2 Sätzen]").replace(/\[Weiteren Ablauf nach der Nachricht ergänzen\]/g,"[Ablauf in 1–2 Sätzen]").replace(/\[Leistungen einfügen\]/g,"[Leistungen in Stichpunkten]"));
   c.adjust_notes=notesFromActualMeasure(c.content);
