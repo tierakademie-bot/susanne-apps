@@ -99,6 +99,12 @@ details.full>summary{cursor:pointer;font:600 13px system-ui;color:#2D4A3E;margin
   .card{max-width:none;box-shadow:none;border-radius:0;overflow:visible}.body{padding:0}.rbox{background:white;border:0;border-left:0;padding:12px 0;margin:0 0 18px;break-inside:auto}.rl{font-size:12px}.rbox p{font-size:12pt;line-height:1.5}
   details.full>summary,.screen-only,.vis-ic,.measure-summary,.sln,.screen-status{display:none!important}.print-status,.print-measure,.print-label,.print-export-header{display:block!important}.print-export-header{border-bottom:1px solid #8FAF9F;padding:0 0 10px;margin:0 0 16px;font:10pt/1.5 system-ui;color:#2D4A3E}.print-status{font:700 11pt Georgia,serif;min-width:110px}.print-label{margin-top:2px}.print-measure{background:white;border:0;padding:12px 0;margin:0 0 18px}.print-measure p{font-size:12pt;line-height:1.5}
 }
+body.print-prep{background:white!important;padding:0!important;display:block!important;align-items:initial!important}
+body.print-prep .hdr,body.print-prep .tabs,body.print-prep .profile-note,body.print-prep .sbar,body.print-prep .copy-hint,body.print-prep .copy-field,body.print-prep .footer,body.print-prep footer,body.print-prep .btn-row,body.print-prep .ci-row,body.print-prep .chat-w,body.print-prep .card-hdr{display:none!important}
+body.print-prep .card{max-width:none!important;box-shadow:none!important;border-radius:0!important;overflow:visible!important;break-inside:auto!important}
+body.print-prep .body{padding:0!important}body.print-prep .rbox{background:white!important;border:0!important;border-left:0!important;padding:12px 0!important;margin:0 0 18px!important;break-inside:auto!important}
+body.print-prep details.full>summary,body.print-prep .screen-only,body.print-prep .vis-ic,body.print-prep .measure-summary,body.print-prep .sln,body.print-prep .screen-status{display:none!important}
+body.print-prep .print-status,body.print-prep .print-measure,body.print-prep .print-label,body.print-prep .print-export-header{display:block!important}
 </style>
 </head>
 <body>
@@ -182,7 +188,7 @@ var FORMATS={antwortvorlage:"Antwortvorlage",beitrag:"Beitrag",flyertext:"Flyert
 function typeLabel(t){return TYPE_LABELS[t]||t||"";}
 function num(x){var m=String(x==null?"":x).match(/\d+/);return m?parseInt(m[0],10):0;}
 function selOpts(list,sel){return '<option value="">Bitte wählen...</option>'+list.map(function(x){return '<option'+(sel===x?' selected':'')+'>'+x+'</option>';}).join('');}
-function smallSample(){var r=dAnswers[qIdx("results")];return !r||!!r.unknown;}
+function smallSample(){var r=dAnswers[qIdx("results")];return !r||!!r.unknown||(num(r.talks)>0&&num(r.talks)<=3);}
 /* KOMPASS_TEST_VERSION: plan-goal-trace-2026-11-02T02 */
 var KOMPASS_TEST_VERSION="plan-goal-trace-2026-11-02T02";
 console.info("KOMPASS_TEST_VERSION="+KOMPASS_TEST_VERSION);
@@ -692,6 +698,8 @@ function uniqueFacts(list,seen){seen=seen||{};return (Array.isArray(list)?list:[
 function removeConversion(text,conversion){return conversion?String(text||"").split(conversion).join("").replace(/\s{2,}/g," ").trim():String(text||"");}
 function withoutConversion(list,conversion){return (Array.isArray(list)?list:[]).filter(function(x){return !conversion||String(x).indexOf(conversion)<0;});}
 function cleanOutputText(text){var seen={},lines=String(text||"").replace(/druckfreier nächster Schritt/ig,"ein Schritt ohne Druck").replace(/druckfreien nächsten Schritt/ig,"einen Schritt ohne Druck").replace(/Die Offenheit dafür heißt nicht, dass schon eine besteht\.?/ig,"").replace(/\[(?:Weiteren Ablauf nach der Nachricht ergänzen|Ablauf nach der Nachricht ergänzen|Ablauf ergänzen)\]/g,"[Ablauf in 1–2 Sätzen]").replace(/\[(?:Leistungen einfügen|Leistungsumfang einsetzen|Leistungsumfang ergänzen|Leistungsumfang als Platzhalter|Platzhalter: Leistungen deiner Beratung)\]/g,"[Leistungen in Stichpunkten]").split("\n").map(function(line){return line.replace(/[ \t]{2,}/g," ").replace(/Eine eigene Seite[^.\n]*hast du,\s*aber offen dafür\./ig,"Eine eigene Seite hast du noch nicht.").trim();}).filter(function(line){if(!line)return true;if(/\b(?:ist|sind|war|waren|bleibt|stehen)\s+\.$/i.test(line))return false;if(/\bweil\s+(?:Details|Angaben|Informationen)[^.]*\b(?:ist|sind)\.$/i.test(line))return false;if(/^[-–]\s*[^\n]*:\s*$/i.test(line))return false;var key=line.replace(/^[-–]\s*/,"").toLowerCase().replace(/[^a-zäöüß0-9]+/g," ").trim();if(/^[-–]\s/.test(line)&&key&&seen[key])return false;if(/^[-–]\s/.test(line)&&key)seen[key]=true;return true;});return lines.join("\n").replace(/\n{3,}/g,"\n\n").trim();}
+var cleanOutputTextBase=cleanOutputText;
+cleanOutputText=function(text){return cleanOutputTextBase(String(text||"").replace(/\[Preisrahmen einsetzen,[^\]]+\]/gi,"[Preisrahmen]")).replace(/([.!?])\1+/g,"$1");};
 function limitMissingPhrases(text,max){var count=0;var lines=String(text||"").split("\n").filter(function(line){if(/(?:in deinen Angaben nicht genannt|Dazu hast du nichts angegeben|nichts angegeben)/i.test(line)){count++;return count<=max;}return true;});return cleanOutputText(lines.join("\n"));}
 function limitMissingPhrasesAcrossEvaluation(){var count=0;function trim(text){var lines=String(text||"").split("\n").filter(function(line){if(/(?:in deinen Angaben nicht genannt|Dazu hast du nichts angegeben|nichts angegeben)/i.test(line)){count++;return count<=3;}if(/Es kommen noch zu wenige Anfragen\.|(?:Die|Sehr|Wegen der) klein\w* Zahlen[^.]*\./i.test(line))return false;return true;});return cleanOutputText(lines.join("\n"));}dDiag=trim(dDiag);dTask=trim(dTask);dCont=trim(dCont);}
 
@@ -738,9 +746,9 @@ function fixText(t){return cleanOutputText(String(t||"").replace(/(^|\n)(- |\d+\
 function diagnosisText(d){return fixText(limitMissingPhrases(diagnosisRaw(d),3));}
 function cleanPriorityText(value){var text=String(value||"").trim(),labels=Object.keys(TYPE_LABELS).map(function(key){return TYPE_LABELS[key].replace(/[.*+?^${}()|[\]\\]/g,"\\$&");});return text.replace(new RegExp("^\\s*(?:"+labels.join("|")+")\\s*:\\s*","i"),"").trim();}
 function missingInfoSummary(items){
-  var labels=(items||[]).map(function(item){var t=String(item||"").replace(/:\s*in deinen Angaben nicht genannt\.?/ig,"").trim();if(/^Leistungsumfang/i.test(t))return "Leistungsumfang";if(/^Ablauf/i.test(t))return "Ablauf bis Zahlung";if(/^Zeitraum/i.test(t))return "Zeitraum";return t;}).filter(Boolean).filter(function(item,i,all){return all.indexOf(item)===i;});
+  var labels=(items||[]).map(function(item){var t=String(item||"").replace(/:\s*in deinen Angaben nicht genannt\.?/ig,"").replace(/[?]+$/," ").trim();if(/^Leistungsumfang/i.test(t))return "Leistungsumfang";if(/^Ablauf.*Telefonat|Telefonat.*Bestellung/i.test(t))return "Ablauf nach dem Telefonat bis zur Bestellung";if(/^Ablauf/i.test(t))return "Ablauf bis Zahlung";if(/^Zeitraum/i.test(t))return "Zeitraum";if(/individuell.*preis|preis.*erkl/i.test(t))return "Erklärung des individuellen Preises";if(/kaufhindernis/i.test(t))return "Kaufhindernis";return t.replace(/^Was\s+/i,"").replace(/\?+$/," ").trim();}).filter(Boolean).filter(function(item,i,all){return all.indexOf(item)===i;});
   if(!labels.length){var r=dAnswers[qIdx("results")]||{},offer=dAnswers[qIdx("offer")]||{};if(String(r.talks||"").trim()==="")labels.push("Gespräche");if(String(r.sales||"").trim()==="")labels.push("Verkäufe");if(!String(offer.offer||"").trim())labels.push("Leistungsumfang");if(!(offer.ablaufNachAnfrage||[]).length)labels.push("Ablauf bis Zahlung");if(!labels.length)labels=["Leistungsumfang","Ablauf bis Zahlung","Zeitraum"];}
-  return "Dazu fehlen noch Angaben zu: "+labels.join(", ")+".";
+  return "Dazu fehlen noch Angaben zu:\n- "+labels.join("\n- ")+".";
 }
 function diagnosisRaw(d){
   var out=(d.confidence==="niedrig"?"Deine vorläufige Einschätzung":"Deine Diagnose")+"\n"+(d.display_problem||d.central_problem)+"\n\nSicherheit der Einschätzung: "+(d.confidence||"nicht angegeben");
@@ -855,9 +863,10 @@ function normalizedMix(m){
 }
 function contentMixExplanation(){
   var r=dAnswers[qIdx("results")]||{},sources=Array.isArray(r.quelleAnfragen)?r.quelleAnfragen.filter(Boolean):[];
+  var mix=normalizedMix(diagData&&diagData.content_mix),erkennen=mix&&mix.find(function(x){return x.label==="Erkennen";}),erkennenHighest=!!(erkennen&&erkennen.v>Math.max.apply(null,mix.filter(function(x){return x.label!=="Erkennen";}).map(function(x){return x.v;})));
   var parts=[];
   if(sources.length)parts.push("Du hast "+sources.join(" und ")+" als Anfragequelle angegeben. Deshalb setzt der Mix dort zuerst auf verständliche, sichtbare Inhalte.");
-  if(num(r.inquiries)<=5)parts.push("Weil bisher nur wenige Anfragen eingetragen sind, bekommt Erkennen mehr Raum: So verstehen passende Menschen schneller, worum es bei deinem Angebot geht.");
+  if(num(r.inquiries)<=5&&erkennenHighest)parts.push("Weil bisher nur wenige Anfragen eingetragen sind, bekommt Erkennen mehr Raum: So verstehen passende Menschen schneller, worum es bei deinem Angebot geht.");
   else if((r.kaufhindernisAuswahl||[]).indexOf("Preis war zu hoch")>=0)parts.push("Weil Preis als Kaufhindernis genannt wurde, enthält der Mix auch Angebot: Preis und Ablauf dürfen nachvollziehbar sichtbar werden.");
   else parts.push("Der Mix verbindet Erkennen, Vertrauen und Angebot, damit Interessierte dein Thema verstehen und den nächsten Schritt einordnen können.");
   return parts.slice(0,3).join(" ");
@@ -865,7 +874,9 @@ function contentMixExplanation(){
 function renderMixPanel(){
   var m=diagData&&normalizedMix(diagData.content_mix);if(!m)return '';
   var ready=!!(dDiag&&dDiag.indexOf("Fehler:")!==0);
-  return '<div class="vis"><div class="rl" style="color:#2D4A3E">Dein persönlicher Content-Mix – Richtwert</div>'+m.map(function(x){return '<div class="mix-row"><span class="mix-lbl">'+x.label+'</span><span class="mix-bar"><span class="mix-fill" style="display:block;width:'+x.v+'%"></span></span><span class="mix-val">'+x.v+' %</span></div>';}).join('')+(ready&&diagData.content_mix_note?'<p class="field-help">'+esc(diagData.content_mix_note)+'</p>':ready?'<p class="field-help">'+esc(contentMixExplanation())+'</p>':'<p class="field-help status">Wird erstellt …</p>')+'</div>';
+  var erkennen=m.find(function(x){return x.label==="Erkennen";}),others=m.filter(function(x){return x.label!=="Erkennen";});
+  var note=String(diagData.content_mix_note||"");if(/Anteil Erkennen ist höher/i.test(note)&&(!erkennen||erkennen.v<=Math.max.apply(null,others.map(function(x){return x.v;}))))note="";
+  return '<div class="vis"><div class="rl" style="color:#2D4A3E">Dein persönlicher Content-Mix – Richtwert</div>'+m.map(function(x){return '<div class="mix-row"><span class="mix-lbl">'+x.label+'</span><span class="mix-bar"><span class="mix-fill" style="display:block;width:'+x.v+'%"></span></span><span class="mix-val">'+x.v+' %</span></div>';}).join('')+(ready&&note?'<p class="field-help">'+esc(note)+'</p>':ready?'<p class="field-help">'+esc(contentMixExplanation())+'</p>':'<p class="field-help status">Wird erstellt …</p>')+'</div>';
 }
 
 function retryBox(fn){
@@ -887,7 +898,7 @@ function renderDiagResult(){
   else html+='<div class="rbox"><div class="rl">&#9989; Deine nächsten drei Schritte (7 Tage)</div><p class="status">Wird erstellt …</p></div>';
   if(dStep===2)html+=renderChat();
   html+=renderContArea();
-  if(dTask&&dCont)html+='<div class="btn-row"><button class="btn-o" onclick="endApp()">App beenden</button></div>';
+  if(dTask&&dCont)html+='<div class="btn-row screen-only"><button class="btn-o" onclick="printResult()">Auswertung drucken / als PDF speichern</button><button class="btn-o" onclick="endApp()">App beenden</button></div>';
     return html;
 }
 
@@ -923,7 +934,7 @@ function renderChat(){
 }
 
 function renderContArea(){
-  if(!dCont)return '<div class="spin-w"><div class="spin"></div></div><div class="status">Erstelle die fertige Marketing-Maßnahme...</div>';
+  if(!dCont)return '<div class="spin-w"><div class="spin"></div></div><div class="status">Erstelle die fertige Marketing-Maßnahme...</div><div class="print-measure"><div class="rl">Deine fertige Marketing-Maßnahme</div><p>Maßnahme wird noch erstellt. Bitte schließe den Druck und warte, bis dieser Abschnitt vollständig angezeigt wird.</p></div>';
   if(dCont.indexOf("Fehler:")===0)return '<div class="rbox"><p>'+formatAI(dCont)+'</p></div>'+retryBox("genCont()");
   var html='<div class="rbox measure-summary"><div class="rl">&#9997;&#65039; Deine fertige Marketing-Maßnahme</div><p>'+formatAI(dCont)+'</p>';
   if(measureData&&measureData.content){
@@ -937,6 +948,10 @@ function renderContArea(){
 
 var CHANNEL_ROLES=[["Instagram","ZEIGEN","Schau, was ich mache.","Reels, Karussells, kurze Impulse, Alltagseinblicke"],["Facebook","ERZÄHLEN","Das habe ich erlebt.","Geschichten, Fragen an die Gruppe, Veranstaltungen, regionale Angebote"],["LinkedIn","POSITIONIEREN","Dafür stehe ich.","Fachwissen, Haltung, Erfahrung, Preisgestaltung"],["TikTok","AUFMERKSAMKEIT","Das solltest du wissen.","kurze Videos, Aha-Momente, Humor"],["YouTube","ERKLÄREN","So funktioniert es.","Tutorials, Fachvideos, Fallbesprechungen"],["Pinterest","GEFUNDEN WERDEN","Speichere dir das.","Checklisten, Ratgeber, Infografiken"],["Skool Community","AUSTAUSCHEN","Wie erlebt ihr das?","Fragen, Feedback, Umfragen, Erfahrungen"],["Skool Classroom","LERNEN","Hier findest du die Anleitung.","Kurse, Leitfäden, Videos, Vorlagen"]];
 var cMulti="";
+function printResult(){
+  if(evaluationLoading.measure||!measureData||!measureData.content){alert("Die fertige Marketing-Maßnahme wird noch erstellt. Bitte warte, bis sie vollständig angezeigt wird.");return;}
+  window.print();
+}
 function renderBeitragsaufbau(){
   return '<details class="full"><summary>So ist ein guter Beitrag aufgebaut</summary><div class="rbox"><p style="margin-bottom:8px">Jeder Beitrag folgt sechs Bausteinen, in dieser Reihenfolge:</p><p style="margin-bottom:6px"><strong>1. Einstieg:</strong> Die erste Zeile unterbricht das Weiterscrollen, zum Beispiel mit einer klaren Frage oder einem mutigen Statement. Sie muss zur Zielgruppe passen und darf nicht nur laut sein.</p><p style="margin-bottom:6px"><strong>2. Problem:</strong> Benenne das Problem so konkret und alltagsnah, wie deine Zielgruppe es selbst sagen w&uuml;rde, aber ohne zu dramatisieren.</p><p style="margin-bottom:6px"><strong>3. Wunschzustand:</strong> Zeige, was sich deine Zielgruppe stattdessen w&uuml;nscht, in Bildern und Gef&uuml;hlen.</p><p style="margin-bottom:6px"><strong>4. Dein Angebot als Br&uuml;cke:</strong> Erkl&auml;re, wof&uuml;r dein Angebot gedacht ist und woran ihr gemeinsam arbeitet, ohne Ergebnisse zu versprechen.</p><p style="margin-bottom:6px"><strong>5. Beweis:</strong> Echte Kundenstimmen, echte Beispiele oder deine eigene Qualifikation. Hast du noch keine, bleibt ein Platzhalter stehen. Die App erfindet nichts.</p><p style="margin-bottom:6px"><strong>6. Eine Handlung:</strong> Am Ende steht genau ein klarer n&auml;chster Schritt, nicht drei Wahlm&ouml;glichkeiten.</p><p style="color:#6B8A7E">Faustregel: Stecke etwa 80 % deiner Zeit in den Einstieg und 20 % in den Rest. Ohne starken Einstieg wird auch ein guter Inhalt nicht gelesen.</p></div></details>';
 }
@@ -1152,7 +1167,8 @@ document.addEventListener("input",function(e){
   }
 });
 if(/[?&]test(=|&|$)/.test(location.search)){window.testPage=true;renderTestlauf();}
-window.addEventListener("beforeprint",function(){Array.prototype.forEach.call(document.querySelectorAll("details"),function(d){d.open=true;});});
+window.addEventListener("beforeprint",function(){document.body.classList.add("print-prep");Array.prototype.forEach.call(document.querySelectorAll("details"),function(d){d.open=true;});});
+window.addEventListener("afterprint",function(){document.body.classList.remove("print-prep");});
 if(!/[?&]test(=|&|$)/.test(location.search))render();
 </script>
 <script>
