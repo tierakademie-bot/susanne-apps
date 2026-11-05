@@ -95,10 +95,12 @@ details.full>summary{cursor:pointer;font:600 13px system-ui;color:#2D4A3E;margin
 .mix-val{width:40px;text-align:right;font-weight:700}
 @media(max-width:520px){.choices.two{grid-template-columns:1fr}.mini-grid{grid-template-columns:1fr}.body{padding:18px 16px 24px}}
 @media print{
-  body{background:white;padding:0;display:block}.hdr,.tabs,.profile-note,.sbar,.copy-hint,.copy-field,.footer,footer,.btn-row,.ci-row,.chat-w,.card-hdr{display:none!important}
-  .card{max-width:none;box-shadow:none;border-radius:0;overflow:visible}.body{padding:0}.rbox{background:white;border:0;border-left:0;padding:12px 0;margin:0 0 18px;break-inside:auto}.rl{font-size:12px}.rbox p{font-size:12pt;line-height:1.5}
+  html,body{width:auto!important;min-height:0!important}body{background:white!important;padding:0!important;display:block!important;align-items:initial!important}.hdr,.tabs,.profile-note,.sbar,.copy-hint,.copy-field,.footer,footer,.btn-row,.ci-row,.chat-w,.card-hdr{display:none!important}
+  .card{max-width:none!important;box-shadow:none!important;border-radius:0!important;overflow:visible!important;break-inside:auto!important}.body{padding:0!important}.rbox{background:white!important;border:0!important;border-left:0!important;padding:12px 0!important;margin:0 0 18px!important;break-inside:auto!important}.rl{font-size:12px}.rbox p{font-size:12pt;line-height:1.5}
   details.full>summary,.screen-only,.vis-ic,.measure-summary,.sln,.screen-status{display:none!important}.print-status,.print-measure,.print-label,.print-export-header{display:block!important}.print-export-header{border-bottom:1px solid #8FAF9F;padding:0 0 10px;margin:0 0 16px;font:10pt/1.5 system-ui;color:#2D4A3E}.print-status{font:700 11pt Georgia,serif;min-width:110px}.print-label{margin-top:2px}.print-measure{background:white;border:0;padding:12px 0;margin:0 0 18px}.print-measure p{font-size:12pt;line-height:1.5}
 }
+/* The beforeprint handler adds this class, so the normal browser print dialog
+   gets the same clean layout even if its preview starts with screen styles. */
 body.print-prep{background:white!important;padding:0!important;display:block!important;align-items:initial!important}
 body.print-prep .hdr,body.print-prep .tabs,body.print-prep .profile-note,body.print-prep .sbar,body.print-prep .copy-hint,body.print-prep .copy-field,body.print-prep .footer,body.print-prep footer,body.print-prep .btn-row,body.print-prep .ci-row,body.print-prep .chat-w,body.print-prep .card-hdr{display:none!important}
 body.print-prep .card{max-width:none!important;box-shadow:none!important;border-radius:0!important;overflow:visible!important;break-inside:auto!important}
@@ -945,13 +947,13 @@ function renderContArea(){
   if(measureData&&measureData.content){html+='<div class="print-measure"><div class="rl">Deine fertige Marketing-Maßnahme</div>'+(measureData.title?'<p><strong>'+esc(measureData.title)+'</strong></p>':'')+'<p>'+formatAI(measureData.content)+'</p>'+(measureData.adjust_notes&&measureData.adjust_notes.length?'<p><strong>Vor dem Einsatz anpassen</strong><br>'+measureData.adjust_notes.map(esc).join('<br>')+'</p>':'')+'</div>';}
   return html;
 }
-
-var CHANNEL_ROLES=[["Instagram","ZEIGEN","Schau, was ich mache.","Reels, Karussells, kurze Impulse, Alltagseinblicke"],["Facebook","ERZÄHLEN","Das habe ich erlebt.","Geschichten, Fragen an die Gruppe, Veranstaltungen, regionale Angebote"],["LinkedIn","POSITIONIEREN","Dafür stehe ich.","Fachwissen, Haltung, Erfahrung, Preisgestaltung"],["TikTok","AUFMERKSAMKEIT","Das solltest du wissen.","kurze Videos, Aha-Momente, Humor"],["YouTube","ERKLÄREN","So funktioniert es.","Tutorials, Fachvideos, Fallbesprechungen"],["Pinterest","GEFUNDEN WERDEN","Speichere dir das.","Checklisten, Ratgeber, Infografiken"],["Skool Community","AUSTAUSCHEN","Wie erlebt ihr das?","Fragen, Feedback, Umfragen, Erfahrungen"],["Skool Classroom","LERNEN","Hier findest du die Anleitung.","Kurse, Leitfäden, Videos, Vorlagen"]];
-var cMulti="";
 function printResult(){
   if(evaluationLoading.measure||!measureData||!measureData.content){alert("Die fertige Marketing-Maßnahme wird noch erstellt. Bitte warte, bis sie vollständig angezeigt wird.");return;}
   window.print();
 }
+
+var CHANNEL_ROLES=[["Instagram","ZEIGEN","Schau, was ich mache.","Reels, Karussells, kurze Impulse, Alltagseinblicke"],["Facebook","ERZÄHLEN","Das habe ich erlebt.","Geschichten, Fragen an die Gruppe, Veranstaltungen, regionale Angebote"],["LinkedIn","POSITIONIEREN","Dafür stehe ich.","Fachwissen, Haltung, Erfahrung, Preisgestaltung"],["TikTok","AUFMERKSAMKEIT","Das solltest du wissen.","kurze Videos, Aha-Momente, Humor"],["YouTube","ERKLÄREN","So funktioniert es.","Tutorials, Fachvideos, Fallbesprechungen"],["Pinterest","GEFUNDEN WERDEN","Speichere dir das.","Checklisten, Ratgeber, Infografiken"],["Skool Community","AUSTAUSCHEN","Wie erlebt ihr das?","Fragen, Feedback, Umfragen, Erfahrungen"],["Skool Classroom","LERNEN","Hier findest du die Anleitung.","Kurse, Leitfäden, Videos, Vorlagen"]];
+var cMulti="";
 function renderBeitragsaufbau(){
   return '<details class="full"><summary>So ist ein guter Beitrag aufgebaut</summary><div class="rbox"><p style="margin-bottom:8px">Jeder Beitrag folgt sechs Bausteinen, in dieser Reihenfolge:</p><p style="margin-bottom:6px"><strong>1. Einstieg:</strong> Die erste Zeile unterbricht das Weiterscrollen, zum Beispiel mit einer klaren Frage oder einem mutigen Statement. Sie muss zur Zielgruppe passen und darf nicht nur laut sein.</p><p style="margin-bottom:6px"><strong>2. Problem:</strong> Benenne das Problem so konkret und alltagsnah, wie deine Zielgruppe es selbst sagen w&uuml;rde, aber ohne zu dramatisieren.</p><p style="margin-bottom:6px"><strong>3. Wunschzustand:</strong> Zeige, was sich deine Zielgruppe stattdessen w&uuml;nscht, in Bildern und Gef&uuml;hlen.</p><p style="margin-bottom:6px"><strong>4. Dein Angebot als Br&uuml;cke:</strong> Erkl&auml;re, wof&uuml;r dein Angebot gedacht ist und woran ihr gemeinsam arbeitet, ohne Ergebnisse zu versprechen.</p><p style="margin-bottom:6px"><strong>5. Beweis:</strong> Echte Kundenstimmen, echte Beispiele oder deine eigene Qualifikation. Hast du noch keine, bleibt ein Platzhalter stehen. Die App erfindet nichts.</p><p style="margin-bottom:6px"><strong>6. Eine Handlung:</strong> Am Ende steht genau ein klarer n&auml;chster Schritt, nicht drei Wahlm&ouml;glichkeiten.</p><p style="color:#6B8A7E">Faustregel: Stecke etwa 80 % deiner Zeit in den Einstieg und 20 % in den Rest. Ohne starken Einstieg wird auch ein guter Inhalt nicht gelesen.</p></div></details>';
 }
@@ -1025,10 +1027,26 @@ function notesFromActualMeasure(content){
   if(placeholders.length)notes.push("Ersetze vor dem Einsatz: "+placeholders.join(", ")+".");
   return notes;
 }
+function isGenericMeasureTarget(target){return /^(?:menschen mit tieren?|tierhalter(?:innen)?|tierbesitzer(?:innen)?)$/i.test(String(target||"").trim());}
+function removeGenericTargetFromMeasure(content){
+  if(!isGenericMeasureTarget(animalFocus))return String(content||"");
+  return String(content||"").replace(/(\bIch biete\b[^.!?]*?)\s+für\s+(?:Menschen\s+mit\s+Tieren?|Tierhalter(?:innen)?|Tierbesitzer(?:innen)?)(\s+an\b)?/gi,function(_,start,ending){return start+(ending||"");});
+}
+function replaceIndividualOrderSentence(content){
+  return String(content||"").replace(/(^|[.!?]\s+)([^.!?]*\b(?:direkte?\s+(?:Bestellung|Bestellen)|(?:direkt\s+)?(?:bestellen|kaufen))\b[^.!?]*)([.!?]|$)/gi,function(_,lead){
+    return lead+"Wenn der Preis für dich klar ist und alles passt, klären wir gemeinsam den nächsten Schritt.";
+  });
+}
+function hasBrokenMeasureSentence(content){
+  var text=String(content||"").replace(/\s+/g," ").trim();
+  return /\b(?:eine|einen|einem)\s+direkte?\s+(?=(?:Du|Dann|Danach|Wenn|Es|Auch)\b)/.test(text)||
+    /\b(?:eine|einen|einem|der|die|das|zur|zum|mit|für|auf|an|und|oder)\s*(?:[.!?]|$)/i.test(text);
+}
 function enforceMeasureContract(c){
   if(!c)return c;
   var content=cleanOutputText(c.content||"");
-  if(hasIndividualPrice())content=content.replace(/\b(?:Bestell(?:e|en)?|Kauf(?:e|en)?)(?:[^.!?]*)([.!?])/gi,"");
+  if(hasIndividualPrice())content=replaceIndividualOrderSentence(content);
+  content=removeGenericTargetFromMeasure(content);
   content=stripTrailingCallToAction(content);
   var hint="Bei Beschwerden bitte zuerst tierärztlich abklären lassen. Meine Beratung ersetzt keine Diagnose oder Behandlung.";
   if(!/tierärztlich.*abklär|keine diagnose|keine behandlung/i.test(content)){
@@ -1046,11 +1064,12 @@ function generateStructuredMeasure(facts,contract,retry){
   var target=animalFocus.trim()||"Menschen mit Tier";
   var decision=measureDecision();
   var structure=decision.kind==="reply"?"Antworte auf eine Anfrage: Beginne mit 'Hallo [Name],'. Danach steht ein kurzer Dank, zum Beispiel 'Schön, dass du dich bei mir meldest, und danke für deine Nachricht.' Erst danach steht der kurze Hinweis, dass Beschwerden zuerst tierärztlich abgeklärt werden und die Beratung keine Diagnose oder Behandlung ersetzt. Danach folgen Angebot und Ablauf; zum Schluss ein klarer, freiwilliger nächster Schritt.":"Erstelle einen öffentlichen Beitrag: Beginne mit einem kurzen, nicht fragenden Einstieg, der das Anliegen der Zielgruppe aufgreift. Danach folgen Angebot und Ablauf. Erst danach steht der kurze Hinweis, dass Beschwerden zuerst tierärztlich abgeklärt werden und die Beratung keine Diagnose oder Behandlung ersetzt. Zum Schluss steht ein klarer nächster Schritt.";
-  var prompt="Erstelle eine kurze, direkt nutzbare Marketing-Maßnahme als JSON. "+structure+" Beginne nie mit einer Frage. Nenne die Zielgruppe nur genau als '"+target+"'; verwende keine andere Geschlechtsform und ergänze keine Zielgruppe. Eine Berufsbezeichnung darfst du nur verwenden, wenn sie exakt in den Eingaben steht; sonst nenne keine Berufsbezeichnung. Höchstens drei Platzhalter. Nur einen Call-to-Action. Der letzte Satz muss zu diesem ersten Schritt passen: '"+firstInterestStep()+"'. Bei individuellem Preis nie direkt zur Bestellung auffordern. Keine Diagnose, keine erfundenen Details. Verwende als Format '"+decision.format+"' und als Titel exakt '"+decision.title+"'. JSON: {\"measure_type\":\"uebergang|marketingkanal|bindung|angebotsklaerung|klaerung\",\"format\":\"antwortvorlage|beitrag\",\"title\":\"...\",\"content\":\"...\",\"adjust_notes\":[\"...\"]}.\n\n"+facts;
+  var targetRule=isGenericMeasureTarget(target)?"Die allgemeine Zielgruppe wird im Angebotsatz nicht genannt: schreibe zum Beispiel nur 'Ich biete artgerechte Tiernahrung an.'":"Nenne die Zielgruppe nur genau als '"+target+"'; verwende keine andere Geschlechtsform und ergänze keine Zielgruppe.";
+  var prompt="Erstelle eine kurze, direkt nutzbare Marketing-Maßnahme als JSON. "+structure+" Beginne nie mit einer Frage. "+targetRule+" Eine Berufsbezeichnung darfst du nur verwenden, wenn sie exakt in den Eingaben steht; sonst nenne keine Berufsbezeichnung. Höchstens drei Platzhalter. Nur einen Call-to-Action. Der letzte Satz muss zu diesem ersten Schritt passen: '"+firstInterestStep()+"'. Bei individuellem Preis nie direkt zur Bestellung auffordern. Jeder Satz muss vollständig sein; entferne niemals einzelne Wörter oder Satzteile. Keine Diagnose, keine erfundenen Details. Verwende als Format '"+decision.format+"' und als Titel exakt '"+decision.title+"'. JSON: {\"measure_type\":\"uebergang|marketingkanal|bindung|angebotsklaerung|klaerung\",\"format\":\"antwortvorlage|beitrag\",\"title\":\"...\",\"content\":\"...\",\"adjust_notes\":[\"...\"]}.\n\n"+facts;
   callJSONChecked(SYS,prompt,function(c){
     if(c&&Array.isArray(c.content))c.content=c.content.join("\n");
     if(c){c.format=decision.format;c.title=decision.title;c=enforceMeasureContract(c);}
-    if(!validMeasure(c)||hasUnenteredProfessionalTitle(c&&c.content)){
+    if(!validMeasure(c)||hasBrokenMeasureSentence(c&&c.content)||hasUnenteredProfessionalTitle(c&&c.content)){
       if(!retry){generateStructuredMeasure(facts,contract,true);return;}
       dCont="Fehler: Die Maßnahme war unvollständig. Bitte erneut versuchen.";evaluationLoading.measure=false;renderMain();return;
     }
@@ -1180,3 +1199,4 @@ if(!/[?&]test(=|&|$)/.test(location.search))render();
 </footer>
 </body>
 </html>
+
