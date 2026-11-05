@@ -1039,8 +1039,8 @@ function replaceIndividualOrderSentence(content){
 }
 function hasBrokenMeasureSentence(content){
   var text=String(content||"").replace(/\s+/g," ").trim();
-  return /\b(?:eine|einen|einem)\s+direkte?\s+(?=(?:Du|Dann|Danach|Wenn|Es|Auch)\b)/.test(text)||
-    /\b(?:eine|einen|einem|der|die|das|zur|zum|mit|für|auf|an|und|oder)\s*(?:[.!?]|$)/i.test(text);
+  return /\b(?:eine|einen|einem)\s+direkte?\s+(?=(?:Du|Dann|Danach|Wenn|Es|Auch)\b)/i.test(text)||
+    /\b(?:Bestellung|Bestellen|Kauf(?:en)?)\s+(?=(?:Du|Dann|Danach|Wenn|Es|Auch)\b)/i.test(text);
 }
 function enforceMeasureContract(c){
   if(!c)return c;
