@@ -814,8 +814,15 @@ function generateStructuredPlan(facts,contract,retry){
       dTask="Die Auswertung ist nicht gelungen, bitte noch einmal versuchen.";evaluationLoading.plan=false;renderMain();return;
     }
     var rawSteps=(data.steps||[]).map(function(step){return {title:step.title,action:step.action,goal:step.goal};});
-    var cap=dAnswers[qIdx("capacity")]||{};data.weekly_time=(cap.time&&cap.time!=="Weiß ich noch nicht")?cap.time+" pro Woche":"nicht angegeben (der Plan bleibt bewusst klein)";data=addFriendlyFollowup(data);data=setOneSuccessMetricPerStep(data);
-    window.__kompassPlanTrace={version:KOMPASS_TEST_VERSION,raw:rawSteps,after:data.steps.map(function(step,i){return {title:step.title,action:safePlanAction(step,i),goal:safePlanGoal(step,i)};})};
+    var cap=dAnswers[qIdx("capacity")]||{};data.weekly_time=(cap.time&&cap.time!=="Weiß ich noch nicht")?cap.time+" pro Woche":"nicht angegeben (der Plan bleibt bewusst klein)";data=addFriendlyFollowup(data);
+    /* Ziele und Zeit gehören zum gespeicherten Schritt, nicht nur zur Bildschirmdarstellung. */
+    data.steps=(data.steps||[]).map(function(step,i){
+      var action=safePlanAction(step,i),normalized={title:String(step&&step.title||""),action:action,goal:String(step&&step.goal||""),minutes:Number(step&&step.minutes)||30};
+      normalized.goal=safePlanGoal(normalized,i);
+      return normalized;
+    });
+    data=setOneSuccessMetricPerStep(data);
+    window.__kompassPlanTrace={version:KOMPASS_TEST_VERSION,raw:rawSteps,after:data.steps.map(function(step){return {title:step.title,action:step.action,goal:step.goal};})};
     console.info("KOMPASS_PLAN_TRACE="+JSON.stringify(window.__kompassPlanTrace));
     planData=data;dTask=planText(data);evaluationLoading.plan=false;limitMissingPhrasesAcrossEvaluation();renderMain();
   },function(e){dTask="Fehler: "+e;evaluationLoading.plan=false;renderMain();});
