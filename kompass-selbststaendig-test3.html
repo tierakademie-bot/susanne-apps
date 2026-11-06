@@ -626,33 +626,48 @@ function planStepText(step){return String(step&&step.title||"")+" "+String(step&
 function planStepKind(step){
   var title=typeof step==="object"?String(step&&step.title||""):"";
   var action=typeof step==="object"?String(step&&step.action||""):String(step||"");
-  /* Der Titel benennt die Schrittart. Erst danach darf die Handlung ergänzen.
-     So macht ein Wort wie "telefonieren" einen Community-Beitrag nicht zum Kaufweg. */
+  /* Der Titel bestimmt zuerst die Schrittart. Worte in der Handlung dürfen das Ziel nicht umdeuten. */
   if(/angebotsseite|google-unternehmensprofil|google-eintrag|angebot(?:s| )/i.test(title))return "offer";
-  if(/veröffentlich|hinweis|kontakt|profil|beitrag|bio/i.test(title))return "contact";
-  if(/zahlen|verk[aä]uf.*festhalt|daten.*festhalt|gespräche.*festhalt/i.test(title))return "numbers";
-  if(/kaufweg|\bkauf\b|ablauf|preisrahmen|gespräch|verkauf|buchung/i.test(title))return "purchase";
+  if(/veröffentlich|hinweis|kontaktweg|kontakt|profil|beitrag|bio/i.test(title))return "contact";
+  if(/anschauen|festhalt|notier|liste|zahlen/i.test(title))return "numbers";
+  if(/kaufweg|ablauf|preisrahmen|nächsten?\s+schritt(?:\s+nach\s+dem\s+gespräch)?|nach\s+dem\s+gespräch/i.test(title))return "purchase";
   if(/zahlen\s+(?:festhalten|notier|vergleich)|(?:anfragen|gespräche).*?(?:notier|vergleich)|(?:notier|vergleich).*?(?:anfragen|gespräche)/i.test(action))return "numbers";
   if(/angebotsseite|google-unternehmensprofil|google-eintrag|angebot(?:s| )/i.test(action))return "offer";
-  if(/kaufweg|ablauf|preisrahmen|gespräch|verkauf|buchung/i.test(action))return "purchase";
   if(/instagram|facebook|community|empfehl|beitrag|bio|kontaktweg|kontaktpunkt|veröffentlich|hinweis|profil/i.test(action))return "contact";
+  if(/kaufweg|ablauf|preisrahmen|gespräch|verkauf|buchung/i.test(action))return "purchase";
   return "";
 }
 function standardPlanGoal(step){
   var kind=planStepKind(step);
-  if(kind==="purchase")return "Interessierte wissen, wie es nach dem Gespräch weitergeht und was der nächste Schritt ist.";
+  if(kind==="contact")return "Der Kontaktweg ist für Interessierte klar sichtbar.";
   if(kind==="offer")return "Das Angebot, der Preis und der Kontaktweg sind an einem klaren Ort sichtbar.";
-  if(kind==="numbers")return "Die Zahlen und offenen Punkte sind so festgehalten, dass du sie vergleichen kannst.";
-  if(kind==="contact")return "Beitrag und Bio nennen den Kontaktweg klar.";
+  if(kind==="purchase")return "Interessierte wissen, wie es nach dem Gespräch weitergeht und was der nächste Schritt ist.";
+  if(kind==="numbers")return "Du weißt, bei welchen Gesprächen es nicht zum Kauf kam und was jeweils noch offen war.";
   return "";
 }
 function planGoalMatchesAction(step){
-  var kind=planStepKind(step),goal=String(step&&step.goal||"");
+  var kind=planStepKind(step),goal=String(step&&step.goal||"").trim(),text=planStepText(step);
   if(!kind)return true;
-  if(kind==="purchase")return !/beitrag|bio|kontaktweg/i.test(goal)&&/gespräch|ablauf|nächsten schritt|kauf/i.test(goal);
+  if(kind==="contact"){
+    if(/\bbio\b/i.test(goal)&&!/\bbio\b/i.test(text))return false;
+    return /kontaktweg.*(?:klar|sichtbar)|interessiert.*(?:klar|sichtbar)/i.test(goal);
+  }
   if(kind==="offer")return /angebot|preis|kontaktweg|sichtbar|seite|eintrag/i.test(goal);
-  if(kind==="numbers")return /zahl|notier|festgehalten|vergleichen/i.test(goal);
-  return /beitrag|bio|kontaktweg|anfrage|sichtbar/i.test(goal);
+  if(kind==="purchase")return !/beitrag|bio|kontaktweg/i.test(goal)&&/gespräch|ablauf|nächsten schritt|kauf/i.test(goal);
+  return /gespräch|nicht zum kauf|offen|notier|festgehalten|zahl/i.test(goal);
+}
+/* Feste Beispiele: Diese Prüfung läuft bei jedem Testfall mit. */
+var PLAN_STEP_TYPE_TESTS=[
+  {name:"Sichtbarkeit/Kontakt",step:{title:"Kontakthinweis in der Community veröffentlichen",action:"Erkläre, wie Interessierte dich erreichen."},goal:"Der Kontaktweg ist für Interessierte klar sichtbar."},
+  {name:"Angebotsseite/Google-Eintrag",step:{title:"Google-Eintrag für dein Angebot anlegen",action:"Beschreibe Angebot, Preis und Kontaktweg."},goal:"Das Angebot, der Preis und der Kontaktweg sind an einem klaren Ort sichtbar."},
+  {name:"Kaufweg",step:{title:"Nächsten Schritt nach dem Gespräch klären",action:"Beschreibe den Ablauf nach dem Gespräch."},goal:"Interessierte wissen, wie es nach dem Gespräch weitergeht und was der nächste Schritt ist."},
+  {name:"Gespräche/Zahlen auswerten",step:{title:"Gespräche ohne Kauf anschauen",action:"Notiere, was noch offen war."},goal:"Du weißt, bei welchen Gesprächen es nicht zum Kauf kam und was jeweils noch offen war."}
+];
+function planStepTypeTestHits(){
+  return PLAN_STEP_TYPE_TESTS.filter(function(t){
+    var s={title:t.step.title,action:t.step.action,goal:standardPlanGoal(t.step)};
+    return s.goal!==t.goal||!planGoalMatchesAction(s);
+  }).map(function(t){return "Schrittarten-Test fehlgeschlagen: "+t.name;});
 }
 function validateDiagnosisContract(d,contract){
   var text=[d&&d.central_problem,d&&d.summary,d&&d.bottleneck&&d.bottleneck.explanation,d&&d.rationale].join(" ");
@@ -696,6 +711,12 @@ function applyEvaluationRules(d,logic,contract){
   if((logic.reactions===0)||(logic.inquiries!==null&&logic.inquiries<=5)){d.content_mix=d.content_mix||{};d.content_mix.erkennen=Math.max(35,Number(d.content_mix.erkennen)||0);d.content_mix_note="Der Anteil Erkennen ist höher, weil deine Angaben bisher keine oder nur wenige Anfragen zeigen.";}
   if(logic.kind==="missing_sales")d.uncertainties=d.uncertainties.filter(function(x){return !/zu den verkäufen fehlt|zahl der verkäufe fehlt/i.test(String(x));});
   if(d.content_mix_note)d.content_mix_note=d.content_mix_note.replace(/wegen der Fachgrenzen[^.]*\.?/ig,"").replace(/\s{2,}/g," ").trim();
+  /* Berufliche Bezeichnung oder Qualifikation erscheint ausschließlich im Abschnitt „Was noch offen ist“. */
+  d.uncertainties=(Array.isArray(d.uncertainties)?d.uncertainties:[]).filter(function(x){return !/berufliche bezeichnung|qualifikation/i.test(String(x));});
+  if(d.profession_note){
+    var professionParts=String(d.profession_note).match(/[^.!?]+[.!?]?/g)||[];
+    d.profession_note=professionParts.filter(function(part){return !/berufliche bezeichnung|qualifikation|belegen kannst|\[qualifikation\]/i.test(part);}).join(" ").replace(/\s{2,}/g," ").trim();
+  }
   d.missing_info=uniqueFacts(d.missing_info,{});var seen={};d.missing_info=uniqueFacts(d.missing_info,seen);d.evidence=uniqueFacts(d.evidence,seen);d.uncertainties=uniqueFacts(d.uncertainties,seen);
   return d;
 }
@@ -1137,6 +1158,7 @@ function caseResult(c,err){
   var text=[dDiag,dTask,dCont,measureData&&measureData.content?measureData.content:"",cResult].join("\n");
   var hits=violations(text);
   if(planData&&Array.isArray(planData.steps)&&planData.steps.some(function(s){return !planGoalMatchesAction(s);})){hits.unshift("Plan-Schritt: Ziel passt nicht zur Handlung");}
+  planStepTypeTestHits().forEach(function(hit){hits.unshift(hit);});
   var diagLines=String(dDiag||"").split("\n"),uncertainIndex=diagLines.indexOf("Was noch unsicher ist");
   if(uncertainIndex>=0&&!diagLines.slice(uncertainIndex+1).some(function(line){return /^\s*-\s*\S/.test(line);})){hits.unshift("Leere Überschrift: Was noch unsicher ist");}
   if(hasBrokenMeasureSentence(measureData&&measureData.content))hits.unshift("Maßnahme: abgebrochener Satz");
