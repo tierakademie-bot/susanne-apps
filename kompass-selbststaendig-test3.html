@@ -628,10 +628,10 @@ function planStepKind(step){
   var action=typeof step==="object"?String(step&&step.action||""):String(step||"");
   /* Der Titel benennt die Schrittart. Erst danach darf die Handlung ergänzen.
      So macht ein Wort wie "telefonieren" einen Community-Beitrag nicht zum Kaufweg. */
+  if(/angebotsseite|google-unternehmensprofil|google-eintrag|angebot(?:s| )/i.test(title))return "offer";
   if(/veröffentlich|hinweis|kontakt|profil|beitrag|bio/i.test(title))return "contact";
   if(/zahlen|verk[aä]uf.*festhalt|daten.*festhalt|gespräche.*festhalt/i.test(title))return "numbers";
   if(/kaufweg|ablauf|preisrahmen|gespräch|verkauf|buchung/i.test(title))return "purchase";
-  if(/angebotsseite|google-unternehmensprofil|google-eintrag|angebot(?:s| )/i.test(title))return "offer";
   if(/zahlen\s+(?:festhalten|notier|vergleich)|(?:anfragen|gespräche).*?(?:notier|vergleich)|(?:notier|vergleich).*?(?:anfragen|gespräche)/i.test(action))return "numbers";
   if(/angebotsseite|google-unternehmensprofil|google-eintrag|angebot(?:s| )/i.test(action))return "offer";
   if(/kaufweg|ablauf|preisrahmen|gespräch|verkauf|buchung/i.test(action))return "purchase";
@@ -1137,7 +1137,8 @@ function caseResult(c,err){
   var text=[dDiag,dTask,dCont,measureData&&measureData.content?measureData.content:"",cResult].join("\n");
   var hits=violations(text);
   if(planData&&Array.isArray(planData.steps)&&planData.steps.some(function(s){return !planGoalMatchesAction(s);})){hits.unshift("Plan-Schritt: Ziel passt nicht zur Handlung");}
-  if(/Was noch unsicher ist\s*(?:\n\s*){0,1}(?=\n|$)/i.test(dDiag))hits.unshift("Leere Überschrift: Was noch unsicher ist");
+  var diagLines=String(dDiag||"").split("\n"),uncertainIndex=diagLines.indexOf("Was noch unsicher ist");
+  if(uncertainIndex>=0&&!diagLines.slice(uncertainIndex+1).some(function(line){return /^\s*-\s*\S/.test(line);})){hits.unshift("Leere Überschrift: Was noch unsicher ist");}
   if(hasBrokenMeasureSentence(measureData&&measureData.content))hits.unshift("Maßnahme: abgebrochener Satz");
   if(err)hits.unshift(err);
   [["Diagnose",dDiag],["Plan",dTask],["Maßnahme",dCont],["Ideen",cResult]].forEach(function(x){if(String(x[1]).indexOf("Fehler:")===0)hits.push(x[0]+" nicht erstellt: "+x[1]);});
