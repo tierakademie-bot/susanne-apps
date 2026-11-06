@@ -631,7 +631,7 @@ function planStepKind(step){
   if(/angebotsseite|google-unternehmensprofil|google-eintrag|angebot(?:s| )/i.test(title))return "offer";
   if(/veröffentlich|hinweis|kontakt|profil|beitrag|bio/i.test(title))return "contact";
   if(/zahlen|verk[aä]uf.*festhalt|daten.*festhalt|gespräche.*festhalt/i.test(title))return "numbers";
-  if(/kaufweg|ablauf|preisrahmen|gespräch|verkauf|buchung/i.test(title))return "purchase";
+  if(/kaufweg|\bkauf\b|ablauf|preisrahmen|gespräch|verkauf|buchung/i.test(title))return "purchase";
   if(/zahlen\s+(?:festhalten|notier|vergleich)|(?:anfragen|gespräche).*?(?:notier|vergleich)|(?:notier|vergleich).*?(?:anfragen|gespräche)/i.test(action))return "numbers";
   if(/angebotsseite|google-unternehmensprofil|google-eintrag|angebot(?:s| )/i.test(action))return "offer";
   if(/kaufweg|ablauf|preisrahmen|gespräch|verkauf|buchung/i.test(action))return "purchase";
