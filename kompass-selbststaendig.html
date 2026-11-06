@@ -618,7 +618,7 @@ function planStepKind(step){
   /* Der Titel bestimmt zuerst die Schrittart. Worte in der Handlung dürfen das Ziel nicht umdeuten. */
   if(/angebotsseite|google-unternehmensprofil|google-eintrag|angebot(?:s| )/i.test(title))return "offer";
   if(/veröffentlich|hinweis|kontaktweg|kontakt|profil|beitrag|bio/i.test(title))return "contact";
-  if(/anschauen|festhalt|notier|liste|zahlen/i.test(title))return "numbers";
+  if(/anschauen|auswert|festhalt|notier|liste|zahlen/i.test(title))return "numbers";
   if(/kaufweg|ablauf|preisrahmen|nächsten?\s+schritt(?:\s+nach\s+dem\s+gespräch)?|nach\s+dem\s+gespräch/i.test(title))return "purchase";
   if(/zahlen\s+(?:festhalten|notier|vergleich)|(?:anfragen|gespräche).*?(?:notier|vergleich)|(?:notier|vergleich).*?(?:anfragen|gespräche)/i.test(action))return "numbers";
   if(/angebotsseite|google-unternehmensprofil|google-eintrag|angebot(?:s| )/i.test(action))return "offer";
