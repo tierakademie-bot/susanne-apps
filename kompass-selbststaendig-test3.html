@@ -629,7 +629,7 @@ function planStepKind(step){
   /* Der Titel bestimmt zuerst die Schrittart. Worte in der Handlung dürfen das Ziel nicht umdeuten. */
   if(/angebotsseite|google-unternehmensprofil|google-eintrag|angebot(?:s| )/i.test(title))return "offer";
   if(/veröffentlich|hinweis|kontaktweg|kontakt|profil|beitrag|bio/i.test(title))return "contact";
-  if(/anschauen|festhalt|notier|liste|zahlen/i.test(title))return "numbers";
+  if(/anschauen|auswert|festhalt|notier|liste|zahlen/i.test(title))return "numbers";
   if(/kaufweg|ablauf|preisrahmen|nächsten?\s+schritt(?:\s+nach\s+dem\s+gespräch)?|nach\s+dem\s+gespräch/i.test(title))return "purchase";
   if(/zahlen\s+(?:festhalten|notier|vergleich)|(?:anfragen|gespräche).*?(?:notier|vergleich)|(?:notier|vergleich).*?(?:anfragen|gespräche)/i.test(action))return "numbers";
   if(/angebotsseite|google-unternehmensprofil|google-eintrag|angebot(?:s| )/i.test(action))return "offer";
@@ -661,7 +661,7 @@ var PLAN_STEP_TYPE_TESTS=[
   {name:"Sichtbarkeit/Kontakt",step:{title:"Kontakthinweis in der Community veröffentlichen",action:"Erkläre, wie Interessierte dich erreichen."},goal:"Der Kontaktweg ist für Interessierte klar sichtbar."},
   {name:"Angebotsseite/Google-Eintrag",step:{title:"Google-Eintrag für dein Angebot anlegen",action:"Beschreibe Angebot, Preis und Kontaktweg."},goal:"Das Angebot, der Preis und der Kontaktweg sind an einem klaren Ort sichtbar."},
   {name:"Kaufweg",step:{title:"Nächsten Schritt nach dem Gespräch klären",action:"Beschreibe den Ablauf nach dem Gespräch."},goal:"Interessierte wissen, wie es nach dem Gespräch weitergeht und was der nächste Schritt ist."},
-  {name:"Gespräche/Zahlen auswerten",step:{title:"Gespräche ohne Kauf anschauen",action:"Notiere, was noch offen war."},goal:"Du weißt, bei welchen Gesprächen es nicht zum Kauf kam und was jeweils noch offen war."}
+  {name:"Gespräche/Zahlen auswerten",step:{title:"Gespräche ohne Kauf auswerten",action:"Notiere, was noch offen war."},goal:"Du weißt, bei welchen Gesprächen es nicht zum Kauf kam und was jeweils noch offen war."}
 ];
 function planStepTypeTestHits(){
   return PLAN_STEP_TYPE_TESTS.filter(function(t){
