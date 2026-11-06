@@ -1141,7 +1141,7 @@ function caseResult(c,err){
   if(hasBrokenMeasureSentence(measureData&&measureData.content))hits.unshift("Maßnahme: abgebrochener Satz");
   if(err)hits.unshift(err);
   [["Diagnose",dDiag],["Plan",dTask],["Maßnahme",dCont],["Ideen",cResult]].forEach(function(x){if(String(x[1]).indexOf("Fehler:")===0)hits.push(x[0]+" nicht erstellt: "+x[1]);});
-  return {name:c[0],groups:activeGroups().map(function(k){return GROUP_NAMES[k];}).join(", "),hits:hits,text:text};
+  return {name:(c[4]&&c[4].name)||c[0],groups:activeGroups().map(function(k){return GROUP_NAMES[k];}).join(", "),hits:hits,text:text};
 }
 function runCase(c,cb){
   applyCase(c);startEvaluation();
@@ -1158,12 +1158,13 @@ function runCase(c,cb){
   });
 }
 function renderTestlauf(){
-  var opts='<option value="">Alle 13 Berufe (dauert lange)</option>'+Object.keys(GROUP_NAMES).map(function(k){return '<option value="'+k+'">Nur Gruppe: '+GROUP_NAMES[k]+'</option>';}).join('')+'<option value="__multi">Kanal-Übertragung (Karrierecoaching, Instagram + Facebook)</option>';
+  var opts='<option value="">Alle Testfälle (dauert lange)</option>'+Object.keys(GROUP_NAMES).map(function(k){return '<option value="'+k+'">Nur Gruppe: '+GROUP_NAMES[k]+'</option>';}).join('')+'<option value="__multi">Kanal-Übertragung (Karrierecoaching, Instagram + Facebook)</option><option value="__case_d">Testfall D: Facebook, Community und Empfehlungen</option>';
   $("card").innerHTML='<div class="card-hdr"><div class="e">Nur für dich</div><h2>Testlauf</h2><p>Prüft Berufe mit Musterangaben gegen die Fachgrenzen-Regeln.</p></div><div class="body"><select id="tgroup">'+opts+'</select><button class="btn-p" onclick="startTest()" style="margin-top:12px">Testlauf starten</button><p class="field-help">Tipp: erst nur eine Gruppe testen. Die App wartet zwischen den Anfragen, damit dein KI-Zugang nicht überlastet wird.</p><div id="tprog" class="status"></div><div id="tout"></div></div>';
 }
 function startTest(){
   if(window.testRun)return;
   var g=$("tgroup").value;
+  if(g==="__case_d"){var dc=TESTCASES.filter(function(c){return c[4]&&c[4].name==="Testfall D – Facebook, Community und Empfehlungen";})[0];window.testRun=true;$("tout").innerHTML="";$("tprog").textContent="Testfall D läuft …";testResults=[];runCase(dc,function(r){window.testRun=false;testResults.push(r);showTestReport(true);});return;}
   if(g==="__multi"){var mc=TESTCASES.filter(function(c){return /Karrierecoaching/.test(c[0]);})[0];window.testRun=true;$("tout").innerHTML="";$("tprog").textContent="Kanal-Übertragung läuft …";testResults=[];
     applyCase(mc);dAnswers[qIdx("channels")]=["Instagram","Facebook"];cTopic="Berufliche Neuorientierung: Was im Erstgespräch passiert";cMulti="";genMulti();
     pollUntil(function(){return cMulti;},300000,function(){window.testRun=false;testResults.push({name:"Kanal-Übertragung (Karrierecoaching)",groups:"Instagram + Facebook",hits:cMulti.indexOf("Fehler:")===0?["Fehler bei der Übertragung"]:violations(cMulti),text:cMulti});showTestReport(true);});
