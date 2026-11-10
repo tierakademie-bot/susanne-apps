@@ -97,8 +97,12 @@ details.full>summary{cursor:pointer;font:600 13px system-ui;color:#2D4A3E;margin
 @media print{
   body{background:white;padding:0;display:block}.hdr,.tabs,.profile-note,.sbar,.copy-hint,.copy-field,.footer,footer,.btn-row,.ci-row,.chat-w,.card-hdr{display:none!important}
   .card{max-width:none;box-shadow:none;border-radius:0;overflow:visible}.body{padding:0}.rbox{background:white;border:0;border-left:0;padding:12px 0;margin:0 0 18px;break-inside:auto}.rl{font-size:12px}.rbox p{font-size:12pt;line-height:1.5}
-  details.full>summary,.screen-only,.vis-ic,.measure-summary,.sln,.screen-status{display:none!important}.print-status,.print-measure,.print-label,.print-export-header{display:block!important}.print-export-header{border-bottom:1px solid #8FAF9F;padding:0 0 10px;margin:0 0 16px;font:10pt/1.5 system-ui;color:#2D4A3E}.print-status{font:700 11pt Georgia,serif;min-width:110px}.print-label{margin-top:2px}.print-measure{background:white;border:0;padding:12px 0;margin:0 0 18px}.print-measure p{font-size:12pt;line-height:1.5}
+  details.full>summary,.screen-only,.vis-ic,.measure-summary,.sln,.screen-status{display:none!important}details.full,details.full:not([open]){display:block!important;overflow:visible!important}details.full:not([open])>*:not(summary){display:block!important}.print-status,.print-measure,.print-label,.print-export-header{display:block!important}.print-export-header{border-bottom:1px solid #8FAF9F;padding:0 0 10px;margin:0 0 16px;font:10pt/1.5 system-ui;color:#2D4A3E}.print-status{font:700 11pt Georgia,serif;min-width:110px}.print-label{margin-top:2px}.print-measure{background:white;border:0;padding:12px 0;margin:0 0 18px}.print-measure p{font-size:12pt;line-height:1.5}
 }
+
+/* Supports the member's normal browser print dialog: closed details must print their content. */
+body.print-prep details.full,body.print-prep details.full:not([open]){display:block!important;overflow:visible!important}
+body.print-prep details.full:not([open])>*:not(summary){display:block!important}
 </style>
 </head>
 <body>
@@ -746,12 +750,50 @@ function runStructuredDiagnosis(retry){
 
 var BN_LABELS={"fehlende klarheit":"Fehlende Klarheit","zu wenig reichweite":"Zu wenig Reichweite","falscher kanal":"Falscher Kanal","nur ein kanal":"Nur ein Kanal","fehlende auffindbarkeit":"Fehlende Auffindbarkeit","zu wenig vertrauen":"Zu wenig Vertrauen","zu wenig angebot":"Zu wenig Angebot","kein klarer kaufweg":"Kein klarer Kaufweg","zu viel fachsprache":"Zu viel Fachsprache","zu wenig kundenperspektive":"Zu wenig Kundenperspektive","unregelmäßige sichtbarkeit":"Unregelmäßige Sichtbarkeit","zu wenige kontaktpunkte":"Zu wenige Kontaktpunkte","zu wenig beweis":"Zu wenig Beweis","noch nicht sicher bestimmbar":"Noch nicht sicher bestimmbar"};
 function fixText(t){return cleanOutputText(String(t||"").replace(/(^|\n)(- |\d+\. )?([a-zäöü])/g,function(m,a,b,c){return a+(b||"")+c.toUpperCase();}).replace(/Conversion/g,"Übergang von Anfrage zu Buchung").replace(/[ \t]+,/g,","));}
-function diagnosisText(d){return fixText(limitMissingPhrases(diagnosisRaw(d),3));}
+function diagnosisText(d){return cleanupDiagnosisStructure(fixText(limitMissingPhrases(diagnosisRaw(d),3)));}
+function normalizeMissingInfoLabel(item){
+  var t=String(item||"").replace(/^[-–]\s*/,"").replace(/:\s*in deinen Angaben nicht genannt\.?/ig,"").replace(/[.?!:]+$/,"").trim();
+  if(!t)return "";
+  if(/art der anfrag|wer.*angefragt|wer genau/i.test(t))return "Art der Anfragenden";
+  if(/gespräch.*(?:selben|gleichen).*anfrag|ob.*gespräch.*anfrag/i.test(t))return "Ob die Gespräche mit denselben Personen wie die Anfragen stattfanden";
+  if(/kaufhindernis|grund.*(?:nicht.*kauf|nicht.*buch)/i.test(t))return "Das Kaufhindernis";
+  if(/^Leistungsumfang/i.test(t))return "Leistungsumfang";
+  if(/^Ablauf.*Telefonat|Telefonat.*Bestellung/i.test(t))return "Ablauf nach dem Telefonat bis zur Bestellung";
+  if(/^Ablauf/i.test(t))return "Ablauf bis Zahlung";
+  if(/^Zeitraum/i.test(t))return "Zeitraum";
+  if(/individuell.*preis|preis.*erkl/i.test(t))return "Erklärung des individuellen Preises";
+  return t.replace(/^Was\s+/i,"").replace(/[.?!:]+$/,"").replace(/^./,function(c){return c.toUpperCase();}).trim();
+}
+function cleanupDiagnosisStructure(text){
+  var lines=String(text||"").replace(/\.{2,}/g,".").split("\n"),out=[];
+  for(var i=0;i<lines.length;i++){
+    var line=String(lines[i]||"").trim();
+    if(line==="Was noch unsicher ist"){
+      var hasBullet=false;
+      for(var j=i+1;j<lines.length;j++){var next=String(lines[j]||"").trim();if(!next)continue;hasBullet=/^[-–]\s*\S/.test(next);break;}
+      if(!hasBullet)continue;
+    }
+    if(line==="Dazu fehlen noch Angaben zu:"){
+      out.push(line);
+      for(i=i+1;i<lines.length;i++){
+        var missingLine=String(lines[i]||"").trim();
+        if(!missingLine)break;
+        if(!/^[-–]\s*/.test(missingLine)){out.push(missingLine);continue;}
+        var label=normalizeMissingInfoLabel(missingLine);
+        if(label)out.push("- "+label);
+      }
+      if(i<lines.length&&!String(lines[i]||"").trim())out.push("");
+      continue;
+    }
+    out.push(line);
+  }
+  return out.join("\n").replace(/\n{3,}/g,"\n\n").replace(/\.{2,}/g,".").trim();
+}
 function cleanPriorityText(value){var text=String(value||"").trim(),labels=Object.keys(TYPE_LABELS).map(function(key){return TYPE_LABELS[key].replace(/[.*+?^${}()|[\]\\]/g,"\\$&");});return text.replace(new RegExp("^\\s*(?:"+labels.join("|")+")\\s*:\\s*","i"),"").trim();}
 function missingInfoSummary(items){
-  var labels=(items||[]).map(function(item){var t=String(item||"").replace(/:\s*in deinen Angaben nicht genannt\.?/ig,"").trim();if(/^Leistungsumfang/i.test(t))return "Leistungsumfang";if(/^Ablauf/i.test(t))return "Ablauf bis Zahlung";if(/^Zeitraum/i.test(t))return "Zeitraum";return t;}).filter(Boolean).filter(function(item,i,all){return all.indexOf(item)===i;});
+  var labels=(items||[]).map(normalizeMissingInfoLabel).filter(Boolean).filter(function(item,i,all){return all.indexOf(item)===i;});
   if(!labels.length){var r=dAnswers[qIdx("results")]||{},offer=dAnswers[qIdx("offer")]||{};if(String(r.talks||"").trim()==="")labels.push("Gespräche");if(String(r.sales||"").trim()==="")labels.push("Verkäufe");if(!String(offer.offer||"").trim())labels.push("Leistungsumfang");if(!(offer.ablaufNachAnfrage||[]).length)labels.push("Ablauf bis Zahlung");if(!labels.length)labels=["Leistungsumfang","Ablauf bis Zahlung","Zeitraum"];}
-  return "Dazu fehlen noch Angaben zu: "+labels.join(", ")+".";
+  return "Dazu fehlen noch Angaben zu:\n- "+labels.map(normalizeMissingInfoLabel).filter(Boolean).join("\n- ");
 }
 function diagnosisRaw(d){
   var out=(d.confidence==="niedrig"?"Deine vorläufige Einschätzung":"Deine Diagnose")+"\n"+(d.display_problem||d.central_problem)+"\n\nSicherheit der Einschätzung: "+(d.confidence||"nicht angegeben");
