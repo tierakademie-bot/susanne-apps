@@ -97,7 +97,7 @@ details.full>summary{cursor:pointer;font:600 13px system-ui;color:#2D4A3E;margin
 @media print{
   html,body{width:auto!important;min-height:0!important}body{background:white!important;padding:0!important;display:block!important;align-items:initial!important}.hdr,.tabs,.profile-note,.sbar,.copy-hint,.copy-field,.footer,footer,.btn-row,.ci-row,.chat-w,.card-hdr{display:none!important}
   .card{max-width:none!important;box-shadow:none!important;border-radius:0!important;overflow:visible!important;break-inside:auto!important}.body{padding:0!important}.rbox{background:white!important;border:0!important;border-left:0!important;padding:12px 0!important;margin:0 0 18px!important;break-inside:auto!important}.rl{font-size:12px}.rbox p{font-size:12pt;line-height:1.5}
-  details.full>summary,.screen-only,.vis-ic,.measure-summary,.sln,.screen-status{display:none!important}.print-status,.print-measure,.print-label,.print-export-header{display:block!important}.print-export-header{border-bottom:1px solid #8FAF9F;padding:0 0 10px;margin:0 0 16px;font:10pt/1.5 system-ui;color:#2D4A3E}.print-status{font:700 11pt Georgia,serif;min-width:110px}.print-label{margin-top:2px}.print-measure{background:white;border:0;padding:12px 0;margin:0 0 18px}.print-measure p{font-size:12pt;line-height:1.5}
+  details.full>summary,.screen-only,.vis-ic,.measure-summary,.sln,.screen-status{display:none!important}details.full,details.full:not([open]){display:block!important;overflow:visible!important}details.full:not([open])>*:not(summary){display:block!important}.print-status,.print-measure,.print-label,.print-export-header{display:block!important}.print-export-header{border-bottom:1px solid #8FAF9F;padding:0 0 10px;margin:0 0 16px;font:10pt/1.5 system-ui;color:#2D4A3E}.print-status{font:700 11pt Georgia,serif;min-width:110px}.print-label{margin-top:2px}.print-measure{background:white;border:0;padding:12px 0;margin:0 0 18px}.print-measure p{font-size:12pt;line-height:1.5}
 }
 /* The beforeprint handler adds this class, so the normal browser print dialog
    gets the same clean layout even if its preview starts with screen styles. */
@@ -105,7 +105,7 @@ body.print-prep{background:white!important;padding:0!important;display:block!imp
 body.print-prep .hdr,body.print-prep .tabs,body.print-prep .profile-note,body.print-prep .sbar,body.print-prep .copy-hint,body.print-prep .copy-field,body.print-prep .footer,body.print-prep footer,body.print-prep .btn-row,body.print-prep .ci-row,body.print-prep .chat-w,body.print-prep .card-hdr{display:none!important}
 body.print-prep .card{max-width:none!important;box-shadow:none!important;border-radius:0!important;overflow:visible!important;break-inside:auto!important}
 body.print-prep .body{padding:0!important}body.print-prep .rbox{background:white!important;border:0!important;border-left:0!important;padding:12px 0!important;margin:0 0 18px!important;break-inside:auto!important}
-body.print-prep details.full>summary,body.print-prep .screen-only,body.print-prep .vis-ic,body.print-prep .measure-summary,body.print-prep .sln,body.print-prep .screen-status{display:none!important}
+body.print-prep details.full>summary,body.print-prep .screen-only,body.print-prep .vis-ic,body.print-prep .measure-summary,body.print-prep .sln,body.print-prep .screen-status{display:none!important}body.print-prep details.full,body.print-prep details.full:not([open]){display:block!important;overflow:visible!important}body.print-prep details.full:not([open])>*:not(summary){display:block!important}
 body.print-prep .print-status,body.print-prep .print-measure,body.print-prep .print-label,body.print-prep .print-export-header{display:block!important}
 </style>
 </head>
@@ -772,12 +772,50 @@ function runStructuredDiagnosis(retry){
 
 var BN_LABELS={"fehlende klarheit":"Fehlende Klarheit","zu wenig reichweite":"Zu wenig Reichweite","falscher kanal":"Falscher Kanal","nur ein kanal":"Nur ein Kanal","fehlende auffindbarkeit":"Fehlende Auffindbarkeit","zu wenig vertrauen":"Zu wenig Vertrauen","zu wenig angebot":"Zu wenig Angebot","kein klarer kaufweg":"Kein klarer Kaufweg","zu viel fachsprache":"Zu viel Fachsprache","zu wenig kundenperspektive":"Zu wenig Kundenperspektive","unregelmäßige sichtbarkeit":"Unregelmäßige Sichtbarkeit","zu wenige kontaktpunkte":"Zu wenige Kontaktpunkte","zu wenig beweis":"Zu wenig Beweis","noch nicht sicher bestimmbar":"Noch nicht sicher bestimmbar"};
 function fixText(t){return cleanOutputText(String(t||"").replace(/(^|\n)(- |\d+\. )?([a-zäöü])/g,function(m,a,b,c){return a+(b||"")+c.toUpperCase();}).replace(/Conversion/g,"Übergang von Anfrage zu Buchung").replace(/[ \t]+,/g,","));}
-function diagnosisText(d){return fixText(limitMissingPhrases(diagnosisRaw(d),3));}
+function diagnosisText(d){return cleanupDiagnosisStructure(fixText(limitMissingPhrases(diagnosisRaw(d),3)));}
+function normalizeMissingInfoLabel(item){
+  var t=String(item||"").replace(/^[-–]\s*/,"").replace(/:\s*in deinen Angaben nicht genannt\.?/ig,"").replace(/[.?!:]+$/,"").trim();
+  if(!t)return "";
+  if(/art der anfrag|wer.*angefragt|wer genau/i.test(t))return "Art der Anfragenden";
+  if(/gespräch.*(?:selben|gleichen).*anfrag|ob.*gespräch.*anfrag/i.test(t))return "Ob die Gespräche mit denselben Personen wie die Anfragen stattfanden";
+  if(/kaufhindernis|grund.*(?:nicht.*kauf|nicht.*buch)/i.test(t))return "Das Kaufhindernis";
+  if(/^Leistungsumfang/i.test(t))return "Leistungsumfang";
+  if(/^Ablauf.*Telefonat|Telefonat.*Bestellung/i.test(t))return "Ablauf nach dem Telefonat bis zur Bestellung";
+  if(/^Ablauf/i.test(t))return "Ablauf bis Zahlung";
+  if(/^Zeitraum/i.test(t))return "Zeitraum";
+  if(/individuell.*preis|preis.*erkl/i.test(t))return "Erklärung des individuellen Preises";
+  return t.replace(/^Was\s+/i,"").replace(/[.?!:]+$/,"").replace(/^./,function(c){return c.toUpperCase();}).trim();
+}
+function cleanupDiagnosisStructure(text){
+  var lines=String(text||"").replace(/\.{2,}/g,".").split("\n"),out=[];
+  for(var i=0;i<lines.length;i++){
+    var line=String(lines[i]||"").trim();
+    if(line==="Was noch unsicher ist"){
+      var hasBullet=false;
+      for(var j=i+1;j<lines.length;j++){var next=String(lines[j]||"").trim();if(!next)continue;hasBullet=/^[-–]\s*\S/.test(next);break;}
+      if(!hasBullet)continue;
+    }
+    if(line==="Dazu fehlen noch Angaben zu:"){
+      out.push(line);
+      for(i=i+1;i<lines.length;i++){
+        var missingLine=String(lines[i]||"").trim();
+        if(!missingLine)break;
+        if(!/^[-–]\s*/.test(missingLine)){out.push(missingLine);continue;}
+        var label=normalizeMissingInfoLabel(missingLine);
+        if(label)out.push("- "+label);
+      }
+      if(i<lines.length&&!String(lines[i]||"").trim())out.push("");
+      continue;
+    }
+    out.push(line);
+  }
+  return out.join("\n").replace(/\n{3,}/g,"\n\n").replace(/\.{2,}/g,".").trim();
+}
 function cleanPriorityText(value){var text=String(value||"").trim(),labels=Object.keys(TYPE_LABELS).map(function(key){return TYPE_LABELS[key].replace(/[.*+?^${}()|[\]\\]/g,"\\$&");});return text.replace(new RegExp("^\\s*(?:"+labels.join("|")+")\\s*:\\s*","i"),"").trim();}
 function missingInfoSummary(items){
-  var labels=(items||[]).map(function(item){var t=String(item||"").replace(/:\s*in deinen Angaben nicht genannt\.?/ig,"").replace(/[?]+$/," ").trim();if(/^Leistungsumfang/i.test(t))return "Leistungsumfang";if(/^Ablauf.*Telefonat|Telefonat.*Bestellung/i.test(t))return "Ablauf nach dem Telefonat bis zur Bestellung";if(/^Ablauf/i.test(t))return "Ablauf bis Zahlung";if(/^Zeitraum/i.test(t))return "Zeitraum";if(/individuell.*preis|preis.*erkl/i.test(t))return "Erklärung des individuellen Preises";if(/kaufhindernis/i.test(t))return "Kaufhindernis";return t.replace(/^Was\s+/i,"").replace(/\?+$/," ").trim();}).filter(Boolean).filter(function(item,i,all){return all.indexOf(item)===i;});
+  var labels=(items||[]).map(normalizeMissingInfoLabel).filter(Boolean).filter(function(item,i,all){return all.indexOf(item)===i;});
   if(!labels.length){var r=dAnswers[qIdx("results")]||{},offer=dAnswers[qIdx("offer")]||{};if(String(r.talks||"").trim()==="")labels.push("Gespräche");if(String(r.sales||"").trim()==="")labels.push("Verkäufe");if(!String(offer.offer||"").trim())labels.push("Leistungsumfang");if(!(offer.ablaufNachAnfrage||[]).length)labels.push("Ablauf bis Zahlung");if(!labels.length)labels=["Leistungsumfang","Ablauf bis Zahlung","Zeitraum"];}
-  return "Dazu fehlen noch Angaben zu:\n- "+labels.join("\n- ")+".";
+  return "Dazu fehlen noch Angaben zu:\n- "+labels.map(normalizeMissingInfoLabel).filter(Boolean).join("\n- ");
 }
 function diagnosisRaw(d){
   var out=(d.confidence==="niedrig"?"Deine vorläufige Einschätzung":"Deine Diagnose")+"\n"+(d.display_problem||d.central_problem)+"\n\nSicherheit der Einschätzung: "+(d.confidence||"nicht angegeben");
@@ -1161,11 +1199,27 @@ function applyCase(c){
   cTopic=c[1];cCat=CATS[0];cPillar=PILLAR_OPTS[0];
 }
 function pollUntil(fn,ms,done){var t0=Date.now();(function tick(){var r=fn();if(r||Date.now()-t0>ms){done(!!r);return;}setTimeout(tick,500);})();}
+function diagnosisFormatTestHits(text){
+  var value=String(text||""),hits=[],lines=value.split("\n"),idx=lines.indexOf("Was noch unsicher ist");
+  if(/\.{2,}/.test(value))hits.push("Diagnose: doppelter Punkt");
+  if(idx>=0&&!lines.slice(idx+1).some(function(line){return /^\s*[-–]\s*\S/.test(line);})){hits.push("Diagnose: leere Überschrift Was noch unsicher ist");}
+  var missing=lines.indexOf("Dazu fehlen noch Angaben zu:");
+  if(missing>=0){for(var i=missing+1;i<lines.length&&String(lines[i]||"").trim();i++){var label=String(lines[i]||"").replace(/^\s*[-–]\s*/,"");if(label!==normalizeMissingInfoLabel(label)||/[.:]$/.test(label)||!label){hits.push("Diagnose: uneinheitliche Aufzählung unter Was noch offen ist");break;}}}
+  return hits;
+}
+function missingInfoFormatTestHits(){
+  var sample=["art der Anfragenden.","Ob die Gespräche mit denselben Personen wie die Anfragen stattfanden:","Das Kaufhindernis ist noch unbekannt."];
+  var expected=["Art der Anfragenden","Ob die Gespräche mit denselben Personen wie die Anfragen stattfanden","Das Kaufhindernis"];
+  var actual=sample.map(normalizeMissingInfoLabel);
+  return actual.join("|")===expected.join("|")?[]:["Test fehlender Angaben: Aufzählung nicht einheitlich"];
+}
 function caseResult(c,err){
   var text=[dDiag,dTask,dCont,measureData&&measureData.content?measureData.content:"",cResult].join("\n");
   var hits=violations(text);
   if(planData&&Array.isArray(planData.steps)&&planData.steps.some(function(s){return !planGoalMatchesAction(s);})){hits.unshift("Plan-Schritt: Ziel passt nicht zur Handlung");}
   planStepTypeTestHits().forEach(function(hit){hits.unshift(hit);});
+  diagnosisFormatTestHits(dDiag).forEach(function(hit){hits.unshift(hit);});
+  missingInfoFormatTestHits().forEach(function(hit){hits.unshift(hit);});
   var diagLines=String(dDiag||"").split("\n"),uncertainIndex=diagLines.indexOf("Was noch unsicher ist");
   if(uncertainIndex>=0&&!diagLines.slice(uncertainIndex+1).some(function(line){return /^\s*-\s*\S/.test(line);})){hits.unshift("Leere Überschrift: Was noch unsicher ist");}
   if(hasBrokenMeasureSentence(measureData&&measureData.content))hits.unshift("Maßnahme: abgebrochener Satz");
