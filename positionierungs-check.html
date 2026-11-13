@@ -42,7 +42,6 @@ textarea:focus { border-color: #C4923A; }
 .rs-lbl { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .8px; margin-bottom: 8px; }
 .rs-txt { font-size: 14px; color: #1E2E28; line-height: 1.75; }
 .copy-hint { font-size: 11px; color: #6B8A7E; font-family: system-ui; margin: 10px 0 4px; }
-.copy-field { width: 100%; background: white; border: 1.5px solid #C4923A; border-radius: 8px; padding: 9px 11px; font-size: 13px; color: #1E2E28; font-family: inherit; line-height: 1.7; resize: none; outline: none; cursor: text; display: block; }
 .spin-wrap { display: flex; flex-direction: column; align-items: center; gap: 16px; padding: 40px 0; }
 .spin { width: 36px; height: 36px; border: 3px solid #E8DCC8; border-top-color: #C4923A; border-radius: 50%; animation: spin .8s linear infinite; }
 .err { background: #fff0f0; border-left: 4px solid #cc4444; border-radius: 10px; padding: 14px 16px; font-size: 13px; color: #7a2222; font-family: system-ui; }
@@ -72,13 +71,16 @@ var RES = "";
 
 function escapeHTML(value){return String(value).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];});}
 async function copyResult(index,button){
-  var field=$("copy-"+index);
+  var field=$("result-"+index), status=$("copy-status-"+index);
   try {
-    await navigator.clipboard.writeText(field.value);
-    $("copy-status").textContent="Text kopiert.";
+    await navigator.clipboard.writeText(field.innerText);
+    status.textContent="Text kopiert. Du kannst ihn jetzt einfügen.";
   } catch(e) {
-    field.focus(); field.select();
-    $("copy-status").textContent="Bitte den markierten Text mit Strg+C oder der Kopierfunktion deines Geräts kopieren.";
+    var range=document.createRange();
+    range.selectNodeContents(field);
+    var selection=window.getSelection();
+    selection.removeAllRanges(); selection.addRange(range);
+    status.textContent="Bitte den markierten Text mit Strg+C oder der Kopierfunktion deines Geräts kopieren.";
   }
 }
 function endApp(){
@@ -96,7 +98,7 @@ function showWelcome(){
     '<div class="feat"><div class="feat-icon">🧵</div><div class="feat-text">Dein roter Faden – in einem klaren Satz formuliert</div></div>' +
     '<div class="feat"><div class="feat-icon">📱</div><div class="feat-text">Fertige Bio-Version für Instagram, LinkedIn oder Website</div></div>' +
     '<div class="feat"><div class="feat-icon">💬</div><div class="feat-text">Dein Gesprächs-Einstieg für das nächste „Was machst du?“</div></div>' +
-    '<div class="feat"><div class="feat-icon">🧭</div><div class="feat-text">KI-Auswertung mit Stärken, offenen Fragen und konkreten Verbesserungsvorschlägen</div></div>' +
+    '<div class="feat"><div class="feat-icon">🧭</div><div class="feat-text">Deine Stärken, offene Fragen und konkrete Verbesserungsvorschläge</div></div>' +
     '<div class="tip"><strong style="color:#C4923A">Tipp:</strong> Antworte spontan und ehrlich – keine perfekten Sätze nötig.</div>' +
     '<p class="copy-hint" style="line-height:1.6;margin-bottom:14px">Für die KI-Auswertung werden deine Antworten an einen KI-Dienst übermittelt. Bitte gib keine vertraulichen Informationen oder personenbezogenen Daten anderer Personen ein.</p><button class="btn-p" onclick="showQ(1)">🧵 Check starten</button>' +
     '</div>';
@@ -185,7 +187,7 @@ function showResult(){
     {key:"roter faden",lbl:"🧵 Dein roter Faden",col:"#2D4A3E",copy:true},
     {key:"bio-version",lbl:"📱 Bio-Version",col:"#4A7C6F",copy:true},
     {key:"gesprächs-einstieg",lbl:"💬 Gesprächs-Einstieg",col:"#C4923A",copy:true},
-    {key:"ki-auswertung",lbl:"🧭 KI-Auswertung",col:"#2D4A3E",copy:false},
+    {key:"ki-auswertung",lbl:"🧭 Deine Stärken und Potenziale",col:"#2D4A3E",copy:false},
     {key:"verbesserungsvorschläge",lbl:"💡 Verbesserungsvorschläge",col:"#2D4A3E",copy:false},
     {key:"dein nächster schritt",lbl:"✍️ Dein nächster Schritt",col:"#2D4A3E",copy:false}
   ];
@@ -206,14 +208,13 @@ function showResult(){
   if(cur)parsed.push(cur);
   if(!parsed.length)parsed=[{lbl:"🧵 Ergebnis",col:"#2D4A3E",copy:true,txt:RES}];
 
-  var html='<div class="card-body"><p style="font-size:16px;font-weight:700;color:#2D4A3E;margin-bottom:4px">Dein roter Faden 🧵</p><p style="font-size:13px;color:#6B8A7E;font-family:system-ui;margin-bottom:16px;line-height:1.6">Diese KI-Auswertung basiert auf deinen Antworten und ist keine persönliche Einschätzung von Susanne. Prüfe, was zu dir passt, und passe die Entwürfe an.</p>';
+  var html='<div class="card-body"><p style="font-size:16px;font-weight:700;color:#2D4A3E;margin-bottom:4px">Dein roter Faden 🧵</p><p style="font-size:13px;color:#6B8A7E;font-family:system-ui;margin-bottom:16px;line-height:1.6">Hier findest du deine Formulierungen und konkrete Anregungen. Mit „Text kopieren“ übernimmst du jeweils den darüberstehenden Text.</p>';
   for(var k=0;k<parsed.length;k++){
     var s=parsed[k];
-    var rows=Math.max(2,s.txt.split("\n").length+1);
-    var cp=s.copy?'<textarea id="copy-'+k+'" aria-label="'+s.lbl+'" class="copy-field" readonly rows="'+rows+'" onclick="this.select()">'+escapeHTML(s.txt)+'</textarea><button class="btn-o" style="margin-top:8px" onclick="copyResult('+k+',this)">Text kopieren</button>':"";
-    html+='<div class="rbox" style="border-left:4px solid '+s.col+'"><div class="rs-lbl" style="color:'+s.col+'">'+s.lbl+'</div><div class="rs-txt">'+escapeHTML(s.txt).replace(/\n/g,"<br>")+'</div>'+cp+'</div>';
+    var cp=s.copy?'<button class="btn-o" style="margin-top:12px" onclick="copyResult('+k+',this)">Text kopieren</button><p id="copy-status-'+k+'" role="status" class="copy-hint"></p>':"";
+    html+='<div class="rbox" style="border-left:4px solid '+s.col+'"><div class="rs-lbl" style="color:'+s.col+'">'+s.lbl+'</div><div class="rs-txt" id="result-'+k+'">'+escapeHTML(s.txt).replace(/\n/g,"<br>")+'</div>'+cp+'</div>';
   }
-  html+='<div class="btn-row" style="flex-wrap:wrap"><button class="btn-o" onclick="showQ(1)">Antworten bearbeiten</button><button class="btn-p" onclick="endApp()">App beenden</button></div><p class="copy-hint">Kopiere vorher die Texte, die du behalten möchtest. Beim Beenden werden die Antworten und das Ergebnis aus dieser Ansicht entfernt.</p><p id="copy-status" role="status" class="copy-hint"></p></div>';
+  html+='<div class="btn-row" style="flex-wrap:wrap"><button class="btn-p" onclick="endApp()">App beenden</button></div><p class="copy-hint">Kopiere vorher die Texte, die du behalten möchtest. Beim Beenden werden die Antworten und das Ergebnis aus dieser Ansicht entfernt.</p></div>';
   $("card").innerHTML=html;
 }
 
