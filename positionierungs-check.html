@@ -59,15 +59,16 @@ textarea:focus { border-color: #C4923A; }
 
 <script>
 var QS = [
-  {lbl:"Deine Wunschkund:innen", q:"Mit welchen Menschen, Unternehmen oder Organisationen arbeitest du am liebsten?", hint:"Denk an die Kund:innen oder Auftraggeber:innen, die nach eurer Zusammenarbeit begeistert waren – wer waren sie?", ph:"z. B. selbstständige Expert:innen, die ihr Angebot klar und überzeugend zeigen möchten…"},
-  {lbl:"Deine stärksten Ergebnisse", q:"Welches Ergebnis hilfst du besonders gut zu ermöglichen?", hint:"Nicht, was du alles anbieten kannst – sondern wo du wirklich den Unterschied machst.", ph:"z. B. Wenn Selbstständige ihr Angebot schärfen und leichter passende Anfragen gewinnen…"},
-  {lbl:"Deine Weiterempfehlungen", q:"Wofür wirst du weiterempfohlen?", hint:"Was sagen andere über dich, wenn sie dich empfehlen? Oft steckt hier dein roter Faden.", ph:"z. B. Sie bringt komplexe Themen auf den Punkt und macht den nächsten Schritt klar…"},
-  {lbl:"Was dir Freude macht", q:"Welche Aufgaben machst du besonders gern?", hint:"Denk an deine Arbeit mit Kund:innen: Was macht dir Freude und hilft ihnen gleichzeitig weiter?", ph:"z. B. Menschen dabei begleiten, aus einem Gedanken eine klare Richtung zu machen…"},
-  {lbl:"Dein Unterschied", q:"Was machst du anders als andere in deinem Bereich?", hint:"Das muss kein riesiger Unterschied sein – manchmal ist es die Haltung oder dein Ansatz.", ph:"z. B. Ich verbinde klare Strategie mit einer ruhigen, individuellen Begleitung…"}
+  {lbl:"Deine Wunschkund:innen", q:"Mit welchen Menschen, Unternehmen oder Organisationen arbeitest du am liebsten?", hint:"Denk an die Kund:innen oder Auftraggeber:innen, die nach eurer Zusammenarbeit begeistert waren – wer waren sie?", ph:"z. B. Familien mit jungen Hunden oder kleine Unternehmen in deiner Region…"},
+  {lbl:"Deine stärksten Ergebnisse", q:"Was erreichen deine Kund:innen durch die Zusammenarbeit mit dir?", hint:"Denk daran, was sich für sie verändert oder leichter wird.", ph:"z. B. Hundehalter:innen verstehen ihren Hund besser und meistern den Alltag entspannter…"},
+  {lbl:"Deine Weiterempfehlungen", q:"Wofür wirst du weiterempfohlen?", hint:"Was sagen andere über dich, wenn sie dich empfehlen? Oft steckt hier dein roter Faden.", ph:"z. B. Sie arbeitet zuverlässig, hört gut zu und findet praktische Lösungen…"},
+  {lbl:"Was dir Freude macht", q:"Welche Aufgaben machst du besonders gern?", hint:"Denk an deine Arbeit mit Kund:innen: Was macht dir Freude und hilft ihnen gleichzeitig weiter?", ph:"z. B. Produkte gestalten, Tiere begleiten oder gemeinsam Lösungen finden…"},
+  {lbl:"Dein Unterschied", q:"Was machst du anders als andere in deinem Bereich?", hint:"Das muss kein riesiger Unterschied sein – manchmal ist es die Haltung oder dein Ansatz.", ph:"z. B. Ich erkläre alles verständlich und passe meinen Ansatz an die jeweilige Situation an…"}
 ];
 var ANS = ["","","","",""];
 var STEP = 0;
 var RES = "";
+var RESULT_TEXT = "";
 
 function escapeHTML(value){return String(value).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];});}
 async function copyResult(index,button){
@@ -83,9 +84,22 @@ async function copyResult(index,button){
     status.textContent="Bitte den markierten Text mit Strg+C oder der Kopierfunktion deines Geräts kopieren.";
   }
 }
+async function copyAllResults(){
+  var status=$("copy-all-status");
+  try {
+    await navigator.clipboard.writeText(RESULT_TEXT);
+    status.textContent="Gesamtes Ergebnis kopiert. Du kannst es jetzt einfügen.";
+  } catch(e) {
+    var range=document.createRange();
+    range.selectNodeContents($("all-results"));
+    var selection=window.getSelection();
+    selection.removeAllRanges(); selection.addRange(range);
+    status.textContent="Das Ergebnis ist markiert. Bitte kopiere es mit Strg+C oder der Kopierfunktion deines Geräts.";
+  }
+}
 function endApp(){
   if(!window.confirm("Check beenden? Kopiere vorher dein Ergebnis. Deine Antworten und die Auswertung werden aus dieser Ansicht entfernt.")) return;
-  ANS=["","","","",""]; RES=""; STEP=0;
+  ANS=["","","","",""]; RES=""; RESULT_TEXT=""; STEP=0;
   $("card").innerHTML='<div class="card-body"><h2 tabindex="-1" id="end-title" style="color:#2D4A3E;margin-bottom:12px">Dein Check ist beendet.</h2><p style="font-family:system-ui;line-height:1.7;margin-bottom:20px">Deine Eingaben und das Ergebnis wurden aus dieser Ansicht entfernt. Du kannst diesen Tab jetzt schließen.</p></div>';
   $("end-title").focus();
 }
@@ -96,7 +110,7 @@ function showWelcome(){
     '<div class="card-body">' +
     '<div class="feat"><div class="feat-icon">✍️</div><div class="feat-text">5 gezielte Fragen zu dir und deiner Arbeit</div></div>' +
     '<div class="feat"><div class="feat-icon">🧵</div><div class="feat-text">Dein roter Faden – in einem klaren Satz formuliert</div></div>' +
-    '<div class="feat"><div class="feat-icon">📱</div><div class="feat-text">Fertige Bio-Version für Instagram, LinkedIn oder Website</div></div>' +
+    '<div class="feat"><div class="feat-icon">📱</div><div class="feat-text">Ein Bio-Entwurf für Instagram, LinkedIn oder deine Website</div></div>' +
     '<div class="feat"><div class="feat-icon">💬</div><div class="feat-text">Dein Gesprächs-Einstieg für das nächste „Was machst du?“</div></div>' +
     '<div class="feat"><div class="feat-icon">🧭</div><div class="feat-text">Deine Stärken, offene Fragen und konkrete Verbesserungsvorschläge</div></div>' +
     '<div class="tip"><strong style="color:#C4923A">Tipp:</strong> Antworte spontan und ehrlich – keine perfekten Sätze nötig.</div>' +
@@ -107,7 +121,7 @@ function showWelcome(){
 function showQ(n){
   STEP = n;
   var q = QS[n-1];
-  var pct = Math.round((n/5)*100);
+  var pct = Math.round(((n-1)/5)*100);
   var dots = "";
   for(var i=0;i<5;i++){
     var c = i<n-1?"#4A7C6F":i===n-1?"#C4923A":"#E8DCC8";
@@ -118,7 +132,7 @@ function showQ(n){
   var nextLbl = n===5?"🧵 Roten Faden finden":"Weiter →";
   $("card").innerHTML =
     '<div class="card-body">' +
-    '<div class="prog-meta"><span>Frage '+n+' von 5</span><span>'+pct+'%</span></div>' +
+    '<div class="prog-meta"><span>Frage '+n+' von 5</span></div>' +
     '<div class="prog-track"><div class="prog-fill" style="width:'+pct+'%"></div></div>' +
     '<div class="dots">'+dots+'</div>' +
     '<div class="q-label">'+q.lbl+'</div>' +
@@ -209,11 +223,14 @@ function showResult(){
   if(!parsed.length)parsed=[{lbl:"🧵 Ergebnis",col:"#2D4A3E",copy:true,txt:RES}];
 
   var html='<div class="card-body"><p style="font-size:16px;font-weight:700;color:#2D4A3E;margin-bottom:4px">Dein roter Faden 🧵</p><p style="font-size:13px;color:#6B8A7E;font-family:system-ui;margin-bottom:16px;line-height:1.6">Hier findest du deine Formulierungen und konkrete Anregungen. Mit „Text kopieren“ übernimmst du jeweils den darüberstehenden Text.</p>';
+  RESULT_TEXT=parsed.map(function(item){return item.lbl+'\n'+item.txt;}).join('\n\n');
+  html+='<div id="all-results">';
   for(var k=0;k<parsed.length;k++){
     var s=parsed[k];
     var cp=s.copy?'<button class="btn-o" style="margin-top:12px" onclick="copyResult('+k+',this)">Text kopieren</button><p id="copy-status-'+k+'" role="status" class="copy-hint"></p>':"";
     html+='<div class="rbox" style="border-left:4px solid '+s.col+'"><div class="rs-lbl" style="color:'+s.col+'">'+s.lbl+'</div><div class="rs-txt" id="result-'+k+'">'+escapeHTML(s.txt).replace(/\n/g,"<br>")+'</div>'+cp+'</div>';
   }
+  html+='</div><button class="btn-o" style="width:100%;margin:4px 0 10px" onclick="copyAllResults()">Gesamtes Ergebnis kopieren</button><p id="copy-all-status" role="status" class="copy-hint"></p>';
   html+='<div class="btn-row" style="flex-wrap:wrap"><button class="btn-p" onclick="endApp()">App beenden</button></div><p class="copy-hint">Kopiere vorher die Texte, die du behalten möchtest. Beim Beenden werden die Antworten und das Ergebnis aus dieser Ansicht entfernt.</p></div>';
   $("card").innerHTML=html;
 }
