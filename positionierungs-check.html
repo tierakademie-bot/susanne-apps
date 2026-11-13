@@ -69,6 +69,37 @@ var ANS = ["","","","",""];
 var STEP = 0;
 var RES = "";
 var RESULT_TEXT = "";
+var END_TIME = Date.parse("2026-11-13T18:00:00+01:00");
+var USE_KEY = "positionierungs_check_einmal_abgeschlossen";
+var RESULT_VISIBLE = false;
+
+function showUnavailable(message){
+  $("card").innerHTML='<div class="card-body"><h2 style="color:#2D4A3E;margin-bottom:12px">Positionierungs-Check</h2><p style="font-family:system-ui;line-height:1.7">'+escapeHTML(message)+'</p></div>';
+}
+function mayStart(){
+  if(Date.now() >= END_TIME){
+    showUnavailable("Dieser Positionierungs-Check ist momentan nicht verfügbar. Vielen Dank für dein Interesse!");
+    return false;
+  }
+  try {
+    var storage=window.localStorage;
+    var probe=USE_KEY+"_probe";
+    storage.setItem(probe,"1"); storage.removeItem(probe);
+    if(storage.getItem(USE_KEY)==="1"){
+      showUnavailable("Du hast den Positionierungs-Check in diesem Browser bereits abgeschlossen. Vielen Dank für deine Teilnahme!");
+      return false;
+    }
+  } catch(e) {
+    showUnavailable("Der Check benötigt Browserspeicher, damit die einmalige Teilnahme erkannt werden kann. Bitte aktiviere den Browserspeicher und lade die Seite neu.");
+    return false;
+  }
+  return true;
+}
+function enforceDeadline(){
+  if(Date.now() >= END_TIME && !RESULT_VISIBLE) {
+    showUnavailable("Der Teilnahmezeitraum ist abgelaufen. Vielen Dank für dein Interesse!");
+  }
+}
 
 function escapeHTML(value){return String(value).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];});}
 async function copyResult(index,button){
@@ -105,6 +136,7 @@ function endApp(){
 }
 function $(id){return document.getElementById(id);}
 function showWelcome(){
+  if(!mayStart()) return;
   $("card").innerHTML =
     '<div class="card-hdr"><div class="ey">Schritt für Schritt</div><h2>Was macht dich unverwechselbar?</h2><p>Viele Solo-Selbstständige wissen genau, was sie können – aber nicht, wie sie es klar nach außen tragen. Dieser Check hilft dir, deinen roten Faden zu finden.</p></div>' +
     '<div class="card-body">' +
@@ -113,12 +145,14 @@ function showWelcome(){
     '<div class="feat"><div class="feat-icon">📱</div><div class="feat-text">Ein Bio-Entwurf für Instagram, LinkedIn oder deine Website</div></div>' +
     '<div class="feat"><div class="feat-icon">💬</div><div class="feat-text">Dein Gesprächs-Einstieg für das nächste „Was machst du?“</div></div>' +
     '<div class="feat"><div class="feat-icon">🧭</div><div class="feat-text">Deine Stärken, offene Fragen und konkrete Verbesserungsvorschläge</div></div>' +
+    '<p class="copy-hint" style="line-height:1.6;margin-bottom:14px">Der Check ist heute bis 18 Uhr deutscher Zeit verfügbar und kann pro Browser einmal abgeschlossen werden. Bitte plane genug Zeit ein und kopiere dein Ergebnis, bevor du die Seite schließt.</p>' +
     '<div class="tip"><strong style="color:#C4923A">Tipp:</strong> Antworte spontan und ehrlich – keine perfekten Sätze nötig.</div>' +
     '<p class="copy-hint" style="line-height:1.6;margin-bottom:14px">Für die KI-Auswertung werden deine Antworten an einen KI-Dienst übermittelt. Bitte gib keine vertraulichen Informationen oder personenbezogenen Daten anderer Personen ein.</p><button class="btn-p" onclick="showQ(1)">🧵 Check starten</button>' +
     '</div>';
 }
 
 function showQ(n){
+  if(!mayStart()) return;
   STEP = n;
   var q = QS[n-1];
   var pct = Math.round(((n-1)/5)*100);
@@ -170,6 +204,7 @@ function showLoading(){
 }
 
 function generate(){
+  if(!mayStart()) return;
   showLoading();
   var msg="";
   for(var i=0;i<5;i++) msg+=QS[i].lbl+": "+(ANS[i]||"keine Antwort")+"\n";
@@ -189,9 +224,12 @@ function generate(){
     if(d.error)throw new Error(d.error.message);
     RES=(d.content||[]).filter(function(block){return block.type==="text" && typeof block.text==="string";}).map(function(block){return block.text;}).join("\n").trim();
     if(!RES) throw new Error("Die KI hat kein Ergebnis geliefert. Bitte versuche es erneut.");
+    try { window.localStorage.setItem(USE_KEY,"1"); } catch(e) { throw new Error("Browserspeicher nicht verfügbar"); }
+    RESULT_VISIBLE=true;
     showResult();
   })
   .catch(function(e){
+    if(Date.now() >= END_TIME){enforceDeadline();return;}
     $("card").innerHTML='<div class="card-body"><div class="err">⚠️ '+escapeHTML(e.name==='TimeoutError'?'Die Auswertung dauert gerade zu lange. Deine Antworten sind noch da. Bitte versuche es erneut.':'Die Auswertung konnte nicht geladen werden. Deine Antworten sind noch da. Bitte versuche es erneut.')+'<br><button class="btn-p" style="margin-top:12px;width:auto;padding:9px 16px" onclick="generate()">↻ Nochmal versuchen</button><button class="btn-o" style="margin-top:12px" onclick="showQ(5)">Antworten bearbeiten</button></div></div>';
   });
 }
@@ -236,6 +274,8 @@ function showResult(){
 }
 
 showWelcome();
+setTimeout(enforceDeadline, Math.min(Math.max(0, END_TIME - Date.now()), 2147483647));
+document.addEventListener("visibilitychange", function(){if(!document.hidden) enforceDeadline();});
 </script>
 
 <footer style="text-align:center; padding:20px; font-size:.85em; color:#6B7C47; margin-top:40px; border-top:1px solid #C8B89A;">
