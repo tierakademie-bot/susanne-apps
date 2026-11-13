@@ -86,7 +86,7 @@ async function copyResult(index,button){
 function endApp(){
   if(!window.confirm("Check beenden? Kopiere vorher dein Ergebnis. Deine Antworten und die Auswertung werden aus dieser Ansicht entfernt.")) return;
   ANS=["","","","",""]; RES=""; STEP=0;
-  $("card").innerHTML='<div class="card-body"><h2 tabindex="-1" id="end-title" style="color:#2D4A3E;margin-bottom:12px">Dein Check ist beendet.</h2><p style="font-family:system-ui;line-height:1.7;margin-bottom:20px">Deine Eingaben und das Ergebnis wurden aus dieser Ansicht entfernt. Du kannst diesen Tab jetzt schließen.</p><button class="btn-p" onclick="showWelcome()">Neuen Check starten</button></div>';
+  $("card").innerHTML='<div class="card-body"><h2 tabindex="-1" id="end-title" style="color:#2D4A3E;margin-bottom:12px">Dein Check ist beendet.</h2><p style="font-family:system-ui;line-height:1.7;margin-bottom:20px">Deine Eingaben und das Ergebnis wurden aus dieser Ansicht entfernt. Du kannst diesen Tab jetzt schließen.</p></div>';
   $("end-title").focus();
 }
 function $(id){return document.getElementById(id);}
