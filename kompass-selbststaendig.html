@@ -567,6 +567,12 @@ function displayInquirySources(sources){
   }).filter(Boolean);
 }
 function stripPlanSquareBrackets(text){return String(text||"").replace(/\[([^\]\n]+)\]/g,"$1").replace(/\s{2,}/g," ").trim();}
+function polishPlanStyle(text){
+  return String(text||"")
+    .replace(/mit\s+Ablauf\s*,\s*Nachricht\s+und\s+Telefonat\s*,?\s+sowie\s+Preisrahmen/ig,"mit einem klaren Ablauf über Nachricht oder Telefonat sowie einem Preisrahmen")
+    .replace(/mit\s+Ablauf\s*\(\s*Nachricht\s*,\s*Telefonat\s*\)\s+und\s+Preisrahmen/ig,"mit einem klaren Ablauf über Nachricht oder Telefonat sowie einem Preisrahmen")
+    .replace(/\s+,\s+sowie\s+/g," sowie ");
+}
 function evaluationLogic(){
   var r=dAnswers[qIdx("results")]||{};
   function givenNumber(value){var raw=String(value===undefined||value===null?"":value).trim();if(raw==="")return null;var parsed=Number(raw.replace(",","."));return isFinite(parsed)&&parsed>=0?parsed:null;}
@@ -651,7 +657,7 @@ function standardPlanGoal(step){
   if(kind==="contact")return "Der Kontaktweg ist für Interessierte klar sichtbar.";
   if(kind==="offer")return "Das Angebot, der Preis und der Kontaktweg sind an einem klaren Ort sichtbar.";
   if(kind==="purchase")return "Interessierte wissen, wie es nach dem Gespräch weitergeht und was der nächste Schritt ist.";
-  if(kind==="numbers")return "Du weißt, bei welchen Gesprächen es nicht zum Kauf kam und was jeweils noch offen war.";
+  if(kind==="numbers")return "Anfragen, Gespräche, Verkäufe und ihre Quelle sind festgehalten.";
   return "";
 }
 function planGoalMatchesAction(step){
@@ -670,7 +676,7 @@ var PLAN_STEP_TYPE_TESTS=[
   {name:"Sichtbarkeit/Kontakt",step:{title:"Kontakthinweis in der Community veröffentlichen",action:"Erkläre, wie Interessierte dich erreichen."},goal:"Der Kontaktweg ist für Interessierte klar sichtbar."},
   {name:"Angebotsseite/Google-Eintrag",step:{title:"Google-Eintrag für dein Angebot anlegen",action:"Beschreibe Angebot, Preis und Kontaktweg."},goal:"Das Angebot, der Preis und der Kontaktweg sind an einem klaren Ort sichtbar."},
   {name:"Kaufweg",step:{title:"Nächsten Schritt nach dem Gespräch klären",action:"Beschreibe den Ablauf nach dem Gespräch."},goal:"Interessierte wissen, wie es nach dem Gespräch weitergeht und was der nächste Schritt ist."},
-  {name:"Gespräche/Zahlen auswerten",step:{title:"Gespräche ohne Kauf auswerten",action:"Notiere, was noch offen war."},goal:"Du weißt, bei welchen Gesprächen es nicht zum Kauf kam und was jeweils noch offen war."}
+  {name:"Gespräche/Zahlen auswerten",step:{title:"Gespräche ohne Kauf auswerten",action:"Notiere, was noch offen war."},goal:"Anfragen, Gespräche, Verkäufe und ihre Quelle sind festgehalten."}
 ];
 function planStepTypeTestHits(){
   return PLAN_STEP_TYPE_TESTS.filter(function(t){
@@ -888,7 +894,7 @@ function generateStructuredPlan(facts,contract,retry){
   },function(e){dTask="Fehler: "+e;evaluationLoading.plan=false;renderMain();});
 }
 
-function planText(p){return stripPlanSquareBrackets(fixText(planRaw(p)));}
+function planText(p){return polishPlanStyle(stripPlanSquareBrackets(fixText(planRaw(p))));}
 function safePlanAction(step,index){
   var action=String(step&&step.action||"").trim();
   if(!action||/\b(?:ist|sind|war|waren|bleibt|stehen)\s+\.$/i.test(action)||/^aktion\s*:?$/i.test(action)||/setze den vorgesehenen angebotsort|ergänze nur angaben, die bereits feststehen/i.test(action)){
@@ -1277,6 +1283,8 @@ function planOutputTestHits(){
   var hits=[],text=String(dTask||"");
   if(/\[[^\]]+\]/.test(text))hits.push("Plan: eckige Klammern");
   if(/\bAnderes\b/.test([dDiag,dTask,dCont,cResult].join("\n")))hits.push("Auswahlnamen: Anderes erscheint im Text");
+  if(standardPlanGoal({title:"Zahlen festhalten"})!=="Anfragen, Gespräche, Verkäufe und ihre Quelle sind festgehalten.")hits.push("Plan: Ziel für Zahlen festhalten ist nicht passend");
+  if(!/mit einem klaren Ablauf über Nachricht oder Telefonat sowie einem Preisrahmen/i.test(polishPlanStyle("mit Ablauf, Nachricht und Telefonat, sowie Preisrahmen")))hits.push("Plan: holprige Ablauf-Formulierung");
   return hits;
 }
 function caseResult(c,err){
