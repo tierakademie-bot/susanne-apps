@@ -1301,6 +1301,7 @@ function planOutputTestHits(){
   var hits=[],text=String(dTask||"");
   if(/\[[^\]]+\]/.test(text))hits.push("Plan: eckige Klammern");
   if(/\bAnderes\b/.test([dDiag,dTask,dCont,cResult].join("\n")))hits.push("Auswahlnamen: Anderes erscheint im Text");
+  if(/\b([A-Za-zÄÖÜäöüß]+)\s+\1\b/i.test(text))hits.push("Plan: Wort direkt doppelt hintereinander");
   if(standardPlanGoal({title:"Zahlen festhalten"})!=="Anfragen, Gespräche, Verkäufe und ihre Quelle sind festgehalten.")hits.push("Plan: Ziel für Zahlen festhalten ist nicht passend");
   if(!/mit einem klaren Ablauf über Nachricht oder Telefonat sowie einem Preisrahmen/i.test(polishPlanStyle("mit Ablauf, Nachricht und Telefonat, sowie Preisrahmen")))hits.push("Plan: holprige Ablauf-Formulierung");
   var duplicateFix=polishPlanStyle("mit dem Ablauf (Nachricht, Telefonat, Preis nach Angaben zum Kunden oder Tier), dem Preisrahmen Preisrahmen und einem kleinen nächsten Schritt nächster Schritt");
