@@ -788,7 +788,7 @@ function runStructuredDiagnosis(retry){
       if(!retry){runStructuredDiagnosis(true);return;}
       dDiag="Die Auswertung ist nicht gelungen, bitte noch einmal versuchen.";diagData=null;evaluationLoading.diagnosis=false;renderMain();return;
     }
-    var immediateMix=diagData&&diagData.content_mix;diagData=applyEvaluationRules(data.diagnosis,logic,contract);if(immediateMix)diagData.content_mix=immediateMix;if(smallSample())diagData.confidence="niedrig";dDiag=diagnosisText(diagData);evaluationLoading.diagnosis=false;limitMissingPhrasesAcrossEvaluation();renderMain();
+    var immediateMix=diagData&&diagData.content_mix;diagData=applyEvaluationRules(data.diagnosis,logic,contract);if(immediateMix)diagData.content_mix=immediateMix;if(diagData.content_mix_note&&/Anteil Erkennen ist höher/i.test(String(diagData.content_mix_note))&&!erkennenIsStrictHighest(normalizedMix(diagData.content_mix)))diagData.content_mix_note="";if(smallSample())diagData.confidence="niedrig";dDiag=diagnosisText(diagData);evaluationLoading.diagnosis=false;limitMissingPhrasesAcrossEvaluation();renderMain();
   },function(e){dDiag="Fehler: "+e;evaluationLoading.diagnosis=false;renderMain();});
 }
 
