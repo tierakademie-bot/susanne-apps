@@ -569,8 +569,11 @@ function displayInquirySources(sources){
 function stripPlanSquareBrackets(text){return String(text||"").replace(/\[([^\]\n]+)\]/g,"$1").replace(/\s{2,}/g," ").trim();}
 function polishPlanStyle(text){
   return String(text||"")
+    .replace(/(?:mit\s+)?dem\s+Ablauf\s*\(\s*Nachricht\s*,\s*Telefonat(?:\s*,\s*Preis\s+nach\s+Angaben\s+zum\s+Kunden\s+oder\s+Tier)?\s*\)\s*,?\s*dem\s+Preisrahmen\s+Preisrahmen\s+und\s+einem?\s+kleinen\s+nächsten\s+Schritt\s+nächster\s+Schritt/ig,"mit dem Ablauf, einem Preisrahmen und einem kleinen nächsten Schritt")
+    .replace(/mit\s+(?:dem\s+)?Ablauf\s*\(\s*Nachricht\s*,\s*Telefonat\s*\)\s*(?:und|sowie)\s+(?:einem?\s+)?Preisrahmen/ig,"mit einem klaren Ablauf über Nachricht oder Telefonat sowie einem Preisrahmen")
     .replace(/mit\s+Ablauf\s*,\s*Nachricht\s+und\s+Telefonat\s*,?\s+sowie\s+Preisrahmen/ig,"mit einem klaren Ablauf über Nachricht oder Telefonat sowie einem Preisrahmen")
-    .replace(/mit\s+Ablauf\s*\(\s*Nachricht\s*,\s*Telefonat\s*\)\s+und\s+Preisrahmen/ig,"mit einem klaren Ablauf über Nachricht oder Telefonat sowie einem Preisrahmen")
+    .replace(/\bPreisrahmen\s+Preisrahmen\b/ig,"Hinweis auf den individuellen Preis")
+    .replace(/\beinem?\s+kleinen\s+nächsten\s+Schritt\s+nächster\s+Schritt\b/ig,"einem klaren nächsten Schritt")
     .replace(/\s+,\s+sowie\s+/g," sowie ");
 }
 function evaluationLogic(){
@@ -1010,12 +1013,11 @@ function renderDiagResult(){
 }
 
 function renderPrintExportHeader(){
-  var r=dAnswers[qIdx("results")]||{},offer=dAnswers[qIdx("offerType")]||{},date=new Date().toLocaleDateString("de-DE"),facts=[];
+  var r=dAnswers[qIdx("results")]||{},date=new Date().toLocaleDateString("de-DE"),facts=[date];
   if(String(r.inquiries||"").trim()!=="")facts.push(r.inquiries+" Anfragen");
   if(String(r.talks||"").trim()!=="")facts.push(r.talks+" Gespräche");
   if(String(r.sales||"").trim()!=="")facts.push(r.sales+" Verkäufe");
-  if(offer.angebotsart)facts.push(offer.angebotsart);
-  return '<div class="print-export-header">'+esc(date)+(facts.length?' · '+esc(facts.join(' · ')):"")+'</div>';
+  return '<p class="print-export-header">'+esc(facts.join(' · '))+'</p>';
 }
 
 function renderStepBar(){
@@ -1052,19 +1054,35 @@ function renderContArea(){
   if(measureData&&measureData.content){html+='<div class="print-measure"><div class="rl">Deine fertige Marketing-Maßnahme</div>'+(measureData.title?'<p><strong>'+esc(measureData.title)+'</strong></p>':'')+'<p>'+formatAI(measureData.content)+'</p>'+(measureData.adjust_notes&&measureData.adjust_notes.length?'<p><strong>Vor dem Einsatz anpassen</strong><br>'+measureData.adjust_notes.map(esc).join('<br>')+'</p>':'')+'</div>';}
   return html;
 }
+function renderPdfRichText(text,kind){
+  var raw=cleanAI(String(text||"")).replace(/\r/g,"");
+  if(kind==="plan")raw=raw.replace(/(Art:[^\n]*?)\s+(?=1\.\s)/g,"$1\n").replace(/([.!?])\s+(?=\d+\.\s)/g,"$1\n");
+  var headings=["Deine vorläufige Einschätzung","Was noch offen ist","Geschäftsart (Einschätzung)","Dein blinder Fleck","Dein größter Engpass","Für deinen Beruf","Woran die Einschätzung erkennbar ist","Was noch unsicher ist","Was jetzt Vorrang hat","Drei Themenideen für deinen nächsten Beitrag","Dein Plan für die nächsten 7 Tage","Erfolg nach 7 Tagen prüfen","Vor dem Einsatz anpassen"];
+  var lines=raw.split(/\n+/).map(function(line){return line.trim();}).filter(Boolean),out=[],listOpen=false;
+  function closeList(){if(listOpen){out.push("</ul>");listOpen=false;}}
+  lines.forEach(function(line){
+    if(/^[-•]\s+/.test(line)){if(!listOpen){out.push('<ul class="pdf-list">');listOpen=true;}out.push("<li>"+esc(line.replace(/^[-•]\s+/,""))+"</li>");return;}
+    closeList();
+    if(headings.indexOf(line)>=0||(/^\d+\.\s/.test(line)&&kind==="plan"))out.push("<h3>"+esc(line)+"</h3>");
+    else out.push("<p>"+esc(line)+"</p>");
+  });
+  closeList();
+  return out.join("");
+}
 function renderPdfVisibility(){
-  return '<section class="pdf-section"><h2>Dein Sichtbarkeitssystem</h2><ul>'+visibilityAreas().map(function(row){return '<li><strong>'+esc(row.k)+':</strong> '+(row.ok?'vorhanden':'noch offen')+' – '+esc(row.basis)+'</li>';}).join('')+'</ul></section>';
+  return '<section class="pdf-section"><h2>Dein Sichtbarkeitssystem</h2><ul class="pdf-list">'+visibilityAreas().map(function(row){return '<li><strong>'+esc(row.k)+':</strong> '+(row.ok?'vorhanden':'noch offen')+' – '+esc(row.basis)+'</li>';}).join('')+'</ul></section>';
 }
 function renderPdfMix(){
   var mix=normalizedMix(diagData&&diagData.content_mix);if(!mix)return '';
   var note=String(diagData.content_mix_note||"");if(/Anteil Erkennen ist höher/i.test(note)&&!erkennenIsStrictHighest(mix))note='';
-  return '<section class="pdf-section"><h2>Dein persönlicher Content-Mix</h2><ul>'+mix.map(function(item){return '<li><strong>'+esc(item.label)+':</strong> '+item.v+' %</li>';}).join('')+'</ul>'+(note?'<p>'+esc(note)+'</p>':'<p>'+esc(contentMixExplanation())+'</p>')+'</section>';
+  return '<section class="pdf-section"><h2>Dein persönlicher Content-Mix</h2><ul class="pdf-list">'+mix.map(function(item){return '<li><strong>'+esc(item.label)+':</strong> '+item.v+' %</li>';}).join('')+'</ul>'+(note?'<p>'+esc(note)+'</p>':'<p>'+esc(contentMixExplanation())+'</p>')+'</section>';
 }
 function renderPdfDocument(){
-  var header=renderPrintExportHeader(),followup=needsFriendlyFollowup()?'<section class="pdf-section"><h2>Freiwillige Nachfrage-Vorlage</h2><div>'+formatAI(friendlyFollowupTemplate())+'</div></section>':'';
-  var measure='<section class="pdf-section pdf-measure"><h2>Deine fertige Marketing-Maßnahme</h2>'+(measureData&&measureData.title?'<h3>'+esc(measureData.title)+'</h3>':'')+'<div>'+formatAI(measureData&&measureData.content||'')+'</div>'+(measureData&&measureData.adjust_notes&&measureData.adjust_notes.length?'<h3>Vor dem Einsatz anpassen</h3><ul>'+measureData.adjust_notes.map(function(note){return '<li>'+esc(note)+'</li>';}).join('')+'</ul>':'')+'</section>';
-  return '<!doctype html><html lang="de"><head><meta charset="utf-8"><title>Marketing-Kompass-Auswertung</title><style>@page{margin:18mm 16mm}*{box-sizing:border-box}body{font:11pt/1.5 Arial,sans-serif;color:#1e2e28;margin:0}.print-export-header{font-size:9.5pt;color:#47685a;border-bottom:1px solid #8faf9f;padding-bottom:8px;margin-bottom:18px}h1{font:700 21pt Georgia,serif;color:#2d4a3e;margin:0 0 18px}h2{font:700 15pt Georgia,serif;color:#2d4a3e;margin:26px 0 8px;break-after:avoid-page;page-break-after:avoid}h3{font:700 12pt Arial,sans-serif;color:#2d4a3e;margin:12px 0 6px;break-after:avoid-page;page-break-after:avoid}p{margin:0 0 9px}ul{margin:0;padding-left:20px}li{margin:0 0 5px}.pdf-section{margin:0 0 18px}.pdf-measure{break-inside:avoid-page;page-break-inside:avoid}.pdf-measure>div{white-space:normal}.pdf-measure h2{margin-top:26px}@media print{body{print-color-adjust:exact;-webkit-print-color-adjust:exact}}</style></head><body>'+header+'<h1>Marketing Kompass</h1><section class="pdf-section"><h2>Kurz gesagt</h2><div>'+formatAI(fixText(diagData&&diagData.summary||''))+'</div></section><section class="pdf-section"><h2>Kompass-Diagnose</h2><div>'+formatAI(dDiag||'')+'</div></section>'+renderPdfVisibility()+renderPdfMix()+'<section class="pdf-section"><h2>Deine nächsten drei Schritte (7 Tage)</h2><div>'+formatAI(dTask||'')+'</div></section>'+followup+measure+'</body></html>';
+  var header=renderPrintExportHeader(),followup=needsFriendlyFollowup()?'<section class="pdf-section"><h2>Freiwillige Nachfrage-Vorlage</h2>'+renderPdfRichText(friendlyFollowupTemplate(),"text")+'</section>':'';
+  var measure='<section class="pdf-section pdf-measure"><h2>Deine fertige Marketing-Maßnahme</h2>'+(measureData&&measureData.title?'<h3>'+esc(measureData.title)+'</h3>':'')+renderPdfRichText(measureData&&measureData.content||"","text")+(measureData&&measureData.adjust_notes&&measureData.adjust_notes.length?'<h3>Vor dem Einsatz anpassen</h3><ul class="pdf-list">'+measureData.adjust_notes.map(function(note){return '<li>'+esc(note)+'</li>';}).join('')+'</ul>':'')+'</section>';
+  return '<!doctype html><html lang="de"><head><meta charset="utf-8"><title>Marketing-Kompass-Auswertung</title><style>@page{size:A4;margin:18mm}*{box-sizing:border-box}html,body{margin:0;padding:0}body{font:10.5pt/1.48 Arial,sans-serif;color:#1e2e28}.print-export-header{font-size:9pt;color:#47685a;margin:0 0 15px;padding:0 0 8px;border-bottom:1px solid #8faf9f}h1{font:700 22pt/1.2 Georgia,serif;color:#2d4a3e;margin:0 0 7px}h2{font:700 15pt/1.25 Georgia,serif;color:#2d4a3e;margin:23px 0 9px;padding-top:3px;break-after:avoid-page;page-break-after:avoid}h3{font:700 11.5pt/1.35 Arial,sans-serif;color:#2d4a3e;margin:14px 0 6px;break-after:avoid-page;page-break-after:avoid}p{margin:0 0 8px}.pdf-section{margin:0 0 17px}.pdf-list{margin:0 0 9px;padding-left:19px}.pdf-list li{margin:0 0 5px}.pdf-measure{border:1px solid #8faf9f;border-radius:8px;padding:12px 14px;margin-top:24px;break-inside:avoid-page;page-break-inside:avoid}.pdf-measure h2{margin-top:0}.pdf-measure p{margin-bottom:10px}@media print{body{print-color-adjust:exact;-webkit-print-color-adjust:exact}}</style></head><body><h1>Marketing Kompass</h1>'+header+'<section class="pdf-section"><h2>Kurz gesagt</h2>'+renderPdfRichText(fixText(diagData&&diagData.summary||""),"text")+'</section><section class="pdf-section"><h2>Kompass-Diagnose</h2>'+renderPdfRichText(dDiag||"","diagnosis")+'</section>'+renderPdfVisibility()+renderPdfMix()+'<section class="pdf-section"><h2>Deine nächsten drei Schritte (7 Tage)</h2>'+renderPdfRichText(dTask||"","plan")+'</section>'+followup+measure+'</body></html>';
 }
+
 function printResult(){
   if(evaluationLoading.measure||!measureData||!measureData.content){alert("Die fertige Marketing-Maßnahme wird noch erstellt. Bitte warte, bis sie vollständig angezeigt wird.");return;}
   var printWindow=window.open("","_blank");
@@ -1285,6 +1303,8 @@ function planOutputTestHits(){
   if(/\bAnderes\b/.test([dDiag,dTask,dCont,cResult].join("\n")))hits.push("Auswahlnamen: Anderes erscheint im Text");
   if(standardPlanGoal({title:"Zahlen festhalten"})!=="Anfragen, Gespräche, Verkäufe und ihre Quelle sind festgehalten.")hits.push("Plan: Ziel für Zahlen festhalten ist nicht passend");
   if(!/mit einem klaren Ablauf über Nachricht oder Telefonat sowie einem Preisrahmen/i.test(polishPlanStyle("mit Ablauf, Nachricht und Telefonat, sowie Preisrahmen")))hits.push("Plan: holprige Ablauf-Formulierung");
+  var duplicateFix=polishPlanStyle("mit dem Ablauf (Nachricht, Telefonat, Preis nach Angaben zum Kunden oder Tier), dem Preisrahmen Preisrahmen und einem kleinen nächsten Schritt nächster Schritt");
+  if(duplicateFix.indexOf("Preisrahmen Preisrahmen")>=0||duplicateFix.indexOf("nächsten Schritt nächster Schritt")>=0||duplicateFix.indexOf("Ablauf (Nachricht, Telefonat")>=0)hits.push("Plan: doppelte Platzhalter oder holpriger Ablauf");
   return hits;
 }
 function caseResult(c,err){
