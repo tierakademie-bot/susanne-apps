@@ -900,7 +900,7 @@ function renderDiagResult(){
   else html+='<div class="rbox"><div class="rl">&#9989; Deine nächsten drei Schritte (7 Tage)</div><p class="status">Wird erstellt …</p></div>';
   if(dStep===2)html+=renderChat();
   html+=renderContArea();
-  if(dTask){var measureReady=isMeasureReady();html+='<div class="btn-row screen-only"><button class="btn-o" onclick="printResult()"'+(measureReady?'':' disabled')+'>'+(measureReady?'Auswertung drucken / als PDF speichern':'Maßnahme wird noch erstellt …')+'</button><button class="btn-o" onclick="endApp()">App beenden</button></div>';}
+  if(dTask){var measureReady=isMeasureReady();html+='<div class="btn-row screen-only"><button class="btn-o" onclick="printResult()"'+(measureReady?'':' disabled')+'>'+(measureReady?'Auswertung als PDF speichern':'Maßnahme wird noch erstellt …')+'</button><button class="btn-o" onclick="endApp()">App beenden</button></div>';}
     return html;
 }
 
