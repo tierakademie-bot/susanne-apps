@@ -558,6 +558,15 @@ function setInquiryConversion(logic,inquiries,sales){
   logic.usesInquiryConversion=true;
   logic.firstStep={title:"Sichtbarkeit und Kontakt erhöhen",action:"Veröffentliche einen kurzen, konkreten Hinweis, wie Interessierte dich erreichen können, und nenne den kleinen ersten Schritt.",goal:"Ein sichtbarer Kontaktpunkt bringt neue Anfragen näher."};
 }
+function displayInquirySources(sources){
+  return (Array.isArray(sources)?sources:[]).map(function(source){
+    source=String(source||"").trim();
+    if(!source||/^weiß ich nicht$/i.test(source))return "";
+    if(/^anderes$/i.test(source))return "andere Quellen";
+    return source;
+  }).filter(Boolean);
+}
+function stripPlanSquareBrackets(text){return String(text||"").replace(/\[([^\]\n]+)\]/g,"$1").replace(/\s{2,}/g," ").trim();}
 function evaluationLogic(){
   var r=dAnswers[qIdx("results")]||{};
   function givenNumber(value){var raw=String(value===undefined||value===null?"":value).trim();if(raw==="")return null;var parsed=Number(raw.replace(",","."));return isFinite(parsed)&&parsed>=0?parsed:null;}
@@ -594,11 +603,11 @@ function evaluationLogic(){
     else {logic.kind="inconsistent_counts";logic.countsNote="Es gab "+sales+" Verkäufe bei "+inquiries+" Anfragen. Die Zahlen passen nicht zusammen.";logic.firstStep={title:"Zahlen zu Anfragen und Verkäufen prüfen",action:"Notiere getrennt, wie viele Anfragen, Gespräche und Verkäufe es gab.",goal:"Die Zahlen lassen sich ohne Doppelzählung vergleichen."};}
   } else if(inquiries!==null){logic.kind="no_talks_yet";logic.missingConversationNote="Es gibt noch keine Gesprächszahl, aus der sich der Übergang zum Verkauf berechnen lässt.";}
   if(logic.small)logic.smallNote="Die Zahlen sind klein und geben nur ein erstes Bild.";
-  var sources=Array.isArray(r.quelleAnfragen)?r.quelleAnfragen.filter(Boolean):[];
-  logic.sources=sources;
-  if(sources.length)logic.text.push("Die meisten Anfragen kamen laut Angabe über: "+sources.join(", ")+". Das wird zuerst verstärkt.");
+  var sources=Array.isArray(r.quelleAnfragen)?r.quelleAnfragen.filter(Boolean):[],sourceLabels=displayInquirySources(sources);
+  logic.sources=sourceLabels;
+  if(sourceLabels.length)logic.text.push("Die meisten Anfragen kamen laut Angabe über: "+sourceLabels.join(", ")+". Das wird zuerst verstärkt.");
   if(reactions===0&&inquiries!==null&&inquiries>0)logic.text.push("Deine Anfragen kamen offenbar nicht über Beiträge.");
-  if(reactions!==null&&inquiries!==null&&reactions>=10&&inquiries>0&&reactions/inquiries>=5)logic.text.push("Deine Anfragen kamen bisher über "+(sources.length?sources.join(", "):"deinen angegebenen Kontaktweg")+". Plane dort einen klaren Hinweis, wie Menschen dich erreichen.");
+  if(reactions!==null&&inquiries!==null&&reactions>=10&&inquiries>0&&reactions/inquiries>=5)logic.text.push("Deine Anfragen kamen bisher über "+(sourceLabels.length?sourceLabels.join(", "):"deinen angegebenen Kontaktweg")+". Plane dort einen klaren Hinweis, wie Menschen dich erreichen.");
   return logic;
 }
 function offerPriceHint(){return hasIndividualPrice()?"Hinweis auf den individuellen Preis":"Preisrahmen";}
@@ -717,7 +726,19 @@ function applyEvaluationRules(d,logic,contract){
     var professionParts=String(d.profession_note).match(/[^.!?]+[.!?]?/g)||[];
     d.profession_note=professionParts.filter(function(part){return !/berufliche bezeichnung|qualifikation|belegen kannst|\[qualifikation\]/i.test(part);}).join(" ").replace(/\s{2,}/g," ").trim();
   }
-  d.missing_info=uniqueFacts(d.missing_info,{});var seen={};d.missing_info=uniqueFacts(d.missing_info,seen);d.evidence=uniqueFacts(d.evidence,seen);d.uncertainties=uniqueFacts(d.uncertainties,seen);
+  if(logic.talks!==null&&logic.talks<3){
+    var talkWord=logic.talks===1?"Gespräch":"Gesprächen",cautious="Aus "+logic.talks+" "+talkWord+" lässt sich noch nichts ableiten.";
+    d.confidence="niedrig";
+    d.display_problem=cautious;
+    d.summary=(logic.conversionText?logic.conversionText+" ":"")+cautious+" Halte weitere Gespräche und ihre nächsten Schritte fest.";
+    d.priority_type="klaerung";
+    d.priority="Halte weitere Gespräche und ihre nächsten Schritte fest.";
+    d.rationale="Mit weiteren Gesprächen wird der Kaufweg besser einschätzbar.";
+    d.bottleneck={type:"noch nicht sicher bestimmbar",explanation:""};
+    d.evidence=(d.evidence||[]).filter(function(x){return !/\b(?:selten|oft|häufig|meistens|immer|nie)\b/i.test(String(x));});
+    d.uncertainties=(d.uncertainties||[]).filter(function(x){return !/\b(?:selten|oft|häufig|meistens|immer|nie)\b/i.test(String(x));});
+  }
+    d.missing_info=uniqueFacts(d.missing_info,{});var seen={};d.missing_info=uniqueFacts(d.missing_info,seen);d.evidence=uniqueFacts(d.evidence,seen);d.uncertainties=uniqueFacts(d.uncertainties,seen);
   return d;
 }
 function addUnique(list,text){list=Array.isArray(list)?list:[];if(text&&list.indexOf(text)<0)list.push(text);return list;}
@@ -728,7 +749,7 @@ function removeConversion(text,conversion){return conversion?String(text||"").sp
 function withoutConversion(list,conversion){return (Array.isArray(list)?list:[]).filter(function(x){return !conversion||String(x).indexOf(conversion)<0;});}
 function cleanOutputText(text){var seen={},lines=String(text||"").replace(/druckfreier nächster Schritt/ig,"ein Schritt ohne Druck").replace(/druckfreien nächsten Schritt/ig,"einen Schritt ohne Druck").replace(/Die Offenheit dafür heißt nicht, dass schon eine besteht\.?/ig,"").replace(/\[(?:Weiteren Ablauf nach der Nachricht ergänzen|Ablauf nach der Nachricht ergänzen|Ablauf ergänzen)\]/g,"[Ablauf in 1–2 Sätzen]").replace(/\[(?:Leistungen einfügen|Leistungsumfang einsetzen|Leistungsumfang ergänzen|Leistungsumfang als Platzhalter|Platzhalter: Leistungen deiner Beratung)\]/g,"[Leistungen in Stichpunkten]").split("\n").map(function(line){return line.replace(/[ \t]{2,}/g," ").replace(/Eine eigene Seite[^.\n]*hast du,\s*aber offen dafür\./ig,"Eine eigene Seite hast du noch nicht.").trim();}).filter(function(line){if(!line)return true;if(/\b(?:ist|sind|war|waren|bleibt|stehen)\s+\.$/i.test(line))return false;if(/\bweil\s+(?:Details|Angaben|Informationen)[^.]*\b(?:ist|sind)\.$/i.test(line))return false;if(/^[-–]\s*[^\n]*:\s*$/i.test(line))return false;var key=line.replace(/^[-–]\s*/,"").toLowerCase().replace(/[^a-zäöüß0-9]+/g," ").trim();if(/^[-–]\s/.test(line)&&key&&seen[key])return false;if(/^[-–]\s/.test(line)&&key)seen[key]=true;return true;});return lines.join("\n").replace(/\n{3,}/g,"\n\n").trim();}
 var cleanOutputTextBase=cleanOutputText;
-cleanOutputText=function(text){return cleanOutputTextBase(String(text||"").replace(/\[Preisrahmen einsetzen,[^\]]+\]/gi,"[Preisrahmen]")).replace(/([.!?])\1+/g,"$1");};
+cleanOutputText=function(text){return cleanOutputTextBase(String(text||"").replace(/\[Preisrahmen einsetzen,[^\]]+\]/gi,"[Preisrahmen]").replace(/(?:über|aus)\s+Anderes\b/gi,function(m){return m.charAt(0).toLowerCase()==="a"?"aus andere Quellen":"über andere Quellen";}).replace(/,\s*Anderes(?=[,.])/g,", andere Quellen")).replace(/([.!?])\1+/g,"$1");};
 function limitMissingPhrases(text,max){var count=0;var lines=String(text||"").split("\n").filter(function(line){if(/(?:in deinen Angaben nicht genannt|Dazu hast du nichts angegeben|nichts angegeben)/i.test(line)){count++;return count<=max;}return true;});return cleanOutputText(lines.join("\n"));}
 function limitMissingPhrasesAcrossEvaluation(){var count=0;function trim(text){var lines=String(text||"").split("\n").filter(function(line){if(/(?:in deinen Angaben nicht genannt|Dazu hast du nichts angegeben|nichts angegeben)/i.test(line)){count++;return count<=3;}if(/Es kommen noch zu wenige Anfragen\.|(?:Die|Sehr|Wegen der) klein\w* Zahlen[^.]*\./i.test(line))return false;return true;});return cleanOutputText(lines.join("\n"));}dDiag=trim(dDiag);dTask=trim(dTask);dCont=trim(dCont);}
 
@@ -866,7 +887,7 @@ function generateStructuredPlan(facts,contract,retry){
   },function(e){dTask="Fehler: "+e;evaluationLoading.plan=false;renderMain();});
 }
 
-function planText(p){return fixText(planRaw(p));}
+function planText(p){return stripPlanSquareBrackets(fixText(planRaw(p)));}
 function safePlanAction(step,index){
   var action=String(step&&step.action||"").trim();
   if(!action||/\b(?:ist|sind|war|waren|bleibt|stehen)\s+\.$/i.test(action)||/^aktion\s*:?$/i.test(action)||/setze den vorgesehenen angebotsort|ergänze nur angaben, die bereits feststehen/i.test(action)){
@@ -936,9 +957,14 @@ function normalizedMix(m){
   out[out.indexOf(Math.max.apply(null,out))]+=diff;
   return keys.map(function(k,i){return {label:labels[i],v:out[i]};});
 }
+function erkennenIsStrictHighest(mix){
+  var erkennen=(mix||[]).filter(function(x){return x&&x.label==="Erkennen";})[0];
+  var others=(mix||[]).filter(function(x){return x&&x.label!=="Erkennen";}).map(function(x){return Number(x.v)||0;});
+  return !!(erkennen&&others.length&&Number(erkennen.v)>Math.max.apply(null,others));
+}
 function contentMixExplanation(){
-  var r=dAnswers[qIdx("results")]||{},sources=Array.isArray(r.quelleAnfragen)?r.quelleAnfragen.filter(Boolean):[];
-  var mix=normalizedMix(diagData&&diagData.content_mix),erkennen=mix&&mix.find(function(x){return x.label==="Erkennen";}),erkennenHighest=!!(erkennen&&erkennen.v>Math.max.apply(null,mix.filter(function(x){return x.label!=="Erkennen";}).map(function(x){return x.v;})));
+  var r=dAnswers[qIdx("results")]||{},sources=displayInquirySources(Array.isArray(r.quelleAnfragen)?r.quelleAnfragen.filter(Boolean):[]);
+  var mix=normalizedMix(diagData&&diagData.content_mix),erkennenHighest=erkennenIsStrictHighest(mix);
   var parts=[];
   if(sources.length)parts.push("Du hast "+sources.join(" und ")+" als Anfragequelle angegeben. Deshalb setzt der Mix dort zuerst auf verständliche, sichtbare Inhalte.");
   if(num(r.inquiries)<=5&&erkennenHighest)parts.push("Weil bisher nur wenige Anfragen eingetragen sind, bekommt Erkennen mehr Raum: So verstehen passende Menschen schneller, worum es bei deinem Angebot geht.");
@@ -949,8 +975,7 @@ function contentMixExplanation(){
 function renderMixPanel(){
   var m=diagData&&normalizedMix(diagData.content_mix);if(!m)return '';
   var ready=!!(dDiag&&dDiag.indexOf("Fehler:")!==0);
-  var erkennen=m.find(function(x){return x.label==="Erkennen";}),others=m.filter(function(x){return x.label!=="Erkennen";});
-  var note=String(diagData.content_mix_note||"");if(/Anteil Erkennen ist höher/i.test(note)&&(!erkennen||erkennen.v<=Math.max.apply(null,others.map(function(x){return x.v;}))))note="";
+  var note=String(diagData.content_mix_note||"");if(/Anteil Erkennen ist höher/i.test(note)&&!erkennenIsStrictHighest(m))note="";
   return '<div class="vis"><div class="rl" style="color:#2D4A3E">Dein persönlicher Content-Mix – Richtwert</div>'+m.map(function(x){return '<div class="mix-row"><span class="mix-lbl">'+x.label+'</span><span class="mix-bar"><span class="mix-fill" style="display:block;width:'+x.v+'%"></span></span><span class="mix-val">'+x.v+' %</span></div>';}).join('')+(ready&&note?'<p class="field-help">'+esc(note)+'</p>':ready?'<p class="field-help">'+esc(contentMixExplanation())+'</p>':'<p class="field-help status">Wird erstellt …</p>')+'</div>';
 }
 
@@ -973,7 +998,7 @@ function renderDiagResult(){
   else html+='<div class="rbox"><div class="rl">&#9989; Deine nächsten drei Schritte (7 Tage)</div><p class="status">Wird erstellt …</p></div>';
   if(dStep===2)html+=renderChat();
   html+=renderContArea();
-  if(dTask&&dCont)html+='<div class="btn-row screen-only"><button class="btn-o" onclick="printResult()">Auswertung drucken / als PDF speichern</button><button class="btn-o" onclick="endApp()">App beenden</button></div>';
+  if(dTask&&dCont)html+='<div class="btn-row screen-only"><button class="btn-o" onclick="printResult()">Auswertung als PDF speichern</button><button class="btn-o" onclick="endApp()">App beenden</button></div>';
     return html;
 }
 
@@ -1020,9 +1045,27 @@ function renderContArea(){
   if(measureData&&measureData.content){html+='<div class="print-measure"><div class="rl">Deine fertige Marketing-Maßnahme</div>'+(measureData.title?'<p><strong>'+esc(measureData.title)+'</strong></p>':'')+'<p>'+formatAI(measureData.content)+'</p>'+(measureData.adjust_notes&&measureData.adjust_notes.length?'<p><strong>Vor dem Einsatz anpassen</strong><br>'+measureData.adjust_notes.map(esc).join('<br>')+'</p>':'')+'</div>';}
   return html;
 }
+function renderPdfVisibility(){
+  return '<section class="pdf-section"><h2>Dein Sichtbarkeitssystem</h2><ul>'+visibilityAreas().map(function(row){return '<li><strong>'+esc(row.k)+':</strong> '+(row.ok?'vorhanden':'noch offen')+' – '+esc(row.basis)+'</li>';}).join('')+'</ul></section>';
+}
+function renderPdfMix(){
+  var mix=normalizedMix(diagData&&diagData.content_mix);if(!mix)return '';
+  var note=String(diagData.content_mix_note||"");if(/Anteil Erkennen ist höher/i.test(note)&&!erkennenIsStrictHighest(mix))note='';
+  return '<section class="pdf-section"><h2>Dein persönlicher Content-Mix</h2><ul>'+mix.map(function(item){return '<li><strong>'+esc(item.label)+':</strong> '+item.v+' %</li>';}).join('')+'</ul>'+(note?'<p>'+esc(note)+'</p>':'<p>'+esc(contentMixExplanation())+'</p>')+'</section>';
+}
+function renderPdfDocument(){
+  var header=renderPrintExportHeader(),followup=needsFriendlyFollowup()?'<section class="pdf-section"><h2>Freiwillige Nachfrage-Vorlage</h2><div>'+formatAI(friendlyFollowupTemplate())+'</div></section>':'';
+  var measure='<section class="pdf-section pdf-measure"><h2>Deine fertige Marketing-Maßnahme</h2>'+(measureData&&measureData.title?'<h3>'+esc(measureData.title)+'</h3>':'')+'<div>'+formatAI(measureData&&measureData.content||'')+'</div>'+(measureData&&measureData.adjust_notes&&measureData.adjust_notes.length?'<h3>Vor dem Einsatz anpassen</h3><ul>'+measureData.adjust_notes.map(function(note){return '<li>'+esc(note)+'</li>';}).join('')+'</ul>':'')+'</section>';
+  return '<!doctype html><html lang="de"><head><meta charset="utf-8"><title>Marketing-Kompass-Auswertung</title><style>@page{margin:18mm 16mm}*{box-sizing:border-box}body{font:11pt/1.5 Arial,sans-serif;color:#1e2e28;margin:0}.print-export-header{font-size:9.5pt;color:#47685a;border-bottom:1px solid #8faf9f;padding-bottom:8px;margin-bottom:18px}h1{font:700 21pt Georgia,serif;color:#2d4a3e;margin:0 0 18px}h2{font:700 15pt Georgia,serif;color:#2d4a3e;margin:26px 0 8px;break-after:avoid-page;page-break-after:avoid}h3{font:700 12pt Arial,sans-serif;color:#2d4a3e;margin:12px 0 6px;break-after:avoid-page;page-break-after:avoid}p{margin:0 0 9px}ul{margin:0;padding-left:20px}li{margin:0 0 5px}.pdf-section{margin:0 0 18px}.pdf-measure{break-inside:avoid-page;page-break-inside:avoid}.pdf-measure>div{white-space:normal}.pdf-measure h2{margin-top:26px}@media print{body{print-color-adjust:exact;-webkit-print-color-adjust:exact}}</style></head><body>'+header+'<h1>Marketing Kompass</h1><section class="pdf-section"><h2>Kurz gesagt</h2><div>'+formatAI(fixText(diagData&&diagData.summary||''))+'</div></section><section class="pdf-section"><h2>Kompass-Diagnose</h2><div>'+formatAI(dDiag||'')+'</div></section>'+renderPdfVisibility()+renderPdfMix()+'<section class="pdf-section"><h2>Deine nächsten drei Schritte (7 Tage)</h2><div>'+formatAI(dTask||'')+'</div></section>'+followup+measure+'</body></html>';
+}
 function printResult(){
   if(evaluationLoading.measure||!measureData||!measureData.content){alert("Die fertige Marketing-Maßnahme wird noch erstellt. Bitte warte, bis sie vollständig angezeigt wird.");return;}
-  window.print();
+  var printWindow=window.open("","_blank");
+  if(!printWindow){alert("Der Browser hat das Druckfenster blockiert. Bitte erlaube Pop-ups für diese Seite und versuche es erneut.");return;}
+  printWindow.document.open();
+  printWindow.document.write(renderPdfDocument());
+  printWindow.document.close();
+  window.setTimeout(function(){printWindow.focus();printWindow.print();},250);
 }
 
 var CHANNEL_ROLES=[["Instagram","ZEIGEN","Schau, was ich mache.","Reels, Karussells, kurze Impulse, Alltagseinblicke"],["Facebook","ERZÄHLEN","Das habe ich erlebt.","Geschichten, Fragen an die Gruppe, Veranstaltungen, regionale Angebote"],["LinkedIn","POSITIONIEREN","Dafür stehe ich.","Fachwissen, Haltung, Erfahrung, Preisgestaltung"],["TikTok","AUFMERKSAMKEIT","Das solltest du wissen.","kurze Videos, Aha-Momente, Humor"],["YouTube","ERKLÄREN","So funktioniert es.","Tutorials, Fachvideos, Fallbesprechungen"],["Pinterest","GEFUNDEN WERDEN","Speichere dir das.","Checklisten, Ratgeber, Infografiken"],["Skool Community","AUSTAUSCHEN","Wie erlebt ihr das?","Fragen, Feedback, Umfragen, Erfahrungen"],["Skool Classroom","LERNEN","Hier findest du die Anleitung.","Kurse, Leitfäden, Videos, Vorlagen"]];
@@ -1213,6 +1256,27 @@ function missingInfoFormatTestHits(){
   var actual=sample.map(normalizeMissingInfoLabel);
   return actual.join("|")===expected.join("|")?[]:["Test fehlender Angaben: Aufzählung nicht einheitlich"];
 }
+function contentMixTestHits(){
+  var hits=[],sample=normalizedMix({erkennen:20,verstehen:20,vertrauen:25,beweis:10,angebot:25});
+  if(erkennenIsStrictHighest(sample))hits.push("Content-Mix-Test: Erkennen darf bei Gleichstand nicht höher sein");
+  var current=normalizedMix(diagData&&diagData.content_mix),note=String(diagData&&diagData.content_mix_note||"");
+  if(/Anteil Erkennen ist höher/i.test(note)&&!erkennenIsStrictHighest(current))hits.push("Content-Mix: Erkennen höher ohne höchsten Anteil");
+  return hits;
+}
+function smallTalkTestHits(){
+  var r=dAnswers[qIdx("results")]||{},talks=String(r.talks||"").trim(),count=Number(talks),text=String(dDiag||"")+"\n"+String(dTask||"");
+  if(talks!==""&&isFinite(count)&&count<3){
+    if(!/Sicherheit der Einschätzung:\s*niedrig/i.test(String(dDiag||"")))return ["Kleine Gesprächszahl: Sicherheit nicht niedrig"];
+    if(/\b(?:selten|oft|häufig|meistens|immer|nie)\b/i.test(text))return ["Kleine Gesprächszahl: Häufigkeitsaussage gefunden"];
+  }
+  return [];
+}
+function planOutputTestHits(){
+  var hits=[],text=String(dTask||"");
+  if(/\[[^\]]+\]/.test(text))hits.push("Plan: eckige Klammern");
+  if(/\bAnderes\b/.test([dDiag,dTask,dCont,cResult].join("\n")))hits.push("Auswahlnamen: Anderes erscheint im Text");
+  return hits;
+}
 function caseResult(c,err){
   var text=[dDiag,dTask,dCont,measureData&&measureData.content?measureData.content:"",cResult].join("\n");
   var hits=violations(text);
@@ -1220,6 +1284,9 @@ function caseResult(c,err){
   planStepTypeTestHits().forEach(function(hit){hits.unshift(hit);});
   diagnosisFormatTestHits(dDiag).forEach(function(hit){hits.unshift(hit);});
   missingInfoFormatTestHits().forEach(function(hit){hits.unshift(hit);});
+  contentMixTestHits().forEach(function(hit){hits.unshift(hit);});
+  smallTalkTestHits().forEach(function(hit){hits.unshift(hit);});
+  planOutputTestHits().forEach(function(hit){hits.unshift(hit);});
   var diagLines=String(dDiag||"").split("\n"),uncertainIndex=diagLines.indexOf("Was noch unsicher ist");
   if(uncertainIndex>=0&&!diagLines.slice(uncertainIndex+1).some(function(line){return /^\s*-\s*\S/.test(line);})){hits.unshift("Leere Überschrift: Was noch unsicher ist");}
   if(hasBrokenMeasureSentence(measureData&&measureData.content))hits.unshift("Maßnahme: abgebrochener Satz");
