@@ -466,7 +466,7 @@ function renderQuestionInput(i){
   if(q.type==="opennessPage"){a=a||{};return choiceList("open-page",OPEN_PAGE_OPTS,a.offenheitEigeneSeite,false);}
   if(q.type==="capacity"){
     a=a||{};
-    return '<div class="mini-grid"><div><span class="lbl" style="margin-top:0">Zeit pro Woche</span>'+sel("cap-time",["Unter 1 Stunde","1–2 Stunden","3–5 Stunden","Mehr als 5 Stunden","Weiß ich noch nicht"],a.time)+'</div><div><span class="lbl" style="margin-top:0">Budget pro Monat für Marketing</span>'+sel("cap-budget",["0 Euro","Bis 50 Euro","51–150 Euro","Mehr als 150 Euro","Noch nicht festgelegt"],a.budget)+'</div></div>'+
+    return '<div class="mini-grid"><div><span class="lbl" style="margin-top:0">Zeit pro Woche</span>'+sel("cap-time",["Unter 1 Stunde","1–2 Stunden","3 bis 5 Stunden","Mehr als 5 Stunden","Weiß ich noch nicht"],a.time)+'</div><div><span class="lbl" style="margin-top:0">Budget pro Monat für Marketing</span>'+sel("cap-budget",["0 Euro","Bis 50 Euro","51–150 Euro","Mehr als 150 Euro","Noch nicht festgelegt"],a.budget)+'</div></div>'+
       '<span class="lbl">Was kannst und möchtest du umsetzen? (optional)</span>'+choiceList("formats",["Texte","Fotos","Kurze Videos","Persönliche Gespräche","Veranstaltungen oder lokale Aktionen"],a.formats,true);
   }
   return '';
@@ -918,7 +918,7 @@ function safePlanGoal(step,index){
   return goal;
 }
 function planRaw(p){
-  var out="Dein Plan für die nächsten 7 Tage\nVerfügbare Zeit: "+(p.weekly_time||"laut deiner Angabe")+"\nArt: "+typeLabel(p.priority_type||diagData.priority_type);
+  var weeklyPrint=String(p.weekly_time||"laut deiner Angabe").replace(/[–—]/g," bis "); var out="Dein Plan für die nächsten 7 Tage\nVerfügbare Zeit: "+weeklyPrint+"\nArt: "+typeLabel(p.priority_type||diagData.priority_type);
   p.steps.forEach(function(s,i){var goal=safePlanGoal(s,i);out+="\n\n"+(i+1)+". "+String(s.title||"").replace(/^\s*(?:Schritt\s*)?\d+\s*[:.\-–]\s*/i,"")+"\n"+safePlanAction(s,i)+"\nZeit: "+s.minutes+" Minuten"+(goal?"\nZiel: "+goal:"");});
   if(p.success_metrics&&p.success_metrics.length)out+="\n\nErfolg nach 7 Tagen prüfen\n- "+p.success_metrics.slice(0,3).join("\n- ");
   return out;
@@ -1260,7 +1260,7 @@ function applyCase(c){
   dAnswers[qIdx("content")]={items:["Fallbeispiele","Angebote"]};
   dAnswers[qIdx("results")]=special.results||{reactions:"4",inquiries:"2",talks:"1",sales:"1",who:"Kundinnen und Kunden",unknown:false,overlap:"Weiß ich nicht",kaufhindernisAuswahl:["Noch unentschlossen"],kaufhindernisNachfrage:"",quelleAnfragen:["Instagram"]};
   dAnswers[qIdx("path")]={choices:special.path||["Sie schreibt mir eine Nachricht"],other:""};
-  dAnswers[qIdx("capacity")]={time:"3–5 Stunden",budget:"0 Euro",formats:["Texte"]};
+  dAnswers[qIdx("capacity")]={time:"3 bis 5 Stunden",budget:"0 Euro",formats:["Texte"]};
   dAnswers[qIdx("opennessSocial")]={offenheitSocialMedia:"Ja"};
   dAnswers[qIdx("opennessPage")]={offenheitEigeneSeite:"Ja"};
   dStep=0;dDiag="";dTask="";dCont="";cResult="";diagData=null;planData=null;measureData=null;clarifyMode=false;aiClarificationText="";clarificationRounds=0;
