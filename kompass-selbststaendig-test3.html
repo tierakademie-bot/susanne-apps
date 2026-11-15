@@ -999,7 +999,7 @@ function renderDiagResult(){
   else html+='<div class="rbox"><div class="rl">&#9989; Deine nächsten drei Schritte (7 Tage)</div><p class="status">Wird erstellt …</p></div>';
   if(dStep===2)html+=renderChat();
   html+=renderContArea();
-  if(dTask&&dCont)html+='<div class="btn-row screen-only"><button class="btn-o" onclick="printResult()">Auswertung als PDF speichern</button><button class="btn-o" onclick="endApp()">App beenden</button></div>';
+  if(dTask&&measureData&&measureData.content&&!evaluationLoading.measure)html+='<div class="btn-row screen-only"><button class="btn-o" onclick="printResult()">Auswertung als PDF speichern</button><button class="btn-o" onclick="endApp()">App beenden</button></div>';
     return html;
 }
 
