@@ -246,7 +246,7 @@ function callAI(sys,user,history,cb,errcb,model,jsonMode,attempt){
   function go(){
     /* Testseite: ?simulate429=minute oder ?simulate429=day prüft nur die App-Anzeige. */
     var simulated429=new URLSearchParams(location.search).get("simulate429");
-    if(simulated429){var simulatedError=new Error(simulated429==="minute"?"Bitte warte einen Moment und versuche es dann noch einmal.":"Heute sind sehr viele Auswertungen gelaufen. Bitte versuche es morgen noch einmal.");simulatedError.limit=true;errcb(simulatedError.message);return;}
+    if(simulated429){var simulatedError=new Error(simulated429==="minute"?"Bitte warte einen Moment und versuche es dann noch einmal.":"Heute sind sehr viele Auswertungen gelaufen. Bitte versuche es morgen noch einmal.");simulatedError.limit=true;setTimeout(function(){errcb(simulatedError.message);},50);return;}
     fetch("https://tierakademie-proxy.tierakademie.workers.dev/legacy/marketing-kompass/messages",{
       method:"POST",headers:{"Content-Type":"application/json"},
       body:JSON.stringify({model:model,max_tokens:jsonMode?8000:2500,system:system,messages:msgs})
