@@ -244,15 +244,18 @@ function callAI(sys,user,history,cb,errcb,model,jsonMode,attempt){
   var system=sys+"\n\n"+COMPACT_GUARDRAILS+(jsonMode?"\n\nAUSGABEFORMAT: Antworte ausschließlich mit einem gültigen JSON-Objekt, das mit { beginnt und mit } endet. Kein Text davor oder danach.":"");
   if(system.length+KANALTXT.length+2<=11000)system+="\n\n"+KANALTXT;else msgs[msgs.length-1]={role:"user",content:msgs[msgs.length-1].content+"\n\nVERBINDLICHE KANALREGELN:\n"+KANALTXT};
   function go(){
-    fetch("https://tierakademie-proxy.tierakademie.workers.dev/legacy/messages",{
+    fetch("https://tierakademie-proxy.tierakademie.workers.dev/legacy/marketing-kompass/messages",{
       method:"POST",headers:{"Content-Type":"application/json"},
       body:JSON.stringify({model:model,max_tokens:jsonMode?8000:2500,system:system,messages:msgs})
     }).then(function(r){
       if(!r.ok){
         return r.text().catch(function(){return "";}).then(function(tx){
+        var msg="";
+        try{var detail=JSON.parse(tx);msg=detail&&detail.message||"";}catch(_){}
+        if(r.status===429){var limitError=new Error(msg||"Heute sind sehr viele Auswertungen gelaufen. Bitte versuche es morgen noch einmal.");limitError.limit=true;throw limitError;}
         var e=new Error("Fehler "+r.status+(r.status===400&&tx?" – "+String(tx).replace(/\s+/g," ").slice(0,160):""));
         e.retryModel=(r.status>=400&&r.status<500&&r.status!==429);
-        if(r.status===429||r.status===529||r.status===503){var ra=parseInt(r.headers.get("retry-after"),10);e.waitMs=Math.min(60000,(ra>0?ra*1000:(attempt+1)*20000));}
+        if(r.status===529||r.status===503){var ra=parseInt(r.headers.get("retry-after"),10);e.waitMs=Math.min(60000,(ra>0?ra*1000:(attempt+1)*20000));}
         throw e;
         });
       }
@@ -266,6 +269,7 @@ function callAI(sys,user,history,cb,errcb,model,jsonMode,attempt){
       return out;
     })
     .then(cb,function(e){
+      if(e.limit){errcb(e.message);return;}
       if(e.waitMs&&attempt<3){setTimeout(function(){callAI(sys,user,history,cb,errcb,model,jsonMode,attempt+1);},e.waitMs);return;}
       if(e.retryModel&&model!==FALLBACK_MODEL){callAI(sys,user,history,cb,errcb,FALLBACK_MODEL,jsonMode,attempt);return;}
       errcb(e.waitMs?"Die KI ist gerade ausgelastet (Fehler 429). Bitte warte eine Minute und versuche es erneut.":(e.message||"Verbindungsfehler"));
