@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wo hakt's? Dein Business-Check</title>
+<style>
+:root{
+  --bg:#f4efe6;--card:#ffffff;--ink:#1f3a2c;--text:#3d4a42;--muted:#6f7a73;--gold:#c08a1e;--gold-soft:#f3e3bf;--line:#e4ddd0;
+  --c-mw:#ef8a1f;--c-mm:#d9452f;--c-wg:#14b3a3;--c-ki:#7a3fd1;--c-po:#4caf3d;--c-bs:#1f6fd1;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;font-size:17px;line-height:1.6;font-variant-numeric:lining-nums}
+.wrap{max-width:760px;margin:0 auto;padding:28px 16px 60px}
+h1,h2,h3{font-family:"Playfair Display",Georgia,serif;color:var(--ink);line-height:1.2}
+h1{font-size:clamp(30px,6vw,44px);margin:6px 0 10px}
+h2{font-size:clamp(24px,4.5vw,32px);margin-bottom:10px}
+h3{font-size:21px;margin-bottom:6px}
+.kicker{color:var(--gold);font-weight:700;letter-spacing:.14em;text-transform:uppercase;font-size:13px}
+.card{background:var(--card);border-radius:16px;padding:26px 24px;box-shadow:0 4px 18px rgba(31,58,44,.07);border-left:6px solid var(--ink);margin-top:20px}
+.lead{font-size:18px}
+.btn{display:inline-flex;align-items:center;gap:8px;background:var(--ink);color:#fff;border:0;border-radius:10px;padding:14px 22px;font-size:17px;font-weight:600;cursor:pointer;font-family:inherit}
+.btn:hover{background:#2c5240}
+.btn.ghost{background:transparent;color:var(--ink);border:2px solid var(--ink)}
+.btn.gold{background:var(--gold)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.row{display:flex;gap:12px;flex-wrap:wrap;margin-top:22px;align-items:center}
+.small{font-size:14px;color:var(--muted)}
+.hidden{display:none!important}
+/* Fortschritt */
+.progress{display:flex;gap:6px;margin:18px 0 6px}
+.progress span{flex:1;height:8px;border-radius:4px;background:var(--line)}
+/* Situationsfragen */
+.choices{display:grid;gap:10px;margin-top:12px}
+.choice{display:block;background:#faf7f1;border:2px solid var(--line);border-radius:12px;padding:12px 16px;cursor:pointer;font-size:16px;text-align:left;font-family:inherit;color:var(--text)}
+.choice.sel{border-color:var(--ink);background:#eef3ef;font-weight:600}
+/* Aussagen */
+.q{padding:18px 0;border-top:1px solid var(--line)}
+.q:first-of-type{border-top:0}
+.q p{font-weight:600;color:var(--ink);margin-bottom:10px}
+.scale{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.scale button{border:2px solid var(--line);background:#faf7f1;border-radius:10px;padding:10px 0;font-size:17px;font-weight:700;color:var(--ink);cursor:pointer;font-family:inherit}
+.scale button.sel{color:#fff}
+.scale-lbl{display:flex;justify-content:space-between;font-size:13px;color:var(--muted);margin-top:4px}
+.areahead{display:flex;align-items:center;gap:12px}
+.dot{width:16px;height:16px;border-radius:50%;flex:none}
+/* Ergebnis */
+.wheel{display:block;margin:10px auto 0;max-width:460px;width:100%;height:auto}
+.legend{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px 18px;margin-top:16px}
+.legend div{display:flex;align-items:center;gap:10px;font-size:15px}
+.bar{flex:1;height:8px;background:var(--line);border-radius:4px;overflow:hidden}
+.bar i{display:block;height:100%}
+.tag{display:inline-block;font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:3px 10px;border-radius:20px;color:#fff;margin-bottom:8px}
+.step{margin-top:14px;padding:14px 16px;background:#faf7f1;border-radius:12px}
+.step b{color:var(--ink)}
+.copybox{background:#faf7f1;border:2px dashed var(--gold);border-radius:12px;padding:14px 16px;font-style:italic;margin-top:10px}
+.foot{text-align:center;margin-top:34px;font-family:"Playfair Display",Georgia,serif;color:var(--ink);font-size:18px}
+.foot span{color:var(--gold)}
+@media (max-width:480px){.card{padding:22px 16px}.scale button{padding:9px 0;font-size:16px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- Start -->
+  <section id="s-start">
+    <div class="kicker">Business-Kompass</div>
+    <h1>Wo hakt's?</h1>
+    <p class="lead">Dein Business-Check in 5 Minuten. Du bewertest 18 kurze Aussagen, je drei zu jedem Feld deines Business-Kompass. Danach siehst du auf einen Blick, wo dein Business schon trägt, wo es gerade hakt und womit du am besten anfängst.</p>
+    <div class="card">
+      <h3>So funktioniert es</h3>
+      <p>Antworte aus dem Bauch heraus, so wie es heute ist, nicht wie es sein sollte. Es gibt kein richtig und kein falsch. Deine Antworten bleiben auf deinem Gerät, nichts wird gespeichert oder verschickt.</p>
+      <div class="row"><button class="btn" onclick="go('s-sit')">Check starten →</button></div>
+    </div>
+  </section>
+
+  <!-- Situation -->
+  <section id="s-sit" class="hidden">
+    <div class="kicker">Zuerst zu dir</div>
+    <h2>Wie arbeitest du gerade?</h2>
+    <div class="card">
+      <h3>Deine Selbstständigkeit ist …</h3>
+      <div class="choices" data-key="beruf">
+        <button class="choice" data-v="haupt">hauptberuflich</button>
+        <button class="choice" data-v="neben">nebenberuflich, neben einem anderen Job</button>
+        <button class="choice" data-v="aufbau">gerade erst im Aufbau</button>
+      </div>
+      <h3 style="margin-top:24px">Du arbeitest mit deinen Kunden …</h3>
+      <div class="choices" data-key="ort">
+        <button class="choice" data-v="vorort">vor allem vor Ort</button>
+        <button class="choice" data-v="online">vor allem online</button>
+        <button class="choice" data-v="beides">beides</button>
+      </div>
+      <div class="row"><button class="btn" id="sitNext" disabled onclick="startQ()">Weiter →</button></div>
+    </div>
+  </section>
+
+  <!-- Fragen -->
+  <section id="s-q" class="hidden">
+    <div class="progress" id="prog"></div>
+    <div class="small" id="progtxt"></div>
+    <div class="card" id="qcard">
+      <div class="areahead"><span class="dot" id="adot"></span><h2 id="atitle" style="margin:0"></h2></div>
+      <p class="small" id="asub" style="margin-top:4px"></p>
+      <div id="qs"></div>
+      <div class="row">
+        <button class="btn ghost" onclick="prevArea()">← Zurück</button>
+        <button class="btn" id="qNext" disabled onclick="nextArea()">Weiter →</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Ergebnis -->
+  <section id="s-res" class="hidden">
+    <div class="kicker">Dein Ergebnis</div>
+    <h2>So steht dein Business-Kompass gerade</h2>
+    <div class="card" style="border-left-color:var(--gold)">
+      <svg id="wheel" class="wheel" viewBox="0 0 400 400" aria-label="Business-Kompass mit deinem Ergebnis"></svg>
+      <p class="small" style="text-align:center">Je voller ein Feld, desto besser trägt dein Business dort schon.</p>
+      <div class="legend" id="legend"></div>
+    </div>
+
+    <div class="card" id="mainBox"></div>
+    <div class="card" id="secondBox"></div>
+    <div class="card" id="strongBox" style="border-left-color:var(--c-po)"></div>
+    <div class="card hidden" id="nebenBox" style="border-left-color:var(--gold)"></div>
+
+    <div class="card" style="border-left-color:var(--gold)">
+      <h3>Teil dein Ergebnis in der Community</h3>
+      <p>Kopier diesen Satz und stell dich damit in der Kategorie „Vorstellung“ vor. So finden dich die, denen es gerade genauso geht.</p>
+      <div class="copybox" id="share"></div>
+      <div class="row"><button class="btn gold" onclick="copyShare(this)">Satz kopieren</button><button class="btn ghost" onclick="restart()">Check neu starten</button></div>
+    </div>
+  </section>
+
+  <div class="foot">Klarheit <span>•</span> Stabilität <span>•</span> Entwicklung</div>
+  <p class="small" style="text-align:center;margin-top:6px">Tierakademie Zischgl · Business-Kompass „Vom Können zum tragfähigen Business“</p>
+</div>
+
+<script>
+const AREAS=[
+ {id:"mw",name:"Mensch & Wirkung",color:"var(--c-mw)",hex:"#ef8a1f",
+  sub:"Wie aus Interessenten Kunden werden, und wie du sie begleitest.",
+  q:["Aus Anfragen werden bei mir meistens Buchungen.",
+     "Ich weiß, an welcher Stelle mir Interessenten verloren gehen.",
+     "Meine Kunden empfehlen mich weiter, weil sie spüren, was sich für sie verändert hat."],
+  why:"Interessenten sind da, aber zu wenige werden zu Kunden. Oft liegt das nicht an deinem Können, sondern an kleinen Lücken unterwegs: eine Antwort, die zu spät kommt, ein Preis, den man nicht findet, ein nächster Schritt, der fehlt. Wer diese Lücken schließt, gewinnt Kunden, ohne mehr Werbung zu machen.",
+  start:"„Business in 60 Minuten“, Lektion 5: Wo verlierst du Interessenten?",
+  deep:"Premium-Kurs „Mensch & Wirkung“"},
+ {id:"mm",name:"Mentale Muster",color:"var(--c-mm)",hex:"#d9452f",
+  sub:"Was in deinem Kopf passiert, wenn es ums Zeigen, Verkaufen und Wachsen geht.",
+  q:["Ich traue mich, mich und mein Angebot zu zeigen.",
+     "Zweifel wie „Ich bin noch nicht so weit“ halten mich selten vom Handeln ab.",
+     "Ich kann ein Nein von Interessenten annehmen, ohne es persönlich zu nehmen."],
+  why:"Du weißt eigentlich, was zu tun wäre, aber irgendetwas bremst. Das ist kein Zeichen von Schwäche, sondern von alten Sätzen, die einmal sinnvoll waren. Solange sie unbemerkt mitlaufen, nützt dir das beste Wissen über Marketing wenig. Wenn du sie erkennst, verlieren sie ihre Macht.",
+  start:"„Business in 60 Minuten“, Lektion 3: Sichtbar werden",
+  deep:"Premium-Kurs „Mentale Muster“"},
+ {id:"wg",name:"Wert & Geld",color:"var(--c-wg)",hex:"#14b3a3",
+  sub:"Ob dein Preis dich trägt, und wie sicher du ihn nennst.",
+  q:["Ich weiß, welchen Stundensatz ich brauche, damit sich mein Business trägt.",
+     "Ich nenne meinen Preis, ohne mich zu rechtfertigen oder gleich einen Rabatt anzubieten.",
+     "Mein Business bringt mir genug ein für die Zeit, die ich hineinstecke."],
+  why:"Viel Arbeit, wenig übrig: Das ist eine der häufigsten Bremsen für Selbstständige. Meist steckt dahinter ein Preis, der aus dem Bauch heraus entstanden ist, statt aus einer Rechnung. Wenn du einmal gerechnet hast, musst du deinen Preis nicht mehr fühlen. Du kannst ihn begründen, auch vor dir selbst.",
+  start:"„Business in 60 Minuten“, Lektion 8: Dein Preis in 60 Minuten",
+  deep:"Premium-Kurs „Wert & Geld“"},
+ {id:"ki",name:"KI",color:"var(--c-ki)",hex:"#7a3fd1",
+  sub:"Ob KI dir schon Arbeit abnimmt, ohne dass deine Stimme verloren geht.",
+  q:["Ich nutze KI regelmäßig, um mir Arbeit abzunehmen.",
+     "Texte, die ich mit KI schreibe, klingen nach mir.",
+     "Ich weiß, welche Daten ich einer KI nicht geben darf."],
+  why:"KI kann dir viele Stunden am Schreibtisch abnehmen, von Texten über Angebote bis zu ganzen Webseiten. Wenn du sie noch nicht nutzt oder die Ergebnisse nicht nach dir klingen, verschenkst du Zeit, die du für deine Kunden brauchst. Der Einstieg ist leichter, als du denkst.",
+  start:"„Business in 60 Minuten“: Bevor du loslegst, KI in 10 Minuten und Texte, die nach dir klingen",
+  deep:"„KI Kurs für Anfänger“ (ab Level 4) und die KI-Werkstatt"},
+ {id:"po",name:"Positionierung",color:"var(--c-po)",hex:"#4caf3d",
+  sub:"Ob klar ist, wem du hilfst, wobei, und warum gerade du.",
+  q:["Ich kann in einem Satz sagen, wem ich helfe und wobei.",
+     "Interessenten verstehen schnell, was mich von anderen unterscheidet.",
+     "Ich weiß genau, wer mein Wunschkunde ist, und spreche ihn gezielt an."],
+  why:"Wenn nicht klar ist, wem du hilfst und wobei, wird alles andere schwer: Deine Beiträge erreichen die Falschen, deine Website bleibt allgemein, und Empfehlungen laufen ins Leere, weil niemand weiß, wie er dich beschreiben soll. Positionierung ist das Fundament, auf dem alles andere steht.",
+  start:"„Business in 60 Minuten“, Lektion 1: Dein Angebot in einem Satz",
+  deep:"Premium-Kurs „Positionierung“ und die App „Positionierungs-Check“"},
+ {id:"bs",name:"Businessstruktur",color:"var(--c-bs)",hex:"#1f6fd1",
+  sub:"Dein Angebot, deine Sichtbarkeit und der Weg, auf dem Kunden zu dir finden.",
+  q:["Mein Angebot hat einen klaren Ablauf, einen festen Preis und einen einfachen Weg zur Buchung.",
+     "Neue Kunden finden mich auch ohne persönliche Empfehlung.",
+     "Ich habe eine Website oder ein Profil, das rund um die Uhr erklärt, was ich anbiete."],
+  why:"Dein Können ist da, aber es fehlt das Gerüst drumherum: ein klares Angebot, ein Ort, an dem man dich findet, und ein Weg, auf dem Interessenten zu dir kommen. Ohne dieses Gerüst hängt dein Business vom Zufall und von Empfehlungen ab. Mit ihm arbeitet es auch dann für dich, wenn du gerade nicht postest.",
+  start:"„Business in 60 Minuten“, Lektion 2: Dein Social-Media-Profil",
+  deep:"Premium-Kurse „Businessstruktur“ und „Website, Landingpage & Newsletter“, dazu die App „Angebots-Builder“"}
+];
+const SCALE=["trifft gar nicht zu","","teils, teils","","trifft voll zu"];
+let sit={},ans={},cur=0;
+
+function go(id){document.querySelectorAll("section").forEach(s=>s.classList.add("hidden"));document.getElementById(id).classList.remove("hidden");window.scrollTo({top:0,behavior:"smooth"})}
+
+document.querySelectorAll(".choices").forEach(g=>{
+  g.querySelectorAll(".choice").forEach(b=>b.onclick=()=>{
+    g.querySelectorAll(".choice").forEach(x=>x.classList.remove("sel"));b.classList.add("sel");
+    sit[g.dataset.key]=b.dataset.v;document.getElementById("sitNext").disabled=!(sit.beruf&&sit.ort);
+  });
+});
+
+function startQ(){cur=0;renderArea();go("s-q")}
+
+function renderArea(){
+  const a=AREAS[cur];
+  document.getElementById("prog").innerHTML=AREAS.map((x,i)=>`<span style="background:${i<=cur?x.hex:""}"></span>`).join("");
+  document.getElementById("progtxt").textContent=`Feld ${cur+1} von ${AREAS.length}`;
+  document.getElementById("qcard").style.borderLeftColor=a.hex;
+  document.getElementById("adot").style.background=a.hex;
+  document.getElementById("atitle").textContent=a.name;
+  document.getElementById("asub").textContent=a.sub;
+  document.getElementById("qs").innerHTML=a.q.map((t,qi)=>{
+    const k=a.id+qi,v=ans[k];
+    return `<div class="q"><p>${t}</p><div class="scale" role="radiogroup" aria-label="${t}">${[1,2,3,4,5].map(n=>`<button aria-label="${n} von 5" class="${v===n?"sel":""}" style="${v===n?`background:${a.hex};border-color:${a.hex}`:""}" onclick="setAns('${k}',${n})">${n}</button>`).join("")}</div><div class="scale-lbl"><span>trifft gar nicht zu</span><span>trifft voll zu</span></div></div>`;
+  }).join("");
+  document.getElementById("qNext").textContent=cur===AREAS.length-1?"Ergebnis zeigen →":"Weiter →";
+  checkArea();
+}
+function setAns(k,n){ans[k]=n;renderArea()}
+function checkArea(){const a=AREAS[cur];document.getElementById("qNext").disabled=!a.q.every((_,i)=>ans[a.id+i])}
+function nextArea(){if(cur<AREAS.length-1){cur++;renderArea();window.scrollTo({top:0,behavior:"smooth"})}else showResult()}
+function prevArea(){if(cur>0){cur--;renderArea()}else go("s-sit")}
+
+function score(a){const v=a.q.map((_,i)=>ans[a.id+i]);return (v.reduce((s,x)=>s+x,0)/v.length-1)/4}
+
+function drawWheel(sc){
+  const cx=200,cy=200,R=170,r0=58,svg=[];
+  const pt=(rad,ang)=>[cx+rad*Math.cos(ang),cy+rad*Math.sin(ang)];
+  AREAS.forEach((a,i)=>{
+    const a0=(-90-30+i*60)*Math.PI/180,a1=a0+60*Math.PI/180;
+    const seg=(rOut,fill,op)=>{const[p1x,p1y]=pt(r0,a0),[p2x,p2y]=pt(rOut,a0),[p3x,p3y]=pt(rOut,a1),[p4x,p4y]=pt(r0,a1);
+      return `<path d="M${p1x},${p1y} L${p2x},${p2y} A${rOut},${rOut} 0 0 1 ${p3x},${p3y} L${p4x},${p4y} A${r0},${r0} 0 0 0 ${p1x},${p1y} Z" fill="${fill}" fill-opacity="${op}" stroke="#fff" stroke-width="3"/>`};
+    svg.push(seg(R,a.hex,.16));
+    svg.push(seg(r0+(R-r0)*Math.max(sc[i],.04),a.hex,.95));
+    const mid=(a0+a1)/2,[lx,ly]=pt(R-26,mid);
+    svg.push(`<text x="${lx}" y="${ly}" text-anchor="middle" dominant-baseline="middle" font-size="13" font-weight="700" fill="#1f3a2c" style="paint-order:stroke" stroke="#ffffff" stroke-width="4">${Math.round(sc[i]*100)} %</text>`);
+  });
+  svg.push(`<circle cx="${cx}" cy="${cy}" r="${R+6}" fill="none" stroke="#c08a1e" stroke-width="5"/>`);
+  svg.push(`<circle cx="${cx}" cy="${cy}" r="${r0-2}" fill="#fbf3df" stroke="#c08a1e" stroke-width="4"/>`);
+  svg.push(`<text x="200" y="193" text-anchor="middle" font-family="Georgia,serif" font-weight="700" font-size="15" fill="#1f3a2c">BUSINESS-</text><text x="200" y="212" text-anchor="middle" font-family="Georgia,serif" font-weight="700" font-size="15" fill="#1f3a2c">KOMPASS</text>`);
+  document.getElementById("wheel").innerHTML=svg.join("");
+}
+
+function showResult(){
+  const sc=AREAS.map(score);
+  drawWheel(sc);
+  document.getElementById("legend").innerHTML=AREAS.map((a,i)=>`<div><span class="dot" style="background:${a.hex}"></span><span style="min-width:132px">${a.name}</span><span class="bar"><i style="width:${Math.max(sc[i]*100,3)}%;background:${a.hex}"></i></span></div>`).join("");
+  const order=AREAS.map((a,i)=>i).sort((x,y)=>sc[x]-sc[y]);
+  const w1=AREAS[order[0]],w2=AREAS[order[1]],st=AREAS[order[5]];
+  const extra=(a)=>{
+    let t="";
+    if(a.id==="bs"&&sit.ort!=="online")t+=`<div class="step"><b>Weil du vor Ort arbeitest:</b> Lektion 4 „Dein Flyer mit QR-Code“ bringt Menschen vom Papier direkt zu dir. Und ein kostenloses Google-Unternehmensprofil sorgt dafür, dass man dich in deiner Region findet.</div>`;
+    if(a.id==="bs"&&sit.ort!=="vorort")t+=`<div class="step"><b>Weil du online arbeitest:</b> Lektion 6 „Dein erstes Video ohne Kamera“ hilft dir, sichtbar zu werden, ohne dich vor die Kamera stellen zu müssen.</div>`;
+    if(a.id==="mm")t+=`<div class="step"><b>Kleiner Tipp:</b> Wenn dir vor allem die Kamera im Weg steht, probier Lektion 6 „Dein erstes Video ohne Kamera“. Dort spricht eine Figur für dich.</div>`;
+    return t;
+  };
+  document.getElementById("mainBox").style.borderLeftColor=w1.hex;
+  document.getElementById("mainBox").innerHTML=`<span class="tag" style="background:${w1.hex}">Deine größte Baustelle</span><h3>${w1.name}</h3><p>${w1.why}</p><div class="step"><b>Hier fängst du an (kostenlos):</b><br>${w1.start}</div>${extra(w1)}<div class="step"><b>Wenn du tiefer einsteigen willst:</b><br>${w1.deep}</div>`;
+  document.getElementById("secondBox").style.borderLeftColor=w2.hex;
+  document.getElementById("secondBox").innerHTML=`<span class="tag" style="background:${w2.hex}">Danach</span><h3>${w2.name}</h3><p>${w2.sub}</p><div class="step"><b>Dein nächster Schritt:</b><br>${w2.start}</div>`;
+  const stp=Math.round(sc[order[5]]*100);document.getElementById("strongBox").style.borderLeftColor=st.hex;
+  document.getElementById("strongBox").innerHTML=`<span class="tag" style="background:${st.hex}">Deine Stärke</span><h3>${st.name}</h3><p>${stp>=60?"Hier trägt dein Business schon. Das ist dein Fundament, auf dem du aufbauen kannst. Erzähl den anderen in der Community ruhig, wie du das geschafft hast.":"Hier stehst du im Vergleich am stabilsten, auch wenn noch Luft nach oben ist. Fang trotzdem bei deiner größten Baustelle an, dort bewegt sich am meisten."}</p>`;
+  const nb=document.getElementById("nebenBox");
+  if(sit.beruf!=="haupt"){nb.classList.remove("hidden");nb.innerHTML=`<h3>${sit.beruf==="neben"?"Weil du nebenberuflich selbstständig bist":"Weil du gerade erst aufbaust"}</h3><p>Du musst nicht alles auf einmal schaffen. Nimm dir zuerst Lektion 1, 2 und 8 aus „Business in 60 Minuten“ vor: deinen Satz, dein Profil und deinen Preis. Danach reicht ein kleiner Schritt pro Woche. Das ist mehr, als die meisten in einem Jahr schaffen.</p>`}else nb.classList.add("hidden");
+  document.getElementById("share").textContent=`Ich habe den Business-Check gemacht: Meine größte Baustelle ist gerade „${w1.name}“, meine Stärke „${st.name}“. Ich starte mit ${w1.start.replace(/^„Business in 60 Minuten“[,:]?\s*/,"")}.`;
+  go("s-res");
+}
+function copyShare(b){const t=document.getElementById("share").textContent;(navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>{b.textContent="Kopiert ✓";setTimeout(()=>b.textContent="Satz kopieren",2000)}).catch(()=>{const r=document.createRange();r.selectNodeContents(document.getElementById("share"));const s=getSelection();s.removeAllRanges();s.addRange(r);b.textContent="Markiert, jetzt Strg + C"})}
+function restart(){ans={};sit={};document.querySelectorAll(".choice").forEach(x=>x.classList.remove("sel"));document.getElementById("sitNext").disabled=true;go("s-start")}
+</script>
+</body>
+</html>
