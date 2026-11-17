@@ -540,8 +540,6 @@
 </div>
 
 <script>
-const PROXY = 'https://tierakademie-proxy.tierakademie.workers.dev/free/messages';
-
 const questions = [
   {
     text: 'Woran würdest du merken, dass sich etwas zwischen dir und deinem Hund verändert hat?',
@@ -623,58 +621,34 @@ function advance() {
   }
 }
 
-async function generateResult() {
+function usableAnswer(index) {
+  const value = (answers[index] || '').trim();
+  return value && value !== 'Ich weiß es nicht.' ? value : '';
+}
+
+function generateResult() {
   showScreen('screen-loading');
 
-  const prompt = `Du begleitest Menschen, die eine tiefere Verbindung zu ihrem Hund suchen. Jemand hat sich gerade Zeit genommen, vier Reflexionsfragen ehrlich zu beantworten – bevor er oder sie eine Reise durch ein Selbstreflexionsmodell beginnt.
+  const change = usableAnswer(0);
+  const connection = usableAnswer(1);
+  const burden = usableAnswer(2);
+  const future = usableAnswer(3);
 
-Hier sind die Antworten:
+  const paragraphs = [
+    'Du bist hier, weil dir die Verbindung zwischen dir und deinem Hund wichtig ist. Du hast dir Zeit genommen, hinzuschauen und deinem Wunsch Worte zu geben.',
+    [change, connection].filter(Boolean).join(' '),
+    burden ? 'Im Moment trägst du: ' + burden : '',
+    future
+      ? 'Für die Zeit nach dieser Reise wünschst du dir: ' + future
+      : 'Du musst heute noch nicht wissen, wie jeder Schritt aussieht. Es reicht, dass du dich auf den Weg machst.'
+  ].filter(Boolean);
 
-Frage 1 – Woran würdest du merken, dass sich etwas verändert hat?
-${answers[0]}
+  const errorBox = document.getElementById('error-box');
+  errorBox.style.display = 'none';
+  errorBox.textContent = '';
+  document.getElementById('result-text').textContent = paragraphs.join('\n\n');
 
-Frage 2 – Was soll zwischen euch funktionieren – und was soll sich dabei gut anfühlen?
-${answers[1]}
-
-Frage 3 – Was trägst du gerade mit dir, wenn du an euch beide denkst?
-${answers[2]}
-
-Frage 4 – Was soll nach dieser Reise anders sein?
-${answers[3]}
-
-Schreib jetzt ein persönliches Wunschbild für diese Person – in Du-Form, warm und ruhig. Kein Coaching-Ton, keine Liste, keine Überschriften. Fließender Text, 3–4 Absätze.
-
-Spiegele wider, was diese Person beschrieben hat. Benenne das Wunschbild konkret – was sie sich für sich und ihren Hund wünscht. Erkenne auch an, was sie gerade trägt. Und schließe mit einem ruhigen, einladenden Satz, der sie in die Reise begleitet.
-
-Wichtig: Schreib nur den Text selbst. Keine Einleitung wie "Hier ist dein Wunschbild", keine Überschrift, kein Kommentar.`;
-
-  try {
-    const res = await fetch(PROXY, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-haiku-4-5-20251001',
-        max_tokens: 800,
-        messages: [{ role: 'user', content: prompt }]
-      })
-    });
-
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data = await res.json();
-    const text = data.content?.[0]?.text || '';
-
-    if (!text) throw new Error('Keine Antwort erhalten.');
-
-    document.getElementById('result-text').textContent = text;
-    showScreen('screen-result');
-
-  } catch (err) {
-    showScreen('screen-result');
-    const errBox = document.getElementById('error-box');
-    errBox.style.display = 'block';
-    errBox.textContent = 'Dein Wunschbild konnte gerade nicht geladen werden. Bitte versuche es in einem Moment noch einmal.';
-    document.getElementById('result-text').textContent = answers.filter(a => a !== 'Ich weiß es nicht.').join('\n\n');
-  }
+  window.setTimeout(() => showScreen('screen-result'), 350);
 }
 
 function showScreen(id) {
