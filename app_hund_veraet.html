@@ -220,7 +220,8 @@ function generateResult() {
     parseAndShow(text);
   })
   .catch(function(e) {
-    $("card").innerHTML = '<div class="body"><div style="background:#fff0f0;border-left:4px solid #cc4444;border-radius:10px;padding:14px 16px;font-size:13px;color:#7a2222;font-family:system-ui">⚠️ ' + e.message + '<br><button class="btn-next" style="margin-top:12px" onclick="showLoading()">↺ Nochmal versuchen</button></div></div>';
+    $("card").innerHTML = '<div class="body"><div style="background:#fff0f0;border-left:4px solid #cc4444;border-radius:10px;padding:14px 16px;font-size:13px;color:#7a2222;font-family:system-ui"><span id="result-error"></span><br><button class="btn-next" style="margin-top:12px" onclick="showLoading()">↺ Nochmal versuchen</button></div></div>';
+    $("result-error").textContent = "⚠️ " + e.message;
   });
 }
 
@@ -245,21 +246,27 @@ function parseAndShow(text) {
     '<div class="body">' +
     '<div class="result-box">' +
     '<div class="rl">🐾 Dein Muster</div>' +
-    '<div class="rt">' + titel + '</div>' +
-    '<div class="rb">' + auswertung + '</div>' +
+    '<div class="rt" id="result-title"></div>' +
+    '<div class="rb" id="result-body"></div>' +
     '</div>' +
     (einladung ?
       '<div class="result-box2 show">' +
       '<div class="rl">💬 Eine Einladung</div>' +
-      '<div class="rb">' + einladung + '</div>' +
+      '<div class="rb" id="result-invitation"></div>' +
       '</div>' : '') +
     '<div class="share-box show">' +
     '<p>Teile dein Ergebnis in der Community –<br><strong>ich bin gespannt, was dein Hund über dich verrät.</strong></p>' +
-    '<textarea class="copy-result" readonly rows="5" onclick="this.select()">' + copyText + '</textarea>' +
+    '<textarea class="copy-result" id="result-copy" readonly rows="5" onclick="this.select()"></textarea>' +
     '<button class="btn-copy" onclick="copyResult()">📋 Ergebnis kopieren & teilen</button>' +
     '</div>' +
     '' +
     '</div>';
+
+  // Treat all model output as text, never as HTML.
+  $("result-title").textContent = titel;
+  $("result-body").textContent = auswertung;
+  if (einladung) $("result-invitation").textContent = einladung;
+  $("result-copy").value = copyText;
 }
 
 function copyResult() {
