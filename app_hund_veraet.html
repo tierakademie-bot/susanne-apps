@@ -53,6 +53,17 @@ body { font-family: Georgia, serif; background: linear-gradient(160deg, #2C3E2D 
 .footer { margin-top: 18px; font-size: 11px; color: rgba(143,175,159,.5); font-family: system-ui; text-align: center; }
 
 </style>
+<meta http-equiv="Content-Security-Policy" content="connect-src 'none'; object-src 'none'; base-uri 'self'">
+<style>
+.local-copy,.local-note,.local-result p{font:15px/1.7 system-ui,sans-serif;margin:0 0 16px;color:#385448}
+.local-note{font-size:13px;background:#f3f5ed;padding:14px;border-radius:10px}
+.local-options{border:0;min-width:0;padding:0;margin:0 0 18px}.local-options legend{font-size:19px;font-weight:bold;line-height:1.45;margin-bottom:16px}
+.local-option{display:flex;align-items:flex-start;gap:12px;padding:14px;margin:10px 0;border:1px solid #b7c9c0;border-radius:10px;font:15px/1.5 system-ui;cursor:pointer}
+.local-option:has(input:checked){background:#edf3e9;border-color:#2c4a3e}.local-option input[type=radio]{display:block;width:18px;height:18px;flex-shrink:0;margin:3px 0 0;accent-color:#2c4a3e}
+.local-button{display:block;width:100%;padding:14px;margin:12px 0;border:0;border-radius:10px;background:#2c4a3e;color:white;font:600 15px system-ui;cursor:pointer}.local-button:disabled{opacity:.45;cursor:default}
+.local-button:focus-visible,.local-option:focus-within{outline:3px solid #bc882c;outline-offset:3px}.local-result{padding:16px 0;border-bottom:1px solid #d8e4dc}.local-result h3{font-size:17px;color:#2c4a3e;margin-bottom:10px}
+#local-share{box-sizing:border-box;width:100%;font:14px/1.6 system-ui;padding:12px;border:1px solid #b7c9c0;border-radius:8px}
+</style>
 </head>
 <body>
 
@@ -66,220 +77,86 @@ body { font-family: Georgia, serif; background: linear-gradient(160deg, #2C3E2D 
 <div class="footer">🐾 Susanne Zischgl · Die unsichtbaren Fäden zwischen Mensch und Hund</div>
 
 <script>
-var QUESTIONS = [
-  {
-    q: "Wie reagiert dein Hund, wenn du nach Hause kommst?",
-    hint: "Beobachte ihn genau – er zeigt dir etwas Wichtiges.",
-    opts: [
-      "Er dreht völlig durch – springt, bellt, dreht Runden",
-      "Er freut sich herzlich, bleibt aber ruhig",
-      "Er schaut kurz auf und legt sich wieder hin",
-      "Es kommt sehr darauf an, wie ich drauf bin"
-    ]
-  },
-  {
-    q: "Was macht dein Hund, wenn du gestresst oder traurig bist?",
-    hint: "Hunde sind Meister darin, unsere Stimmung zu lesen.",
-    opts: [
-      "Er wird unruhig und klammert sich an mich",
-      "Er kommt zu mir und legt sich an mich",
-      "Er zieht sich eher zurück",
-      "Er versucht mich abzulenken – bringt Spielzeug oder tobt"
-    ]
-  },
-  {
-    q: "Wie läuft ein typischer Spaziergang mit deinem Hund ab?",
-    hint: "Der Alltag verrät mehr als besondere Momente.",
-    opts: [
-      "Er zieht, ich folge – irgendwie",
-      "Wir haben unseren Rhythmus, meist läuft es gut",
-      "Ich plane die Route, er kommt mit",
-      "Es ist jedes Mal anders – je nach Tagesform von uns beiden"
-    ]
-  },
-  {
-    q: "Was passiert, wenn dein Hund etwas falsch macht?",
-    hint: "Unsere erste Reaktion zeigt viel über uns.",
-    opts: [
-      "Ich ärgere mich – manchmal mehr als ich möchte",
-      "Ich versuche ruhig zu bleiben, aber es gelingt nicht immer",
-      "Ich überlege zuerst, was ich falsch gemacht habe",
-      "Ich nehme es meistens mit Humor"
-    ]
-  },
-  {
-    q: "Wenn dein Hund sprechen könnte – was würde er über euch sagen?",
-    hint: "Stell dir das wirklich einen Moment vor.",
-    opts: [
-      "\"Ich passe auf dich auf – du brauchst mich.\"",
-      "\"Wir sind ein gutes Team – auch wenn es manchmal holpert.\"",
-      "\"Du gibst mir Sicherheit. Ich vertraue dir.\"",
-      "\"Du verstehst mich noch nicht ganz – aber du versuchst es.\""
-    ]
-  }
-];
-
-var answers = [];
-var currentQ = 0;
-var selectedOpt = -1;
-var resultText = "";
-var resultTitle = "";
-var resultChapter = "";
-
-function $(id) { return document.getElementById(id); }
-
-function renderWelcome() {
-  $("card").innerHTML =
-    '<div class="card-hdr"><div class="e">Die unsichtbaren Fäden</div><h2>Was verrät dein Hund über dich?</h2><p>Dein Hund ist kein Spiegel – er ist ein Fenster. 5 ehrliche Fragen, eine überraschende Antwort.</p></div>' +
-    '<div class="body">' +
-    '<p style="font-size:14px;color:#6B8A7E;font-family:system-ui;line-height:1.7;margin-bottom:20px">Hunde zeigen uns Dinge über uns selbst, die wir oft nicht sehen wollen. Diese 5 Fragen nehmen nur 2 Minuten – aber das Ergebnis bleibt.</p>' +
-    '<div style="background:#F5F0E8;border-radius:12px;padding:14px 16px;margin-bottom:20px;font-size:13px;color:#6B8A7E;font-family:system-ui;line-height:1.65">' +
-    '🐾 <strong style="color:#2C4A3E">Für wen ist das?</strong> Für alle, die ihren Hund lieben – und manchmal das Gefühl haben, er versteht sie besser als sie sich selbst.' +
-    '</div>' +
-    '<button class="btn-next" onclick="startQuiz()">🐾 Los geht\'s</button>' +
-    '</div>';
-}
-
-function startQuiz() {
-  answers = [];
-  currentQ = 0;
-  selectedOpt = -1;
-  renderQuestion();
-}
-
-function renderQuestion() {
-  var q = QUESTIONS[currentQ];
-  var pct = Math.round((currentQ / QUESTIONS.length) * 100);
-  var optsHtml = "";
-  for (var i = 0; i < q.opts.length; i++) {
-    var sel = selectedOpt === i ? " selected" : "";
-    optsHtml += '<button class="opt' + sel + '" onclick="selectOpt(' + i + ')">' + q.opts[i] + '</button>';
-  }
-  $("card").innerHTML =
-    '<div class="card-hdr"><div class="e">Frage ' + (currentQ + 1) + ' von ' + QUESTIONS.length + '</div><h2>Was verrät dein Hund über dich?</h2><p>Wähle die Antwort, die am ehesten zu euch passt.</p></div>' +
-    '<div class="body">' +
-    '<div class="qprog">Frage ' + (currentQ + 1) + ' von ' + QUESTIONS.length + '</div>' +
-    '<div class="qbar"><div class="qbar-fill" id="qfill" style="width:' + pct + '%"></div></div>' +
-    '<div class="question">' + q.q + '</div>' +
-    '<div class="question-hint">' + q.hint + '</div>' +
-    '<div class="options" id="opts">' + optsHtml + '</div>' +
-    '<button class="btn-next" id="nextbtn" onclick="nextQuestion()" ' + (selectedOpt === -1 ? 'disabled' : '') + '>' +
-    (currentQ < QUESTIONS.length - 1 ? 'Weiter →' : '🐾 Mein Ergebnis anzeigen') +
-    '</button>' +
-    '</div>';
-}
-
-function selectOpt(i) {
-  selectedOpt = i;
-  var opts = document.querySelectorAll(".opt");
-  for (var j = 0; j < opts.length; j++) {
-    opts[j].className = "opt" + (j === i ? " selected" : "");
-  }
-  var btn = $("nextbtn");
-  if (btn) btn.disabled = false;
-}
-
-function nextQuestion() {
-  answers.push(selectedOpt);
-  selectedOpt = -1;
-  currentQ++;
-  if (currentQ < QUESTIONS.length) {
-    renderQuestion();
-  } else {
-    showLoading();
-  }
-}
-
-function showLoading() {
-  $("card").innerHTML = '<div class="body"><div class="spin-wrap"><div class="spin"></div><p style="font-size:14px;color:#6B8A7E;font-family:system-ui;font-style:italic">Dein Hund flüstert mir gerade etwas zu...</p></div></div>';
-  generateResult();
-}
-
-function generateResult() {
-  var summary = "";
-  for (var i = 0; i < QUESTIONS.length; i++) {
-    summary += "Frage: " + QUESTIONS[i].q + "\nAntwort: " + QUESTIONS[i].opts[answers[i]] + "\n\n";
-  }
-
-  var sys = "Du bist Susanne Zischgl, erfahrene Hundetrainerin, Physiotherapeutin und systemische Coach mit über 30 Jahren Erfahrung. Du arbeitest mit dem Konzept der 'unsichtbaren Fäden zwischen Mensch und Hund' – der Idee, dass Hunde uns einen tiefen Spiegel vorhalten.\n\nAnalysiere die 5 Antworten dieser Person. Schreibe eine persönliche, tiefgehende Auswertung in zwei Teilen:\n\n###TITEL###\n[Ein prägnanter, poetischer Titel für ihr Muster – z.B. 'Die fürsorgliche Beschützerin' oder 'Der suchende Wanderer' – maximal 5 Wörter]\n###TITEL_ENDE###\n\n###AUSWERTUNG###\n[3-4 Sätze: Was verrät ihr Hund über sie? Warm, direkt, tief. Keine Floskeln. Kein Markdown. Sprich sie direkt an (du). Überrasche sie – sage etwas was sie so noch nicht gedacht hat.]\n###AUSWERTUNG_ENDE###\n\n###EINLADUNG###\n[1-2 Sätze: Eine sanfte Einladung, dieses Thema in der Community zu teilen oder zu vertiefen. Warm, nicht werbend.]\n###EINLADUNG_ENDE###";
-
-  fetch("https://tierakademie-proxy.tierakademie.workers.dev/free/messages", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      model: "claude-haiku-4-5-20251001",
-      max_tokens: 600,
-      system: sys,
-      messages: [{ role: "user", content: summary }]
-    })
-  })
-  .then(function(r) { if (!r.ok) throw new Error("Fehler " + r.status); return r.json(); })
-  .then(function(d) {
-    if (d.error) throw new Error(d.error.message);
-    var text = d.content && d.content[0] ? d.content[0].text : "";
-    parseAndShow(text);
-  })
-  .catch(function(e) {
-    $("card").innerHTML = '<div class="body"><div style="background:#fff0f0;border-left:4px solid #cc4444;border-radius:10px;padding:14px 16px;font-size:13px;color:#7a2222;font-family:system-ui"><span id="result-error"></span><br><button class="btn-next" style="margin-top:12px" onclick="showLoading()">↺ Nochmal versuchen</button></div></div>';
-    $("result-error").textContent = "⚠️ " + e.message;
+const QUIZ = {"title":"Was verrät dein Hund über dich?","intro":"Fünf Fragen zu eurem Alltag – ein Impuls zum Nachdenken.","questions":[{"q":"Wie reagiert dein Hund, wenn du nach Hause kommst?","hint":"Beobachte die Situation, ohne sie sofort zu bewerten.","options":[{"text":"Er dreht völlig durch – springt, bellt, dreht Runden","key":"care"},{"text":"Er freut sich herzlich, bleibt aber ruhig","key":"balance"},{"text":"Er schaut kurz auf und legt sich wieder hin","key":"structure"},{"text":"Es kommt sehr darauf an, wie ich drauf bin","key":"flexible"}]},{"q":"Was macht dein Hund, wenn du gestresst oder traurig bist?","hint":"Hunde sind Meister darin, unsere Stimmung zu lesen.","options":[{"text":"Er wird unruhig und klammert sich an mich","key":"care"},{"text":"Er kommt zu mir und legt sich an mich","key":"balance"},{"text":"Er zieht sich eher zurück","key":"structure"},{"text":"Er versucht mich abzulenken – bringt Spielzeug oder tobt","key":"flexible"}]},{"q":"Wie läuft ein typischer Spaziergang mit deinem Hund ab?","hint":"Der Alltag verrät mehr als besondere Momente.","options":[{"text":"Er zieht, ich folge – irgendwie","key":"care"},{"text":"Wir haben unseren Rhythmus, meist läuft es gut","key":"balance"},{"text":"Ich plane die Route, er kommt mit","key":"structure"},{"text":"Es ist jedes Mal anders – je nach Tagesform von uns beiden","key":"flexible"}]},{"q":"Was passiert, wenn dein Hund etwas falsch macht?","hint":"Unsere erste Reaktion zeigt viel über uns.","options":[{"text":"Ich ärgere mich – manchmal mehr als ich möchte","key":"care"},{"text":"Ich versuche ruhig zu bleiben, aber es gelingt nicht immer","key":"balance"},{"text":"Ich überlege zuerst, was ich falsch gemacht habe","key":"structure"},{"text":"Ich nehme es meistens mit Humor","key":"flexible"}]},{"q":"Wenn dein Hund sprechen könnte – was würde er über euch sagen?","hint":"Stell dir das wirklich einen Moment vor.","options":[{"text":"\"Ich passe auf dich auf – du brauchst mich.\"","key":"care"},{"text":"\"Wir sind ein gutes Team – auch wenn es manchmal holpert.\"","key":"balance"},{"text":"\"Du gibst mir Sicherheit. Ich vertraue dir.\"","key":"structure"},{"text":"\"Du verstehst mich noch nicht ganz – aber du versuchst es.\"","key":"flexible"}]}],"results":{"care":{"title":"Nähe und Fürsorge","sections":[["Was deine Auswahl nahelegt","In deinen Antworten stehen starke Reaktionen und gegenseitige Aufmerksamkeit im Vordergrund. Vielleicht beschäftigt dich besonders, wie es deinem Hund geht und wie ihr aufeinander reagiert."],["Ein anderer Blick","Fürsorge darf auch bedeuten, Ruhe zu ermöglichen. Ein aufgeregter Hund sagt für sich allein nichts darüber aus, ob du zu wenig Sicherheit gibst oder zu viel Nähe suchst."],["Dein Impuls für diese Woche","Beobachte einen ruhigen Moment: Was hilft deinem Hund, sich zu entspannen? Und was hilft dir? Notiere beides getrennt, ohne sofort eine Erklärung zu suchen."]]},"balance":{"title":"Verbunden im Alltag","sections":[["Was deine Auswahl nahelegt","Du beschreibst mehrere Situationen, in denen Verbindung und ein gemeinsamer Rhythmus Platz haben. Vielleicht erkennst du euch besonders in den unspektakulären Momenten wieder."],["Ein anderer Blick","Auch ein gutes Miteinander kennt Missverständnisse. Ruhiges Verhalten ist ein Hinweis auf die jeweilige Situation, kein Beweis für eine perfekte Beziehung."],["Dein Impuls für diese Woche","Halte diese Woche einen kleinen Moment fest, der sich für euch beide gut anfühlt. Was war vorher passiert, und was hast du konkret beobachtet?"]]},"structure":{"title":"Orientierung und eigener Raum","sections":[["Was deine Auswahl nahelegt","Deine Auswahl richtet den Blick auf Eigenständigkeit, Orientierung und deinen eigenen Anteil am Alltag. Vielleicht hilft es dir, Situationen bewusst zu ordnen."],["Ein anderer Blick","Du musst nicht jede Reaktion deines Hundes auf dich beziehen. Rückzug kann ein Bedürfnis nach Ruhe ausdrücken; klare Abläufe können helfen, ohne jeden Moment festzulegen."],["Dein Impuls für diese Woche","Lass bei einem vertrauten Spaziergang eine kleine, sichere Wahl zu, etwa eine Schnüffelpause. Beobachte, wie es dir mit dieser Offenheit geht."]]},"flexible":{"title":"Offen für den Moment","sections":[["Was deine Auswahl nahelegt","In deinen Antworten fallen Unterschiede zwischen Situationen, Stimmungen und Tagesformen auf. Vielleicht erlebst du euer Miteinander eher beweglich als nach einem festen Muster."],["Ein anderer Blick","Flexibilität und Verlässlichkeit können zusammenpassen. Du darfst auf den Moment eingehen und gleichzeitig einfache, wiedererkennbare Abläufe anbieten."],["Dein Impuls für diese Woche","Wähle ein kleines Ritual, das euch beiden guttut. Beobachte an drei Tagen, was gleich bleibt und was sich verändert, ohne den Unterschied zu bewerten."]]}},"mixed":{"title":"Mehrere Seiten eures Miteinanders","sections":[["Was deine Auswahl nahelegt","Deine Antworten ergeben keinen eindeutigen Schwerpunkt. Das kann zu einem Alltag passen, der je nach Situation ganz unterschiedliche Seiten hat."],["Ein anderer Blick","Fünf Antworten können eure Beziehung nicht vollständig beschreiben. Du musst dich deshalb keinem Typ zuordnen."],["Dein Impuls für diese Woche","Wähle die Frage, bei der du am längsten überlegt hast. Beobachte diese Situation diese Woche einmal genauer: Was tut dein Hund, was tust du, und was bleibt zunächst offen?"]],"mixed":true}};
+function chooseOutcome(quiz, answers) {
+  const scores = Object.fromEntries(Object.keys(quiz.results).map(k => [k, 0]));
+  answers.forEach((answer, i) => {
+    const key = quiz.questions[i].options[answer]?.key;
+    if (key && Object.hasOwn(scores, key)) scores[key]++;
   });
+  const ranked = Object.entries(scores).sort((a, b) => b[1] - a[1]);
+  if (ranked[0][1] < 3 || ranked[0][1] === ranked[1][1]) return quiz.mixed;
+  return quiz.results[ranked[0][0]];
 }
 
-function parseAndShow(text) {
-  var titel = "", auswertung = "", einladung = "";
-
-  var m1 = text.match(/###TITEL###([\s\S]*?)###TITEL_ENDE###/);
-  if (m1) titel = m1[1].trim();
-
-  var m2 = text.match(/###AUSWERTUNG###([\s\S]*?)###AUSWERTUNG_ENDE###/);
-  if (m2) auswertung = m2[1].trim();
-
-  var m3 = text.match(/###EINLADUNG###([\s\S]*?)###EINLADUNG_ENDE###/);
-  if (m3) einladung = m3[1].trim();
-
-  if (!auswertung) auswertung = text;
-
-  var copyText = "🐾 \"" + titel + "\"\n\n" + auswertung + "\n\n– Ergebnis aus \"Was verrät dein Hund über dich?\" von Susanne Zischgl";
-
-  $("card").innerHTML =
-    '<div class="card-hdr"><div class="e">Dein Ergebnis</div><h2>Was dein Hund über dich verrät</h2><p>Lies es langsam. Lass es ankommen.</p></div>' +
-    '<div class="body">' +
-    '<div class="result-box">' +
-    '<div class="rl">🐾 Dein Muster</div>' +
-    '<div class="rt" id="result-title"></div>' +
-    '<div class="rb" id="result-body"></div>' +
-    '</div>' +
-    (einladung ?
-      '<div class="result-box2 show">' +
-      '<div class="rl">💬 Eine Einladung</div>' +
-      '<div class="rb" id="result-invitation"></div>' +
-      '</div>' : '') +
-    '<div class="share-box show">' +
-    '<p>Teile dein Ergebnis in der Community –<br><strong>ich bin gespannt, was dein Hund über dich verrät.</strong></p>' +
-    '<textarea class="copy-result" id="result-copy" readonly rows="5" onclick="this.select()"></textarea>' +
-    '<button class="btn-copy" onclick="copyResult()">📋 Ergebnis kopieren & teilen</button>' +
-    '</div>' +
-    '' +
-    '</div>';
-
-  // Treat all model output as text, never as HTML.
-  $("result-title").textContent = titel;
-  $("result-body").textContent = auswertung;
-  if (einladung) $("result-invitation").textContent = einladung;
-  $("result-copy").value = copyText;
-}
-
-function copyResult() {
-  var ta = document.querySelector(".copy-result");
-  if (ta) {
-    ta.select();
-    document.execCommand("copy");
-    var btn = document.querySelector(".btn-copy");
-    if (btn) { btn.textContent = "✅ Kopiert!"; setTimeout(function(){ btn.textContent = "📋 Ergebnis kopieren & teilen"; }, 2000); }
+(() => {
+  'use strict';
+  const card = document.getElementById('card');
+  let step = 0;
+  let answers = Array(QUIZ.questions.length).fill(null);
+  function el(tag, text, cls) {
+    const node = document.createElement(tag);
+    if (text !== undefined) node.textContent = text;
+    if (cls) node.className = cls;
+    return node;
   }
-}
+  function button(text, action) {
+    const b = el('button', text, 'local-button'); b.type = 'button';
+    b.addEventListener('click', action); return b;
+  }
+  function frame(title, intro) {
+    card.replaceChildren();
+    const header = el('div', undefined, 'card-hdr');
+    header.append(el('div', 'Die unsichtbaren Fäden', 'e'));
+    const heading = el('h2', title); heading.tabIndex = -1;
+    header.append(heading, el('p', intro));
+    const body = el('div', undefined, 'body'); card.append(header, body);
+    heading.focus(); return body;
+  }
+  function welcome() {
+    const body = frame(QUIZ.title, QUIZ.intro);
+    body.append(el('p', 'Fünf Fragen helfen dir, deine Wahrnehmung zu sortieren. Wähle jeweils die Antwort, die gerade am besten passt.', 'local-copy'));
+    body.append(el('p', 'Deine Auswahl bleibt in diesem Browserfenster. Das Ergebnis entsteht aus vorbereiteten Texten, ohne KI-Auswertung. Es ist ein Reflexionsimpuls, keine Diagnose über dich oder deinen Hund.', 'local-note'));
+    body.append(button('Los geht’s', () => { step = 0; question(); }));
+  }
+  function question() {
+    const q = QUIZ.questions[step];
+    const body = frame(QUIZ.title, 'Frage ' + (step + 1) + ' von ' + QUIZ.questions.length);
+    const field = el('fieldset', undefined, 'local-options'); field.append(el('legend', q.q));
+    if (q.hint) field.append(el('p', q.hint, 'local-copy'));
+    const next = button(step === QUIZ.questions.length - 1 ? 'Mein Ergebnis anzeigen' : 'Weiter →', () => {
+      if (answers[step] === null) return;
+      if (step < QUIZ.questions.length - 1) { step++; question(); } else result();
+    });
+    next.disabled = answers[step] === null;
+    q.options.forEach((option, index) => {
+      const label = el('label', undefined, 'local-option');
+      const input = document.createElement('input'); input.type = 'radio'; input.name = 'answer'; input.value = index;
+      input.checked = answers[step] === index;
+      input.addEventListener('change', () => { answers[step] = index; next.disabled = false; });
+      label.append(input, el('span', option.text)); field.append(label);
+    });
+    body.append(field, next);
+    if (step > 0) body.append(button('← Zurück', () => { step--; question(); }));
+  }
+  function result() {
+    const outcome = chooseOutcome(QUIZ, answers);
+    const body = frame(outcome.title, 'Dein Ergebnis aus fünf ausgewählten Antworten');
+    body.append(el('p', outcome.mixed ? 'Deine Antworten zeigen mehrere Richtungen oder noch Unsicherheit. Deshalb erhältst du einen offenen Reflexionsimpuls.' : 'Mehrere deiner Antworten passen zu diesem Schwerpunkt. Das beschreibt deine Auswahl in diesem Moment, keine feste Eigenschaft.', 'local-note'));
+    for (const section of outcome.sections) {
+      const box = el('section', undefined, 'local-result'); box.append(el('h3', section[0]), el('p', section[1])); body.append(box);
+    }
+    body.append(el('p', 'Verhalten hat viele mögliche Ursachen, etwa Lernerfahrungen, Umgebung oder Gesundheit. Ob dieser Text zu euch passt, entscheidest du. Er ersetzt keine persönliche Beratung.', 'local-note'));
+    const text = QUIZ.title + '\n\n' + outcome.title + '\n\n' + outcome.sections.map(s => s[0] + '\n' + s[1]).join('\n\n') + '\n\nReflexionsimpuls aus vorbereiteten Texten · Tierakademie Zischgl';
+    const label = el('label', 'Dein Ergebnis zum Kopieren', 'local-copy'); label.htmlFor = 'local-share';
+    const area = el('textarea'); area.id = 'local-share'; area.readOnly = true; area.rows = 6; area.value = text;
+    const copy = button('Ergebnis zum Kopieren markieren', () => { area.focus(); area.select(); });
+    body.append(label, area, copy, el('p', 'Nach dem Markieren: Strg+C oder auf dem Handy „Kopieren“ wählen. Du entscheidest selbst, ob du dein Ergebnis teilst.', 'local-note'));
+    body.append(button('Noch einmal starten', () => { answers = Array(QUIZ.questions.length).fill(null); welcome(); }));
+  }
+  welcome();
+})();
 
-renderWelcome();
 </script>
 <footer style="text-align:center; padding: 20px; font-size: 0.85em; color: #6B7C47; margin-top: 40px; border-top: 1px solid #C8B89A;">
   <a href="https://www.tierakademie-zischgl.de/impressum-dse/" target="_blank" style="color: #6B7C47;">Impressum &amp; Datenschutzerklärung</a> &middot; 
@@ -287,3 +164,5 @@ renderWelcome();
 </footer>
 </body>
 </html>
+
+
