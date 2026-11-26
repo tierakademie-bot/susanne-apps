@@ -54,7 +54,18 @@ textarea:focus{border-color:#4A7C6F}
 .bridge-box{background:#F0F5F2;border-radius:12px;padding:14px 16px;margin-bottom:14px;font-size:13px;color:#6B8A7E;line-height:1.7;font-family:system-ui;border-left:4px solid #D4A853}
 .footer{margin-top:18px;font-size:11px;color:rgba(143,175,159,.5);font-family:system-ui}
 </style>
-<script src="mitgliedszugang.js"></script>
+
+<meta http-equiv="Content-Security-Policy" content="connect-src 'none'; object-src 'none'; base-uri 'self'">
+<style>
+.local-copy,.local-note,.local-result p{font:15px/1.7 system-ui,sans-serif;margin:0 0 16px;color:#385448}
+.local-note{font-size:13px;background:#f3f5ed;padding:14px;border-radius:10px}
+.local-options{border:0;min-width:0;padding:0;margin:0 0 18px}.local-options legend{font-size:19px;font-weight:bold;line-height:1.45;margin-bottom:16px}
+.local-option{display:flex;align-items:flex-start;gap:12px;padding:14px;margin:10px 0;border:1px solid #b7c9c0;border-radius:10px;font:15px/1.5 system-ui;cursor:pointer}
+.local-option:has(input:checked){background:#edf3e9;border-color:#2c4a3e}.local-option input[type=radio]{display:block;width:18px;height:18px;flex-shrink:0;margin:3px 0 0;accent-color:#2c4a3e}
+.local-button{display:block;width:100%;padding:14px;margin:12px 0;border:0;border-radius:10px;background:#2c4a3e;color:white;font:600 15px system-ui;cursor:pointer}.local-button:disabled{opacity:.45;cursor:default}
+.local-button:focus-visible,.local-option:focus-within{outline:3px solid #bc882c;outline-offset:3px}.local-result{padding:16px 0;border-bottom:1px solid #d8e4dc}.local-result h3{font-size:17px;color:#2c4a3e;margin-bottom:10px}
+#local-share{box-sizing:border-box;width:100%;font:14px/1.6 system-ui;padding:12px;border:1px solid #b7c9c0;border-radius:8px}
+</style>
 </head>
 <body>
 <div class="hdr">
@@ -66,190 +77,86 @@ textarea:focus{border-color:#4A7C6F}
 <div class="footer">🐾 Susanne Zischgl · Die unsichtbaren Fäden zwischen Mensch und Hund</div>
 
 <script>
-var QS = [
-  {
-    lbl: "Dein Beziehungsstil",
-    q: "Wie wuerdest du dich in Beziehungen generell beschreiben?",
-    hint: "Nicht nur mit deinem Hund – sondern generell. Passt du dich schnell an? Brauchst du Kontrolle? Suchst du Naehe, meidest sie manchmal? Bist du eher fuehrend oder folgend?",
-    ph: "z. B. Ich passe mich oft an andere an und stelle meine eigenen Beduerfnisse hinten an..."
-  },
-  {
-    lbl: "Wiederkehrende Muster",
-    q: "Gibt es Muster in deinen Beziehungen, die sich immer wieder zeigen – auch mit deinem Hund?",
-    hint: "Dinge, die du kennst. Situationen die sich wiederholen, obwohl du es nicht willst. Das koennen auch positive Muster sein.",
-    ph: "z. B. Ich merke, dass ich bei Konflikten schnell nachgebe – auch mit meinem Hund gebe ich oft nach..."
-  },
-  {
-    lbl: "Naehe und Abstand",
-    q: "Wie ist das Thema Naehe und Abstand bei euch? Wer sucht wen – und wie viel?",
-    hint: "Dein Hund, du, oder beide gleichzeitig? Wer weicht aus, wer dringt vor? Ohne Wertung – nur beobachten.",
-    ph: "z. B. Mein Hund sucht staendig Koerperkontakt, ich geniesse das meistens, aber manchmal ist es mir zu viel..."
-  },
-  {
-    lbl: "Wenn es Konflikt gibt",
-    q: "Was passiert zwischen euch, wenn es zu Reibung oder Konflikt kommt?",
-    hint: "Wie reagierst du, wie reagiert er? Wer weicht aus, wer bleibt, wer loest auf? Auch das ist ein Beziehungsmuster.",
-    ph: "z. B. Ich werde laut, er zieht sich zurueck. Danach bin ich schlechter Laune und er wirkt angespannt..."
-  },
-  {
-    lbl: "Selbstreflexion",
-    q: "Was erkennst du, wenn du ehrlich auf eure Beziehung schaust?",
-    hint: "Was siehst du, das du vielleicht noch nicht laut ausgesprochen hast? Was wuerdest du gerne veraendern – an dir, nicht an ihm?",
-    ph: "z. B. Ich glaube ich erwarte von ihm manchmal Dinge, die ich selbst nicht gebe. Mehr Geduld zum Beispiel..."
-  }
-];
-
-var ANS = ["","","","",""];
-var STEP = 0;
-var RES = "";
-
-function $(id){return document.getElementById(id);}
-
-
-function showWelcome(){
-  $("card").innerHTML =
-    '<div class="card-hdr">'+
-    '<div class="e">Feld 2 · Beziehungsmuster</div>'+
-    '<h2>Dein Hund ist kein Trainingsprojekt.<br>Er ist Teil deiner Beziehungsmuster.</h2>'+
-    '<p>Jetzt wird es ehrlich. Diese App schaut, wie du Beziehungen wirklich lebst – nicht nur mit deinem Hund. Vielleicht bist du jemand, der sich schnell anpasst. Oder viel kontrolliert. Oder Naehe will, sie aber manchmal meidet. Genau das zeigt sich im Zusammenleben mit deinem Hund.</p>'+
-    '</div>'+
-    '<div class="body">'+
-    '<div class="badge-5f">7-Felder-Modell · Feld 2</div>'+
-    '<div class="feat"><div class="feat-icon">&#129309;</div><div class="feat-text"><strong>Wie du Beziehung lebst</strong> – nicht nur mit deinem Hund, sondern generell. Das praegt alles.</div></div>'+
-    '<div class="feat"><div class="feat-icon">&#128260;</div><div class="feat-text"><strong>Warum sich Muster wiederholen</strong> – und was sie dir ueber dich erzaehlen, nicht ueber deinen Hund.</div></div>'+
-    '<div class="feat"><div class="feat-icon">&#129309;</div><div class="feat-text"><strong>Selbstreflexion & Veraenderung</strong> – was du erkennst und was du konkret anders machen kannst.</div></div>'+
-    '<div class="tip">Das hier kann ein kleiner Aha-Schock sein. Das ist gut so. Erkenntnisse die etwas bewegen, fuehlen sich manchmal so an.<br><br><strong style="color:#C4923A">Tipp:</strong> Antworte so ehrlich wie moeglich – und schreib <strong>Ich weiss es nicht</strong> wenn du unsicher bist.</div>'+
-    '<button class="btn-p" onclick="showQ(1)">&#129309; Mein Beziehungsmuster erkennen</button>'+
-    '</div>';
-}
-
-function showQ(n){
-  STEP = n;
-  var q = QS[n-1];
-  var pct = Math.round((n/5)*100);
-  var dots = "";
-  for(var i=0;i<5;i++){
-    var c = i<n-1?"#4A7C6F":i===n-1?"#1E3A2E":"#D8EAE4";
-    dots += '<div class="dot" style="background:'+c+'"></div>';
-  }
-  var back = '';
-  var nextCls = n===5?"btn-g":"btn-p";
-  var nextLbl = n===5?"&#129309; Mein Muster zeigen":"Weiter &#8594;";
-  $("card").innerHTML =
-    '<div class="body">'+
-    '<div class="prog-meta"><span>Frage '+n+' von 5</span><span>'+pct+'%</span></div>'+
-    '<div class="prog-track"><div class="prog-fill" style="width:'+pct+'%"></div></div>'+
-    '<div class="dots">'+dots+'</div>'+
-    '<div class="q-label">'+q.lbl+'</div>'+
-    '<div class="q-title">'+q.q+'</div>'+
-    '<div class="q-hint">'+q.hint+'</div>'+
-    '<textarea id="ta" rows="4" placeholder="'+q.ph+'" oninput="chk()">'+(ANS[n-1]||'')+'</textarea>'+
-    '<p class="idk">&#128161; Du kannst auch schreiben: <strong>Ich weiss es nicht</strong> – das ist eine vollwertige Antwort.</p>'+
-    '<div class="btn-row">'+back+'<button class="'+nextCls+'" id="nbtn" onclick="goNext()">'+nextLbl+'</button></div>'+
-    ''+
-    '</div>';
-  chk();
-}
-
-function chk(){
-  var ta=$("ta"), btn=$("nbtn");
-  if(ta&&btn) btn.disabled = !ta.value.trim();
-}
-
-function goNext(){
-  var ta=$("ta");
-  if(!ta||!ta.value.trim()) return;
-  ANS[STEP-1]=ta.value.trim();
-  if(STEP<5){showQ(STEP+1);}
-  else{generate();}
-}
-
-function goBack(){
-  var ta=$("ta");
-  if(ta) ANS[STEP-1]=ta.value.trim();
-  showQ(STEP-1);
-}
-
-function showLoading(){
-  $("card").innerHTML='<div class="body"><div class="spin-wrap"><div class="spin"></div><p style="font-size:14px;color:#6B8A7E;font-family:system-ui;font-style:italic">Susanne schaut auf eure Beziehungsmuster...</p></div></div>';
-}
-
-function generate(){
-  showLoading();
-  var msg="";
-  var labels=["Beziehungsstil generell","Wiederkehrende Muster","Naehe und Abstand","Verhalten bei Konflikt","Selbstreflexion"];
-  for(var i=0;i<5;i++) msg+=labels[i]+": "+(ANS[i]||"keine Angabe")+"\n";
-
-  var sys="Du bist Susanne, erfahrene Hundetrainerin, Physiotherapeutin und systemische Coach mit ueber 30 Jahren Erfahrung. Du arbeitest mit dem 7-Felder-Modell der Mensch-Hund-Dynamik.\n\nFeld 2 sind die Beziehungsmuster: Wie gestaltet der Mensch Beziehungen generell – und wie zeigt sich das in der Beziehung zum Hund? Der Hund ist kein Trainingsobjekt, sondern Teil der Beziehungswelt des Menschen. Muster aus anderen Beziehungen – Anpassung, Kontrolle, Naehe-Distanz, Konfliktvermeidung – zeigen sich auch im Zusammenleben mit dem Hund.\n\nDu schreibst tief, warm, ehrlich, ohne Floskeln und ohne Coaching-Sprech. Keine Ratschlaege, keine Bewertungen. Du benennst was du siehst, laedt ein zum Nachdenken, und zeigst einen konkreten naechsten Schritt.\n\nBasierend auf den fuenf Antworten schreibst du fuenf Abschnitte mit diesen exakten Ueberschriften:\n\nDein Beziehungsmuster:\n[3-4 Saetze: Welches Grundmuster erkennst du? Benenne es klar und warm – z.B. Anpassungsmuster, Kontrollmuster, Naehe-Distanz-Dynamik, Konfliktvermeidung.]\n\nWie es sich mit dem Hund zeigt:\n[2-3 Saetze: Wie uebertraegt sich dieses Muster konkret auf die Mensch-Hund-Beziehung? Was wiederholt sich dort?]\n\nDer Spiegel des Hundes:\n[2-3 Saetze: Was koennte das Verhalten des Hundes ueber dieses Beziehungsmuster spiegeln? Als Einladung formuliert, nicht als Diagnose.]\n\nSelbstreflexion:\n[2-3 Saetze: Was koennte der Mensch ueber sich erkennen, wenn er dieses Muster bewusst betrachtet? Was moechte er vielleicht veraendern – an sich, nicht am Hund.]\n\nDeine eine Veraenderung diese Woche:\n[1-2 Saetze: Eine einzige konkrete innere Handlung oder Beobachtungsaufgabe fuer die naechste Woche. Kein Training – etwas Inneres.]\n\nKein Markdown. Deutsch, du-Ansprache.";
-
-  fetch("https://tierakademie-proxy.tierakademie.workers.dev",{
-    method:"POST",
-    headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({
-      model:"claude-haiku-4-5-20251001",
-      max_tokens:1100,
-      system:sys,
-      messages:[{role:"user",content:"Hier sind die fuenf Antworten:\n\n"+msg}]
-    })
-  })
-  .then(function(r){if(!r.ok)throw new Error("Fehler "+r.status);return r.json();})
-  .then(function(d){
-    if(d.error)throw new Error(d.error.message);
-    RES=d.content&&d.content[0]?d.content[0].text:"";
-    showResult();
-  })
-  .catch(function(e){
-    $("card").innerHTML='<div class="body"><div class="err">&#9888; '+e.message+'<br><button class="btn-p" style="margin-top:12px;width:auto;padding:9px 16px" onclick="generate()">&#8635; Nochmal versuchen</button></div></div>';
+const QUIZ = {"title":"Deine Beziehungsmuster","intro":"Wie erlebst du Nähe, Bedürfnisse und kleine Konflikte? Schau mit fünf Auswahlfragen auf deinen Alltag.","questions":[{"q":"Wie erlebst du dich in Beziehungen?","hint":"Wähle, was im Moment am ehesten passt.","options":[{"text":"Ich passe mich oft an und stelle eigene Wünsche zurück.","key":"adapt"},{"text":"Ich fühle mich wohler, wenn ich planen und den Überblick behalten kann.","key":"control"},{"text":"Ich wünsche mir Nähe, brauche aber manchmal plötzlich Abstand.","key":"closeness"},{"text":"Ich versuche, eigene Bedürfnisse und die des Gegenübers zu berücksichtigen.","key":"balanced"},{"text":"Das ist unterschiedlich oder ich weiß es noch nicht.","key":null}]},{"q":"Was wiederholt sich im Zusammenleben mit deinem Hund?","options":[{"text":"Ich gebe oft nach, obwohl ich eigentlich etwas anderes wollte.","key":"adapt"},{"text":"Wenn ein Ablauf anders ist als geplant, werde ich unruhig.","key":"control"},{"text":"Ich genieße viel Nähe, bis sie mir manchmal zu viel wird.","key":"closeness"},{"text":"Wir finden häufig einen Rhythmus mit Raum für uns beide.","key":"balanced"},{"text":"Ich erkenne noch kein wiederkehrendes Muster.","key":null}]},{"q":"Wie gehst du mit Nähe und Abstand um?","options":[{"text":"Ich lasse Nähe zu, auch wenn ich gerade lieber Ruhe hätte.","key":"adapt"},{"text":"Ich möchte möglichst selbst bestimmen, wann Nähe und Abstand passen.","key":"control"},{"text":"Mein Wunsch nach Nähe oder Rückzug wechselt deutlich.","key":"closeness"},{"text":"Ich biete Nähe an und respektiere auch Ruhe und Rückzug.","key":"balanced"},{"text":"Das kann ich noch nicht gut einschätzen.","key":null}]},{"q":"Was bemerkst du bei kleinen Konflikten?","options":[{"text":"Ich gebe schnell nach, damit die Spannung verschwindet.","key":"adapt"},{"text":"Ich versuche, die Situation sofort wieder unter Kontrolle zu bringen.","key":"control"},{"text":"Ich schwanke zwischen Kontakt suchen und mich zurückziehen.","key":"closeness"},{"text":"Ich versuche erst ruhiger zu werden und dann zu entscheiden.","key":"balanced"},{"text":"Es hängt stark von der Situation ab.","key":null}]},{"q":"Welchen eigenen Wunsch möchtest du genauer anschauen?","options":[{"text":"Eigene Bedürfnisse ernst nehmen, ohne ein schlechtes Gewissen zu haben.","key":"adapt"},{"text":"Mehr Gelassenheit, wenn nicht alles nach Plan läuft.","key":"control"},{"text":"Nähe und Rückzug früher wahrnehmen und klarer gestalten.","key":"closeness"},{"text":"Bewusster erkennen, was in unserem Miteinander bereits gut funktioniert.","key":"balanced"},{"text":"Ich möchte erst beobachten, bevor ich mich festlege.","key":null}]}],"results":{"adapt":{"title":"Fürsorge mit Platz für dich","sections":[["Was deine Auswahl nahelegt","In mehreren Antworten stellst du Anpassung und das Vermeiden von Spannung in den Vordergrund. Vielleicht nimmst du die Wünsche anderer schnell wahr und deine eigenen erst später."],["Ein anderer Blick","Ein eigenes Bedürfnis zu bemerken ist noch keine Zurückweisung deines Hundes. Du kannst fürsorglich sein und zugleich für angemessene Ruhe, Abstand oder Unterstützung sorgen."],["Dein Impuls für diese Woche","Frage dich in einer ruhigen Alltagssituation: Was brauche ich gerade, und was braucht mein Hund? Schreibe beide Antworten auf, bevor du nach einer Lösung suchst."]]},"control":{"title":"Sicherheit durch Überblick","sections":[["Was deine Auswahl nahelegt","Deine Auswahl betont Planung und den Wunsch, Situationen überschaubar zu halten. Struktur kann dir Orientierung geben; Unvorhergesehenes kostet vielleicht besonders viel Kraft."],["Ein anderer Blick","Verlässliche Abläufe sind hilfreich. Gleichzeitig lässt sich das Verhalten eines Lebewesens nicht vollständig planen. Eine Abweichung ist nicht automatisch dein Fehler."],["Dein Impuls für diese Woche","Bemerke bei einer kleinen, ungefährlichen Planänderung zuerst deinen eigenen Gedanken. Was befürchtest du, und was ist tatsächlich passiert? Lass die beiden Antworten nebeneinanderstehen."]]},"closeness":{"title":"Nähe und Freiraum im Wechsel","sections":[["Was deine Auswahl nahelegt","Mehrere Antworten beschreiben wechselnde Wünsche nach Kontakt und Abstand. Vielleicht merkst du manchmal erst spät, wann aus schöner Nähe ein Zuviel wird."],["Ein anderer Blick","Nähe und Rückzug müssen keine Gegensätze sein. Beide können Bedürfnisse ausdrücken. Auch dein Hund kann Kontakt suchen und später ungestört ruhen wollen."],["Dein Impuls für diese Woche","Achte in einem ruhigen Moment auf ein frühes Zeichen deines eigenen Ruhebedürfnisses. Wie könntest du rechtzeitig eine Pause ermöglichen, die für euch beide angenehm ist?"]]},"balanced":{"title":"Beide Seiten im Blick","sections":[["Was deine Auswahl nahelegt","Deine Antworten betonen gegenseitige Bedürfnisse und das Bemühen, bewusst zu reagieren. Vielleicht helfen dir kleine Pausen, nicht sofort jedem Impuls zu folgen."],["Ein anderer Blick","Das ist keine Bewertung als „besserer“ Beziehungstyp. Auch wenn vieles gut läuft, bleiben schwierige Tage und offene Fragen Teil einer Beziehung."],["Dein Impuls für diese Woche","Notiere eine Situation, in der du sowohl dein eigenes Bedürfnis als auch das deines Hundes berücksichtigen konntest. Welche konkrete Entscheidung hat dabei geholfen?"]]}},"mixed":{"title":"Ein Muster muss noch keinen Namen haben","sections":[["Was deine Auswahl nahelegt","Deine Auswahl zeigt mehrere Richtungen oder enthält noch offene Fragen. Aus diesen fünf Antworten lässt sich deshalb kein klarer Schwerpunkt ableiten."],["Ein anderer Blick","Du darfst Unterschiede zwischen Situationen stehen lassen. Ein Reflexionstest ist keine psychologische Diagnose und muss dich nicht auf einen Typ festlegen."],["Dein Impuls für diese Woche","Wähle eine wiederkehrende Alltagssituation. Notiere getrennt: Was ist passiert? Was habe ich gefühlt? Was habe ich gebraucht? Was habe ich beim Hund tatsächlich gesehen?"]],"mixed":true}};
+function chooseOutcome(quiz, answers) {
+  const scores = Object.fromEntries(Object.keys(quiz.results).map(k => [k, 0]));
+  answers.forEach((answer, i) => {
+    const key = quiz.questions[i].options[answer]?.key;
+    if (key && Object.hasOwn(scores, key)) scores[key]++;
   });
+  const ranked = Object.entries(scores).sort((a, b) => b[1] - a[1]);
+  if (ranked[0][1] < 3 || ranked[0][1] === ranked[1][1]) return quiz.mixed;
+  return quiz.results[ranked[0][0]];
 }
 
-function showResult(){
-  var secs=[
-    {key:"dein beziehungsmuster",lbl:"&#129309; Dein Beziehungsmuster",col:"#1E3A2E",copy:false},
-    {key:"wie es sich mit dem hund",lbl:"&#128062; Wie es sich mit dem Hund zeigt",col:"#4A7C6F",copy:false},
-    {key:"der spiegel des hundes",lbl:"&#129781; Der Spiegel des Hundes",col:"#8B5E3C",copy:false},
-    {key:"selbstreflexion",lbl:"&#128270; Selbstreflexion",col:"#C4923A",copy:false},
-    {key:"deine eine veraenderung",lbl:"&#128336; Deine eine Veraenderung diese Woche",col:"#D4A853",copy:true}
-  ];
-  var parsed=[],cur=null;
-  var lines=RES.split("\n");
-  for(var i=0;i<lines.length;i++){
-    var line=lines[i].trim(),low=line.toLowerCase();
-    var found=false;
-    for(var j=0;j<secs.length;j++){
-      if(low.indexOf(secs[j].key)!==-1){
-        if(cur)parsed.push(cur);
-        cur={lbl:secs[j].lbl,col:secs[j].col,copy:secs[j].copy,txt:""};
-        found=true;break;
-      }
+(() => {
+  'use strict';
+  const card = document.getElementById('card');
+  let step = 0;
+  let answers = Array(QUIZ.questions.length).fill(null);
+  function el(tag, text, cls) {
+    const node = document.createElement(tag);
+    if (text !== undefined) node.textContent = text;
+    if (cls) node.className = cls;
+    return node;
+  }
+  function button(text, action) {
+    const b = el('button', text, 'local-button'); b.type = 'button';
+    b.addEventListener('click', action); return b;
+  }
+  function frame(title, intro) {
+    card.replaceChildren();
+    const header = el('div', undefined, 'card-hdr');
+    header.append(el('div', 'Die unsichtbaren Fäden', 'e'));
+    const heading = el('h2', title); heading.tabIndex = -1;
+    header.append(heading, el('p', intro));
+    const body = el('div', undefined, 'body'); card.append(header, body);
+    heading.focus(); return body;
+  }
+  function welcome() {
+    const body = frame(QUIZ.title, QUIZ.intro);
+    body.append(el('p', 'Fünf Fragen helfen dir, deine Wahrnehmung zu sortieren. Wähle jeweils die Antwort, die gerade am besten passt.', 'local-copy'));
+    body.append(el('p', 'Deine Auswahl bleibt in diesem Browserfenster. Das Ergebnis entsteht aus vorbereiteten Texten, ohne KI-Auswertung. Es ist ein Reflexionsimpuls, keine Diagnose über dich oder deinen Hund.', 'local-note'));
+    body.append(button('Los geht’s', () => { step = 0; question(); }));
+  }
+  function question() {
+    const q = QUIZ.questions[step];
+    const body = frame(QUIZ.title, 'Frage ' + (step + 1) + ' von ' + QUIZ.questions.length);
+    const field = el('fieldset', undefined, 'local-options'); field.append(el('legend', q.q));
+    if (q.hint) field.append(el('p', q.hint, 'local-copy'));
+    const next = button(step === QUIZ.questions.length - 1 ? 'Mein Ergebnis anzeigen' : 'Weiter →', () => {
+      if (answers[step] === null) return;
+      if (step < QUIZ.questions.length - 1) { step++; question(); } else result();
+    });
+    next.disabled = answers[step] === null;
+    q.options.forEach((option, index) => {
+      const label = el('label', undefined, 'local-option');
+      const input = document.createElement('input'); input.type = 'radio'; input.name = 'answer'; input.value = index;
+      input.checked = answers[step] === index;
+      input.addEventListener('change', () => { answers[step] = index; next.disabled = false; });
+      label.append(input, el('span', option.text)); field.append(label);
+    });
+    body.append(field, next);
+    if (step > 0) body.append(button('← Zurück', () => { step--; question(); }));
+  }
+  function result() {
+    const outcome = chooseOutcome(QUIZ, answers);
+    const body = frame(outcome.title, 'Dein Ergebnis aus fünf ausgewählten Antworten');
+    body.append(el('p', outcome.mixed ? 'Deine Antworten zeigen mehrere Richtungen oder noch Unsicherheit. Deshalb erhältst du einen offenen Reflexionsimpuls.' : 'Mehrere deiner Antworten passen zu diesem Schwerpunkt. Das beschreibt deine Auswahl in diesem Moment, keine feste Eigenschaft.', 'local-note'));
+    for (const section of outcome.sections) {
+      const box = el('section', undefined, 'local-result'); box.append(el('h3', section[0]), el('p', section[1])); body.append(box);
     }
-    if(!found&&cur&&line) cur.txt+=(cur.txt?"\n":"")+line;
+    body.append(el('p', 'Verhalten hat viele mögliche Ursachen, etwa Lernerfahrungen, Umgebung oder Gesundheit. Ob dieser Text zu euch passt, entscheidest du. Er ersetzt keine persönliche Beratung.', 'local-note'));
+    const text = QUIZ.title + '\n\n' + outcome.title + '\n\n' + outcome.sections.map(s => s[0] + '\n' + s[1]).join('\n\n') + '\n\nReflexionsimpuls aus vorbereiteten Texten · Tierakademie Zischgl';
+    const label = el('label', 'Dein Ergebnis zum Kopieren', 'local-copy'); label.htmlFor = 'local-share';
+    const area = el('textarea'); area.id = 'local-share'; area.readOnly = true; area.rows = 6; area.value = text;
+    const copy = button('Ergebnis zum Kopieren markieren', () => { area.focus(); area.select(); });
+    body.append(label, area, copy, el('p', 'Nach dem Markieren: Strg+C oder auf dem Handy „Kopieren“ wählen. Du entscheidest selbst, ob du dein Ergebnis teilst.', 'local-note'));
+    body.append(button('Noch einmal starten', () => { answers = Array(QUIZ.questions.length).fill(null); welcome(); }));
   }
-  if(cur)parsed.push(cur);
-  if(!parsed.length)parsed=[{lbl:"&#129309; Dein Beziehungsmuster",col:"#1E3A2E",copy:false,txt:RES}];
+  welcome();
+})();
 
-  var html='<div class="body">'+
-    '<div class="badge-5f">7-Felder-Modell · Feld 2</div>'+
-    '<p style="font-size:16px;font-weight:700;color:#1E3A2E;margin-bottom:4px">Dein Beziehungsmuster &#129309;</p>'+
-    '<p style="font-size:13px;color:#6B8A7E;font-family:system-ui;margin-bottom:16px;line-height:1.65">Lies es langsam. Manchmal brauchen Erkenntnisse einen Moment um anzukommen.</p>';
-
-  for(var k=0;k<parsed.length;k++){
-    var s=parsed[k];
-    var cp=s.copy?
-      '<p class="copy-hint">&#128070; Klick ins Feld &#8594; alles markiert &#8594; Strg+C</p>'+
-      '<textarea class="copy-field" readonly rows="3" onclick="this.select()">'+s.txt+'</textarea>':'';
-    html+='<div class="rbox" style="border-left:4px solid '+s.col+'">'+
-      '<div class="rs-lbl" style="color:'+s.col+'">'+s.lbl+'</div>'+
-      '<div class="rs-txt">'+s.txt.replace(/\n/g,"<br>")+'</div>'+cp+'</div>';
-  }
-
-  html+='</div>';
-  $("card").innerHTML=html;
-}
-
-function reset(){ANS=["","","","",""];STEP=0;RES="";showWelcome();}
-
-showWelcome();
 </script>
 <footer style="text-align:center; padding: 20px; font-size: 0.85em; color: #6B7C47; margin-top: 40px; border-top: 1px solid #C8B89A;">
   <a href="https://www.tierakademie-zischgl.de/impressum-dse/" target="_blank" style="color: #6B7C47;">Impressum &amp; Datenschutzerklärung</a> &middot; 
@@ -257,3 +164,5 @@ showWelcome();
 </footer>
 </body>
 </html>
+
+
