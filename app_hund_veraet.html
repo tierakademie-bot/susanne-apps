@@ -164,7 +164,7 @@ function detailedDogOutcome(quiz, answers) {
     const exportBox = el('details', undefined, 'local-export');
     exportBox.append(el('summary', 'Ergebnis zum Kopieren öffnen'), label, area, copy, el('p', 'Nach dem Markieren: Strg+C oder auf dem Handy „Kopieren“ wählen.', 'local-note'));
     body.append(exportBox);
-    body.append(button('Noch einmal starten', () => { answers = Array(QUIZ.questions.length).fill(null); welcome(); }));
+
   }
   welcome();
 })();
